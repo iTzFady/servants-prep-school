@@ -6,7 +6,6 @@ import Header from "./Header";
 
 export default function ThemedStack() {
   const { theme, colorScheme } = useContext(ThemeContext);
-
   return (
     <>
       <Stack
@@ -20,8 +19,9 @@ export default function ThemedStack() {
         }}
       >
         <Stack.Screen name="index" />
+        <Stack.Screen name="login" />
         <Stack.Screen
-          name="Register"
+          name="register"
           options={{
             headerShown: true,
             header: Header,

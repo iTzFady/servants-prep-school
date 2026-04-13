@@ -5,7 +5,7 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
 function CustomDropdown({ data, dropdownLabel, value, onChange, placeHolder }) {
-  const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme, fonts);
 
   const renderDropdownItems = (item) => {
@@ -47,6 +47,7 @@ function CustomDropdown({ data, dropdownLabel, value, onChange, placeHolder }) {
             maxHeight={250}
             labelField="label"
             valueField="value"
+            onChange={onChange}
             placeholder={placeHolder}
             value={value}
             renderItem={renderDropdownItems}
