@@ -5,7 +5,7 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
@@ -19,15 +19,17 @@ import {
 } from "react-native";
 import { days } from "../data/days";
 
+import UploadButton from "@/components/UploadButton";
+import { educationTypes } from "@/data/education_types";
 import { gender } from "@/data/gender";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Register() {
-  const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDate, setShowDate] = useState(false);
-  const styles = createStyles(theme, fonts);
+  const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const {
     control,
     handleSubmit,
@@ -37,6 +39,7 @@ export default function Register() {
   } = useForm({
     mode: "onBlur",
     defaultValues: {
+      profilePicture: null,
       username: "",
       password: "",
       confirmPassword: "",
@@ -78,6 +81,13 @@ export default function Register() {
               <Text style={styles.sectionTitle}>البيانات الشخصية</Text>
               <Controller
                 control={control}
+                name="profilePicture"
+                render={({ field: { onChange, value } }) => (
+                  <UploadButton onChange={onChange} value={value} />
+                )}
+              />
+              <Controller
+                control={control}
                 name="username"
                 rules={{ required: "اسم المستخدم مطلوب" }}
                 render={({ field: { onChange, onBlur, value } }) => (
@@ -114,7 +124,13 @@ export default function Register() {
               <Controller
                 control={control}
                 name="password"
-                rules={{ required: "برجاء كتابة كلمة المرور" }}
+                rules={{
+                  required: "برجاء كتابة كلمة المرور",
+                  minLength: {
+                    value: 6,
+                    message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+                  },
+                }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
                     text="كلمة المرور"
@@ -133,7 +149,7 @@ export default function Register() {
                         <Feather
                           name={showPassword ? "eye-off" : "eye"}
                           size={24}
-                          color={theme.text}
+                          color={theme.inputField.color}
                         />
                       </TouchableOpacity>
                     }
@@ -155,7 +171,7 @@ export default function Register() {
                     inputMode="text"
                     onChangeText={onChange}
                     value={value}
-                    placeholder="أدخل كلمة المرور مرة اخريقe"
+                    placeholder="أدخل كلمة المرور مرة اخري"
                     secureTextEntry={!showPassword}
                   />
                 )}
@@ -293,7 +309,7 @@ export default function Register() {
                 render={({ field: { onChange, value } }) => (
                   <Dropdown
                     dropdownLabel="نوع الدراسة"
-                    data={days}
+                    data={educationTypes}
                     placeHolder="اختر نوع الدراسة"
                     onChange={onChange}
                     value={value}
@@ -404,6 +420,7 @@ export default function Register() {
             <Button
               text="ارسال الطلب"
               loading={loading}
+              style={styles.button}
               onPressEvent={handleSubmit(onSubmit, (errors) => {
                 const firstError = Object.values(errors)[0];
                 if (firstError) {
@@ -435,23 +452,24 @@ function createStyles(theme, fonts) {
     },
     sectionTitle: {
       borderRightWidth: 4,
-      borderRightColor: theme.primary,
+      borderRightColor: theme.register.text,
       textAlign: "right",
       paddingRight: 10,
       fontFamily: fonts.bold,
       fontSize: 18,
       marginVertical: 10,
-      color: theme.primary,
+      color: theme.register.text,
     },
     title: {
       fontFamily: fonts.bold,
-      color: theme.primary,
+      color: theme.register.text,
       fontSize: 24,
       textAlign: "center",
       marginVertical: 6,
     },
     subtitle: {
       fontFamily: fonts.regular,
+      color: theme.register.text,
       fontSize: 14,
       textAlign: "center",
     },
@@ -464,13 +482,14 @@ function createStyles(theme, fonts) {
       alignItems: "center",
       borderRadius: 10,
       borderWidth: 1,
-      borderColor: theme.borderColor,
-      backgroundColor: "#F8FAFC",
+      borderColor: theme.inputField.borderColor,
+      backgroundColor: theme.inputField.background,
     },
     dateTimeText: {
       fontSize: 20,
       fontFamily: fonts.light,
       marginRight: 10,
+      color: theme.inputField.color,
     },
     dateFieldLabel: {
       fontFamily: fonts.medium,
@@ -483,6 +502,9 @@ function createStyles(theme, fonts) {
     buttonContainer: {
       paddingHorizontal: 20,
       backgroundColor: theme.background,
+    },
+    button: {
+      backgroundColor: theme.register.button,
     },
   });
 }

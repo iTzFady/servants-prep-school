@@ -55,8 +55,8 @@ function createStyles(theme, fonts) {
       paddingHorizontal: 10,
       borderRadius: 10,
       borderWidth: 1,
-      borderColor: theme.borderColor,
-      backgroundColor: "#F8FAFC",
+      borderColor: theme.inputField.borderColor,
+      backgroundColor: theme.inputField.background,
     },
     TextFieldLabel: {
       fontFamily: fonts.medium,
@@ -64,16 +64,16 @@ function createStyles(theme, fonts) {
       marginVertical: 5,
       width: "100%",
       textAlign: "right",
-      color: theme.textSecondary,
+      color: theme.inputField.label,
     },
     TextField: {
       flex: 1,
-      color: theme.text,
+      color: theme.inputField.color,
       fontFamily: fonts.regular,
       textAlign: "right",
     },
     TextFieldPlaceHolder: {
-      color: theme.text,
+      color: theme.inputField.color,
     },
   });
 }

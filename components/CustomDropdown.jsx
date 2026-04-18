@@ -1,12 +1,12 @@
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
-import { memo, useContext } from "react";
+import { memo, useContext, useMemo } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
 function CustomDropdown({ data, dropdownLabel, value, onChange, placeHolder }) {
   const { theme } = useContext(ThemeContext);
-  const styles = createStyles(theme, fonts);
+  const styles = useMemo(() => createStyles(theme, fonts), [theme]);
 
   const renderDropdownItems = (item) => {
     return (
@@ -95,8 +95,8 @@ function createStyles(theme, fonts) {
       alignItems: "center",
       borderRadius: 10,
       borderWidth: 1,
-      borderColor: theme.borderColor,
-      backgroundColor: "#F8FAFC",
+      borderColor: theme.dropdown.border,
+      backgroundColor: theme.dropdown.background,
     },
     dropdownSelectText: {
       textAlign: "right",
@@ -108,6 +108,7 @@ function createStyles(theme, fonts) {
       marginRight: 8,
       fontSize: 16,
       fontFamily: fonts.extraLight,
+      color: theme.dropdown.text,
     },
     dropdownItemContainer: {
       flexDirection: "row-reverse",

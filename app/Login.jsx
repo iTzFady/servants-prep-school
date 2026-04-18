@@ -5,7 +5,7 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { Feather } from "@expo/vector-icons/";
 import { Link } from "expo-router";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import {
@@ -35,13 +35,12 @@ export default function Login() {
       password: "",
     },
   });
-  const styles = createStyles(theme, fonts);
+  const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const onSubmit = (data) => {
     setLoading(true);
     console.log(data);
     setLoading(false);
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -61,7 +60,7 @@ export default function Login() {
                 <Feather
                   name={colorScheme === "dark" ? "moon" : "sun"}
                   size={18}
-                  color={theme.text}
+                  color={colorScheme === "dark" ? "#000" : "#ffffff"}
                 />
               </Pressable>
               <View style={styles.appLogoContainer}>
@@ -95,7 +94,11 @@ export default function Login() {
                       value={value}
                       placeholder="أدخل اسم المستخدم"
                       prefixIcon={
-                        <Feather name="user" size={24} color="black" />
+                        <Feather
+                          name="user"
+                          size={24}
+                          color={theme.inputField.color}
+                        />
                       }
                     />
                   )}
@@ -115,7 +118,11 @@ export default function Login() {
                       value={value}
                       placeholder="أدخل كلمة المرور"
                       prefixIcon={
-                        <Feather name="lock" size={24} color="black" />
+                        <Feather
+                          name="lock"
+                          size={24}
+                          color={theme.inputField.color}
+                        />
                       }
                       suffixIcon={
                         <TouchableOpacity
@@ -126,7 +133,7 @@ export default function Login() {
                           <Feather
                             name={showPassword ? "eye-off" : "eye"}
                             size={24}
-                            color={theme.text}
+                            color={theme.inputField.color}
                           />
                         </TouchableOpacity>
                       }
@@ -144,15 +151,14 @@ export default function Login() {
                     console.log(firstError.message);
                   }
                 })}
-                prefixIcon={
-                  <Feather name="log-in" size={24} color={theme.secondary} />
-                }
+                prefixIcon={<Feather name="log-in" size={24} color="#ffffff" />}
+                style={styles.button}
               />
             </View>
-            <Divider separatorWidth="80%" />
+            <Divider separatorWidth="80%" color={theme.login.divider} />
             <View style={styles.linkContainer}>
               <Text style={styles.linkTitle}>ليس لديك حساب؟</Text>
-              <Link href="/Register" style={styles.link}>
+              <Link href="/register" style={styles.link}>
                 <Text style={styles.linkText}>إنشاء حساب جديد</Text>
               </Link>
             </View>
@@ -203,14 +209,14 @@ function createStyles(theme, fonts) {
     },
     textTitleBox: {
       fontFamily: fonts.bold,
-      color: theme.secondary,
+      color: theme.login.titleBox.text,
       fontSize: 24,
       textAlign: "center",
       marginVertical: 12,
     },
     subtitleBox: {
       fontFamily: fonts.light,
-      color: theme.secondary,
+      color: theme.login.titleBox.text,
       fontSize: 12,
       textAlign: "center",
     },
@@ -223,6 +229,7 @@ function createStyles(theme, fonts) {
     },
     loginSubtitle: {
       fontFamily: fonts.regular,
+      color: theme.title,
       fontSize: 14,
       textAlign: "center",
     },
@@ -238,13 +245,16 @@ function createStyles(theme, fonts) {
     },
     linkTitle: {
       fontFamily: fonts.regular,
-      color: theme.textSecondary,
+      color: theme.login.link.title,
       fontSize: 14,
     },
     linkText: {
-      color: theme.primary,
+      color: theme.login.link.describtion,
       fontFamily: fonts.bold,
       marginTop: 5,
+    },
+    button: {
+      backgroundColor: theme.login.button,
     },
     toggleButton: {
       borderWidth: 1,

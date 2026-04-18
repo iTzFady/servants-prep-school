@@ -1,11 +1,11 @@
 import { memo } from "react";
 import { View } from "react-native";
 
-function Divider({ separatorWidth, margin }) {
+function Divider({ separatorWidth, margin, color }) {
   return (
     <View
       style={{
-        backgroundColor: "#00000025",
+        backgroundColor: color,
         marginBlock: margin,
         marginHorizontal: "auto",
         height: 1.5,

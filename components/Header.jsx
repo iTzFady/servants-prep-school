@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Header(props) {
-  const { theme, colorScheme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   return (
     <SafeAreaView
@@ -22,12 +22,16 @@ export default function Header(props) {
         shadowRadius: 3,
       }}
     >
-      <TouchableOpacity onPress={() => props.navigation.goBack()}>
-        <Feather name="arrow-right" size={20} color={theme.primary} />
-      </TouchableOpacity>
+      {props.options.headerRight ? (
+        props.options.headerRight()
+      ) : (
+        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <Feather name="arrow-right" size={20} color={theme.header.color} />
+        </TouchableOpacity>
+      )}
       <Text
         style={{
-          color: theme.primary,
+          color: theme.header.color,
           fontSize: 18,
           fontFamily: fonts.bold,
           marginHorizontal: "auto",

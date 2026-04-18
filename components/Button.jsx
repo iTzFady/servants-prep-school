@@ -9,7 +9,6 @@ function Button({ text, prefixIcon, onPressEvent, style, loading, disabled }) {
     <Pressable
       style={[
         {
-          backgroundColor: theme.primary,
           borderRadius: 10,
           width: "100%",
           height: 50,
