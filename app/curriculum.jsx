@@ -8,7 +8,7 @@ import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 export default function Curriculum() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const defaultProfilePic = require("@/assets/images/saint-paul.png");
+  const stpaul = require("@/assets/images/saint-paul.png");
 
   const renderTabs = useCallback(({ item }) => {
     return (
@@ -24,20 +24,15 @@ export default function Curriculum() {
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.textContainer}>
-          <Text style={styles.studentName}>مكتبة الخادم</Text>
-          <Text style={styles.cardSubtext}>
+          <Text style={styles.title}>مكتبة الخادم</Text>
+          <Text style={styles.description}>
             استكشف المناهج التعليمية والمحتوى الروحي
           </Text>
         </View>
-        <Image source={defaultProfilePic} style={styles.profilePicture} />
+        <Image source={stpaul} style={styles.stpaulImg} />
       </View>
       <Text style={styles.sectionTitle}>الفروع</Text>
-      <FlatList
-        contentContainerStyle={{ alignContent: "center" }}
-        data={curriculumTabs}
-        renderItem={renderTabs}
-        numColumns={2}
-      />
+      <FlatList data={curriculumTabs} renderItem={renderTabs} numColumns={2} />
     </View>
   );
 }
@@ -45,7 +40,7 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
+      padding: 10,
     },
     sectionTitle: {
       borderRightWidth: 4,
@@ -58,30 +53,33 @@ function createStyles(theme, fonts) {
       color: theme.section.color,
     },
     card: {
-      height: 200,
+      alignContent: "space-between",
+      width: "100%",
+      alignItems: "center",
       backgroundColor: theme.card.background,
       flexDirection: "row-reverse",
-      alignItems: "center",
-      paddingHorizontal: 20,
+      padding: 20,
       gap: 8,
     },
-    profilePicture: {
-      width: 100,
-      height: 180,
-      objectFit: "contain",
+    stpaulImg: {
+      width: 80,
+      height: 190,
+      resizeMode: "contain",
     },
     textContainer: {
+      flex: 1,
       alignItems: "flex-end",
     },
-    studentName: {
+    title: {
       fontFamily: fonts.bold,
       fontSize: 24,
       color: "white",
     },
-    cardSubtext: {
+    description: {
       fontFamily: fonts.regular,
       fontSize: 14,
       color: "white",
+      textAlign: "right",
     },
   });
 }

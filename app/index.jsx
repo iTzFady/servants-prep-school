@@ -27,15 +27,15 @@ export default function Index() {
       <View style={styles.studentCard}>
         <Image source={defaultProfilePic} style={styles.profilePicture} />
         <View style={styles.textContainer}>
-          <Text style={styles.studentName}>ابننا الغالي, فادي</Text>
+          <Text style={styles.studentName}>ابننا الغالي, يوحنا</Text>
           <Text style={styles.cardSubtext}>اهلا بك في مدرسة ماربولس</Text>
           <Text style={styles.cardSubtext}>المستوي الاول</Text>
         </View>
       </View>
       <Text style={styles.sectionTitle}>لوحة التحكم</Text>
       <FlatList
-        contentContainerStyle={{ alignContent: "center" }}
         data={dashboardTabs}
+        showsVerticalScrollIndicator={false}
         renderItem={renderTabs}
         numColumns={2}
       />
@@ -46,10 +46,7 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
-    },
-    scrollContent: {
-      flexGrow: 1,
+      padding: 10,
     },
     sectionTitle: {
       borderRightWidth: 4,

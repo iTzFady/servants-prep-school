@@ -1,0 +1,108 @@
+import TileButton from "@/components/TileButton";
+import ToggleButton from "@/components/ToggleButton";
+import { ThemeContext } from "@/context/ThemeContext";
+import { fonts } from "@/theme/fonts";
+import {
+  Feather,
+  AntDesign,
+  SimpleLineIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import { router } from "expo-router";
+import { Fragment, useCallback, useContext, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Button from "@/components/Button";
+export default function Settings() {
+  const [loading, setLoading] = useState(false);
+  const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
+  const toggleTheme = useCallback(
+    () => setColorScheme(colorScheme === "dark" ? "light" : "dark"),
+    [setColorScheme, colorScheme],
+  );
+
+  const styles = createStyles(theme, fonts);
+  return (
+    <ScrollView style={styles.container}>
+      <Fragment>
+        <Text style={styles.sectionTitle}>الحساب</Text>
+        <View style={styles.section}>
+          <TileButton
+            text="الملف الشخصي"
+            icon={({ color }) => (
+              <Feather name="user" size={24} color={color} />
+            )}
+            onPress={() => router.navigate("/profile")}
+          />
+          <TileButton
+            text="الأمان وكلمة المرور"
+            icon={({ color }) => (
+              <Feather name="lock" size={24} color={color} />
+            )}
+          />
+        </View>
+      </Fragment>
+      <Fragment>
+        <Text style={styles.sectionTitle}>تفضيلات التطبيق</Text>
+        <View style={styles.section}>
+          <ToggleButton
+            text="الوضع الليلي"
+            icon={({ color }) => (
+              <Feather name="moon" size={24} color={color} />
+            )}
+            state={colorScheme !== "dark"}
+            onPress={toggleTheme}
+          />
+        </View>
+      </Fragment>
+      <Fragment>
+        <Text style={styles.sectionTitle}>المساعدة والدعم</Text>
+        <View style={styles.section}>
+          <TileButton
+            text="مركز المساعدة"
+            icon={({ color }) => (
+              <SimpleLineIcons name="question" size={24} color={color} />
+            )}
+          />
+          <TileButton
+            text="عن التطبيق"
+            icon={({ color }) => (
+              <AntDesign name="exclamation-circle" size={24} color={color} />
+            )}
+          />
+        </View>
+      </Fragment>
+      <Button
+        text="تسجيل الخروج"
+        loading={loading}
+        style={styles.button}
+        onPressEvent={() => router.navigate("/login")}
+        prefixIcon={<MaterialIcons name="logout" size={24} color="#DC2626" />}
+      />
+    </ScrollView>
+  );
+}
+
+function createStyles(theme, fonts) {
+  return StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      padding: 8,
+    },
+    sectionTitle: {
+      textAlign: "right",
+      paddingHorizontal: 4,
+      paddingVertical: 6,
+      fontFamily: fonts.bold,
+      fontSize: 14,
+      color: theme.settings.section.title,
+    },
+    section: {
+      backgroundColor: theme.settings.section.background,
+      borderRadius: 10,
+    },
+    button: {
+      backgroundColor: theme.settings.button,
+      color: "#DC2626",
+    },
+  });
+}

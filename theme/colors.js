@@ -35,6 +35,45 @@ export const Colors = {
         title: "#94A3B8",
       },
     },
+    settings: {
+      sectionTitle: "#A71E34",
+      iconButton: {
+        icon: "#A71E34",
+        iconBackground: "rgba(167 , 30 , 52, .1)",
+        title: "#334155",
+      },
+      section: {
+        title: "#A71E34",
+        background: "#FFFFFF",
+      },
+      toggleButton: {
+        on: {
+          track: "#A71E34",
+          thumb: "#FFFFFF",
+        },
+        off: {
+          track: "#E2E8F0",
+          thumb: "#FFFFFF",
+        },
+      },
+      button: "#FEF2F2",
+    },
+    attendance: {
+      section: {
+        title: "#A71E34",
+      },
+      tile: {
+        background: "#FFFFFF",
+        border: "#F8FAFC",
+        title: "#0F172A",
+        describtion: "#64748B",
+        color: "#000",
+      },
+    },
+    qr: {
+      title: "#0F172A",
+      subTitle: "#475569",
+    },
     inputField: {
       label: "#A71E34",
       background: "#F8FAFC",
@@ -67,7 +106,6 @@ export const Colors = {
     header: {
       color: "#A71E34",
     },
-
     primary: "#A71E34",
     secondary: "#FFFFFF",
     title: "#0F172A",
@@ -111,6 +149,44 @@ export const Colors = {
         info: "#FFFFFF",
         title: "#94A3B8",
       },
+    },
+    settings: {
+      iconButton: {
+        icon: "#FFFFFF",
+        iconBackground: "#0f172a81",
+        title: "#FFFFFF",
+      },
+      section: {
+        title: "#ffffff",
+        background: "#1C2839",
+      },
+      toggleButton: {
+        on: {
+          track: "#0F172A",
+          thumb: "#FFFFFF",
+        },
+        off: {
+          track: "#7C7C7C",
+          thumb: "#FFFFFF",
+        },
+      },
+      button: "#1C2839",
+    },
+    attendance: {
+      section: {
+        title: "#FFFFFF",
+      },
+      tile: {
+        background: "#1C2839",
+        border: "#FFFFFF",
+        title: "#FFFFFF",
+        describtion: "#64748B",
+        color: "#fff",
+      },
+    },
+    qr: {
+      title: "#FFFFFF",
+      subTitle: "#FFFFFF",
     },
     inputField: {
       label: "#FFFFFF",

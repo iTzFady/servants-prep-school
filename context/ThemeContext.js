@@ -10,7 +10,7 @@ export function ThemeProvider({ children }) {
   );
 
   const theme = useMemo(
-    () => (colorScheme === "dark" ? Colors.dark : Colors.light),
+    () => (colorScheme === "light" ? Colors.dark : Colors.light),
     [colorScheme],
   );
 

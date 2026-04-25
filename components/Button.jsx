@@ -37,7 +37,7 @@ function Button({ text, prefixIcon, onPressEvent, style, loading, disabled }) {
           {prefixIcon}
           <Text
             style={{
-              color: theme.buttonText || "white",
+              color: style.color || "white",
               fontFamily: fonts.bold,
               textAlign: "center",
             }}

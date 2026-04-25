@@ -27,14 +27,16 @@ export default function ThemedStack() {
             headerTitle: "إعداد خدام",
             headerRight: () => (
               <TouchableOpacity
-                onPress={() => router.navigate("/profile")}
+                onPress={() => router.navigate("/settings")}
                 href="/profile"
               >
-                <Feather name="user" size={24} color={theme.header.color} />
+                <Feather name="settings" size={24} color={theme.header.color} />
               </TouchableOpacity>
             ),
             headerLeft: () => (
-              <TouchableOpacity onPress={() => router.navigate("/login")}>
+              <TouchableOpacity
+                onPress={() => router.navigate("/notifications")}
+              >
                 <Feather name="bell" size={24} color={theme.header.color} />
               </TouchableOpacity>
             ),
@@ -50,11 +52,27 @@ export default function ThemedStack() {
           }}
         />
         <Stack.Screen
+          name="settings"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "الاعدادت",
+          }}
+        />
+        <Stack.Screen
           name="curriculum"
           options={{
             headerShown: true,
             header: Header,
             headerTitle: "المنهج",
+          }}
+        />
+        <Stack.Screen
+          name="attendance"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "سجل الحضور والغياب",
           }}
         />
         <Stack.Screen
@@ -72,6 +90,14 @@ export default function ThemedStack() {
                 />
               </TouchableOpacity>
             ),
+          }}
+        />
+        <Stack.Screen
+          name="qr-code"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "تسجيل الحضور",
           }}
         />
       </Stack>

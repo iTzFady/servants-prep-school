@@ -113,7 +113,7 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
+      padding: 10,
     },
     dataContainer: {
       alignItems: "center",

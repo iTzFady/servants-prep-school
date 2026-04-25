@@ -24,7 +24,7 @@ function createStyles(theme, fonts) {
       alignItems: "center",
       borderRadius: 10,
       elevation: 2,
-      shadowColor: "#00000",
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,

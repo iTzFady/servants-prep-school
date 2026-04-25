@@ -390,9 +390,9 @@ export default function Register() {
                     text="رقم الواتساب"
                     placeholder="رقم الواتساب الفعال"
                     autoCapitalize="none"
-                    autoComplete="name"
+                    autoComplete="tel"
                     autoCorrect="false"
-                    inputMode="text"
+                    inputMode="tel"
                     onChangeText={onChange}
                     value={value}
                   />
@@ -427,9 +427,7 @@ export default function Register() {
                   console.log(firstError.message);
                 }
               })}
-              prefixIcon={
-                <Feather name="send" size={24} color={theme.secondary} />
-              }
+              prefixIcon={<Feather name="send" size={24} color="white" />}
             />
           </View>
         </View>
