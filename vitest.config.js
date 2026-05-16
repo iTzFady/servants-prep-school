@@ -1,0 +1,22 @@
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.js'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'vitest.setup.js',
+      ],
+    },
+  },
+  resolve: {
+    alias: {
+      '@': new URL('./').href,
+    },
+  },
+});

@@ -4,7 +4,7 @@ import InputField from "@/components/InputField";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { Feather } from "@expo/vector-icons/";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -145,12 +145,13 @@ export default function Login() {
               <Button
                 text="تسجيل الدخول"
                 loading={loading}
-                onPressEvent={handleSubmit(onSubmit, (errors) => {
-                  const firstError = Object.values(errors)[0];
-                  if (firstError) {
-                    console.log(firstError.message);
-                  }
-                })}
+                // onPressEvent={handleSubmit(onSubmit, (errors) => {
+                //   const firstError = Object.values(errors)[0];
+                //   if (firstError) {
+                //     console.log(firstError.message);
+                //   }
+                // })}
+                onPressEvent={() => router.navigate("/")}
                 prefixIcon={<Feather name="log-in" size={24} color="#ffffff" />}
                 style={styles.button}
               />
