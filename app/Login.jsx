@@ -5,9 +5,10 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { Feather } from "@expo/vector-icons/";
 import { Link, router } from "expo-router";
+import { useAppDispatch } from "../store/hooks";
+import { setUser, setToken } from "../store/authSlice";
 import { useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-
 import {
   Image,
   KeyboardAvoidingView,
@@ -20,9 +21,12 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-const logo = require("../assets/images/logo.png");
+import { useLogin } from "@/hooks/useApi";
+import Toast from "react-native-toast-message";
+const logo = require("../assets/images/logo.webp");
 export default function Login() {
-  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const { mutate: login, isPending } = useLogin();
   const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -31,15 +35,32 @@ export default function Login() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      username: "",
+      userName: "",
       password: "",
     },
   });
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const onSubmit = (data) => {
-    setLoading(true);
-    console.log(data);
-    setLoading(false);
+    login(data, {
+      onSuccess: (data) => {
+        dispatch(setToken(data.token));
+        dispatch(setUser(data.userResponse));
+        Toast.show({
+          type: "success",
+          text1: "تم تسجيل الدخول بنجاح",
+          text2: "مرحباً بك مجدداً",
+        });
+        router.dismissAll();
+        router.replace("/");
+      },
+      onError: (error) => {
+        Toast.show({
+          type: "error",
+          text1: "خطأ في تسجيل الدخول",
+          text2: error.message || "حدث خطأ غير متوقع",
+        });
+      },
+    });
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -81,7 +102,7 @@ export default function Login() {
               <View style={styles.formContainer}>
                 <Controller
                   control={control}
-                  name="username"
+                  name="userName"
                   rules={{ required: "برجاء كتابة اسم المستخدم" }}
                   render={({ field: { onChange, value } }) => (
                     <InputField
@@ -144,14 +165,17 @@ export default function Login() {
               </View>
               <Button
                 text="تسجيل الدخول"
-                loading={loading}
-                // onPressEvent={handleSubmit(onSubmit, (errors) => {
-                //   const firstError = Object.values(errors)[0];
-                //   if (firstError) {
-                //     console.log(firstError.message);
-                //   }
-                // })}
-                onPressEvent={() => router.navigate("/")}
+                loading={isPending}
+                onPressEvent={handleSubmit(onSubmit, (errors) => {
+                  const firstError = Object.values(errors)[0];
+                  if (firstError) {
+                    Toast.show({
+                      type: "error",
+                      text1: "خطأ في تسجيل الدخول",
+                      text2: firstError.message || "حدث خطأ غير متوقع",
+                    });
+                  }
+                })}
                 prefixIcon={<Feather name="log-in" size={24} color="#ffffff" />}
                 style={styles.button}
               />

@@ -86,7 +86,7 @@ function createStyles(theme, fonts) {
       marginVertical: 5,
       width: "100%",
       textAlign: "right",
-      color: theme.textSecondary,
+      color: theme.dropdown.label,
     },
     dropdown: {
       height: 50,
@@ -100,14 +100,15 @@ function createStyles(theme, fonts) {
     },
     dropdownSelectText: {
       textAlign: "right",
-      fontSize: 20,
-      fontFamily: fonts.extraLight,
+      fontSize: 14,
+      fontFamily: fonts.medium,
+      color: theme.dropdown.text,
     },
     dropdownPlaceholder: {
       textAlign: "right",
       marginRight: 8,
-      fontSize: 16,
-      fontFamily: fonts.extraLight,
+      fontSize: 14,
+      fontFamily: fonts.medium,
       color: theme.dropdown.text,
     },
     dropdownItemContainer: {
@@ -117,9 +118,9 @@ function createStyles(theme, fonts) {
     },
     dropdownItem: {
       textAlign: "right",
-      fontSize: 20,
+      fontSize: 14,
       marginRight: 15,
-      fontFamily: fonts.extraLight,
+      fontFamily: fonts.medium,
     },
   });
 }

@@ -1,6 +1,7 @@
 import Counter from "@/components/Counter";
 import Tile from "@/components/Tile";
 import { ThemeContext } from "@/context/ThemeContext";
+import { useGetProfile, useAttendance } from "@/hooks/useApi";
 import { fonts } from "@/theme/fonts";
 import {
   Entypo,
@@ -8,27 +9,81 @@ import {
   FontAwesome,
   FontAwesome5,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { useContext, useMemo } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import dateUtils from "@/utils/dateFormatter";
+import { getEducationLabel } from "@/data/education_types";
 export default function Profile() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const defaultProfilePic = require("@/assets/images/default-profile.png");
+  const defaultProfilePic = require("@/assets/images/default-profile.webp");
+  const { data: profile, isLoading, error } = useGetProfile();
+  const {
+    data: attendance,
+    isLoading: isAttendanceLoading,
+    error: attendanceError,
+  } = useAttendance();
 
+  const presentCount = attendance?.count.present ?? 0;
+  const absentCount = attendance?.count.absent ?? 0;
+  const isBusy = isLoading || isAttendanceLoading;
+
+  if (isBusy)
+    return (
+      <ActivityIndicator
+        style={{ flex: 1, marginHorizontal: "auto", marginVertical: "auto" }}
+      />
+    );
+
+  if (error || attendanceError)
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <MaterialIcons name="error" size={34} color={theme.title} />
+        <Text
+          style={{
+            textAlign: "center",
+            color: theme.title,
+            fontFamily: fonts.medium,
+          }}
+        >
+          لقد حدث خطأ
+        </Text>
+      </View>
+    );
   return (
     <ScrollView style={styles.container}>
       <View style={styles.dataContainer}>
-        <Image source={defaultProfilePic} style={styles.profilePicture} />
-        <Text style={styles.name}>يوحنا منيا</Text>
+        <Image
+          source={
+            profile?.pfpUrl ? { uri: profile?.pfpUrl } : defaultProfilePic
+          }
+          style={styles.profilePicture}
+        />
+        <Text style={styles.name}>{profile?.name}</Text>
         <View style={styles.tagContainer}>
-          <Text style={styles.tag}>مخدوم</Text>
-          <Text style={styles.tag}>خدمة ثانوي بنين</Text>
+          <Text style={styles.tag}>
+            {profile?.role === "USER" ? "مخدوم" : "خادم"}
+          </Text>
+          <Text style={styles.tag}>{profile?.serviceType}</Text>
         </View>
         <View style={styles.counterContainer}>
-          <Counter counter={24} text="الواجبات المرسلة" />
-          <Counter counter={12} text="مرات الحضور" />
-          <Counter counter={3} text="مرات الغياب" />
+          <Counter counter={presentCount} text="مرات الحضور" />
+          <Counter counter={absentCount} text="مرات الغياب" />
         </View>
         <View style={styles.section}>
           <View style={styles.sectionTitleContainer}>
@@ -49,7 +104,7 @@ export default function Profile() {
                 />
               )}
               title="تاريخ الميلاد"
-              data="١٥ مايو ٢٠١٠ (١٦ عاماً)"
+              data={dateUtils.arabicDate(profile?.birthdate)}
             />
             <Tile
               icon={({ color }) => (
@@ -60,21 +115,21 @@ export default function Profile() {
                 />
               )}
               title="المجموعة"
-              data="المستوي الاول - بنين"
+              data={`${profile?.servantPrepYear === "1" ? "المستوي الاول" : "المستوي الثاني"} - ${profile?.gender === "MALE" ? "بنين" : "بنات"}`}
             />
             <Tile
               icon={({ color }) => (
                 <Entypo name="graduation-cap" size={24} color={color} />
               )}
               title="الدراسة / المهنة"
-              data="ثانوي عام"
+              data={getEducationLabel(profile?.educationType)}
             />
             <Tile
               icon={({ color }) => (
                 <Feather name="phone" size={24} color={color} />
               )}
               title="رقم الهاتف"
-              data="+20 123 456 7890"
+              data={profile?.phoneNumber}
             />
           </View>
         </View>
@@ -93,14 +148,14 @@ export default function Profile() {
                 <FontAwesome name="sticky-note-o" size={24} color={color} />
               )}
               title="أب الاعتراف"
-              data="القس بيشوي اسحق"
+              data={profile?.confessionFather}
             />
             <Tile
               icon={({ color }) => (
                 <Feather name="calendar" size={24} color={color} />
               )}
               title="تاريخ الانضمام للبرنامج"
-              data="١ سيبتمبر ٢٠٢٥"
+              data={dateUtils.arabicDate(profile?.registerDate)}
             />
           </View>
         </View>
@@ -129,6 +184,7 @@ function createStyles(theme, fonts) {
       fontSize: 24,
       fontFamily: fonts.bold,
       color: theme.profile.color,
+      overflow: "hidden",
     },
     tagContainer: {
       flexDirection: "row-reverse",

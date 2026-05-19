@@ -84,6 +84,7 @@ export const Colors = {
       background: "#FFFFFF",
       text: "#6B7280",
       border: "#E2E8F0",
+      label: "#A71E34",
     },
     card: {
       background: "#A71E34",
@@ -105,6 +106,21 @@ export const Colors = {
     },
     header: {
       color: "#A71E34",
+    },
+    chips: {
+      selected: {
+        background: "#A71E34",
+        color: "#FFFFFF",
+      },
+      unSelected: {
+        background: "#FFFFFF",
+        color: "#475569",
+      },
+    },
+    LectureCard: {
+      color: "#475569",
+      background: "#FFFFFF",
+      border: "#f9f9f9",
     },
     primary: "#A71E34",
     secondary: "#FFFFFF",
@@ -198,6 +214,7 @@ export const Colors = {
       background: "#1C2839",
       text: "#94A3B8",
       border: "#94A3B8",
+      label: "#FFFFFF",
     },
     card: {
       background: "#7D1B2B",
@@ -219,6 +236,21 @@ export const Colors = {
     },
     header: {
       color: "#ffffff",
+    },
+    chips: {
+      selected: {
+        background: "#7D1B2B",
+        color: "#FFFFFF",
+      },
+      unSelected: {
+        background: "#1C2839",
+        color: "#FFFFFF",
+      },
+    },
+    LectureCard: {
+      color: "#FFFFFF",
+      background: "#1C2839",
+      border: "#FFFFFF80",
     },
     primary: "#0F172A",
     secondary: "#1C2839",

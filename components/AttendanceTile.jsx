@@ -3,8 +3,9 @@ import { fonts } from "@/theme/fonts";
 import { memo, useContext, useMemo } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import dateUtils from "@/utils/dateFormatter";
 const STATUS_CONFIG = {
-  absent: {
+  ABSENT: {
     background: "#FFF1F2",
     border: "#FFE4E6",
     color: "#881337",
@@ -12,7 +13,7 @@ const STATUS_CONFIG = {
     iconColor: "#E11D48",
     status: "غائب",
   },
-  present: {
+  PRESENT: {
     background: "#D1FAE5",
     border: "#D1FAE5",
     color: "#047857",
@@ -20,7 +21,7 @@ const STATUS_CONFIG = {
     iconColor: "#059669",
     status: "حاضر",
   },
-  accepted_late: {
+  EXCUSEDLATE: {
     background: "#FFFBEB",
     border: "#FEF3C7",
     color: "#92400E",
@@ -28,7 +29,7 @@ const STATUS_CONFIG = {
     iconColor: "#D97706",
     status: "تأخير مقبول",
   },
-  unaccepted_late: {
+  UNEXCUSEDLATE: {
     background: "#F5F3FF",
     border: "#DDD6FE",
     color: "#5B21B6",
@@ -38,12 +39,16 @@ const STATUS_CONFIG = {
   },
 };
 
-function AttendanceTile({ date, time = "غائب", status }) {
+function AttendanceTile({ date, time, status }) {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.present;
-  date = date.toLocaleString("ar-EG");
-  time = time.toLocaleString("ar-EG");
+
+  const arabicDateAndTime = useMemo(
+    () => dateUtils.arabicDateAndTime(date),
+    [date],
+  );
+
   return (
     <View style={styles.container}>
       <View
@@ -59,13 +64,13 @@ function AttendanceTile({ date, time = "غائب", status }) {
         >
           <MaterialIcons
             name={config.icon}
-            size={20}
+            size={35}
             color={config.iconColor}
           />
         </View>
         <View>
-          <Text style={styles.title}>{date}</Text>
-          <Text style={styles.describtion}>{time}</Text>
+          <Text style={styles.title}>{arabicDateAndTime.date}</Text>
+          <Text style={styles.describtion}>{arabicDateAndTime.time}</Text>
         </View>
       </View>
       <Text
@@ -96,7 +101,7 @@ function createStyles(theme, fonts) {
       alignContent: "space-between",
     },
     iconContainer: {
-      padding: 20,
+      padding: 8,
       borderRadius: 50,
     },
     title: {

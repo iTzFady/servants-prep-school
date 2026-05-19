@@ -1,5 +1,5 @@
 import ThemedStack from "@/components/ThemedStack";
-
+import Toast from "react-native-toast-message";
 import { ThemeProvider } from "@/context/ThemeContext";
 import {
   Cairo_200ExtraLight,
@@ -14,6 +14,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import AppProviders from "@/providers/AppProviders";
+import toastConfig from "@/theme/toast";
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     Cairo_200ExtraLight,
@@ -39,7 +41,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <SafeAreaProvider>
-        <ThemedStack />
+        <AppProviders>
+          <ThemedStack />
+        </AppProviders>
+        <Toast config={toastConfig} />
       </SafeAreaProvider>
     </ThemeProvider>
   );

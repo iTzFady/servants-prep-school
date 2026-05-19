@@ -2,11 +2,22 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { memo, useContext, useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-function IconButton({ icon, onPress, title, description }) {
+function IconButton({
+  icon,
+  onPress,
+  title,
+  description,
+  disabled = false,
+  onDisabled,
+}) {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
+
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={!disabled ? onPress : onDisabled}
+    >
       {icon && (
         <View style={styles.iconContainer}>
           {icon({ color: theme.iconButton.icon })}

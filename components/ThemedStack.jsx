@@ -1,12 +1,30 @@
 import { ThemeContext } from "@/context/ThemeContext";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
-import { Stack, router } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { TouchableOpacity } from "react-native";
 import Header from "./Header";
+import { getCurriculumLabel } from "@/data/tabs";
+import { useAppSelector } from "@/store/hooks";
+import Toast from "react-native-toast-message";
 export default function ThemedStack() {
   const { theme, colorScheme } = useContext(ThemeContext);
+  const { user, isAuthenticated } = useAppSelector((s) => s.auth);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const role = user?.role?.toLowerCase?.() || "";
+      if (role === "admin" || role === "superadmin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/");
+      }
+    } else {
+      router.replace("/login");
+    }
+  }, [isAuthenticated, user?.role, router]);
   return (
     <>
       <Stack
@@ -35,13 +53,21 @@ export default function ThemedStack() {
             ),
             headerLeft: () => (
               <TouchableOpacity
-                onPress={() => router.navigate("/notifications")}
+                // onPress={() => router.navigate("/notifications")}
+                onPress={() =>
+                  Toast.show({
+                    type: "info",
+                    text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                    text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+                  })
+                }
               >
                 <Feather name="bell" size={24} color={theme.header.color} />
               </TouchableOpacity>
             ),
           }}
         />
+        <Stack.Screen name="admin" />
         <Stack.Screen name="login" />
         <Stack.Screen
           name="register"
@@ -99,6 +125,14 @@ export default function ThemedStack() {
             header: Header,
             headerTitle: "تسجيل الحضور",
           }}
+        />
+        <Stack.Screen
+          name="curriculum/[id]"
+          options={({ route }) => ({
+            headerShown: true,
+            header: Header,
+            headerTitle: `${getCurriculumLabel(route.params?.id)}`,
+          })}
         />
       </Stack>
       <StatusBar style={colorScheme === "dark" ? "dark" : "light"} />

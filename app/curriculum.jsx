@@ -2,24 +2,35 @@ import IconButton from "@/components/IconButton";
 import { ThemeContext } from "@/context/ThemeContext";
 import { curriculumTabs } from "@/data/tabs";
 import { fonts } from "@/theme/fonts";
+import { router } from "expo-router";
 import { useCallback, useContext, useMemo } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
 export default function Curriculum() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const stpaul = require("@/assets/images/saint-paul.png");
+  const stpaul = require("@/assets/images/saint-paul.webp");
 
-  const renderTabs = useCallback(({ item }) => {
-    return (
-      <IconButton
-        key={item.id}
-        title={item.label}
-        icon={item.icon}
-        description={item.description}
-      />
-    );
+  const handlePress = useCallback((id) => {
+    router.push({
+      pathname: `/curriculum/${id}`,
+    });
   }, []);
+
+  const renderTabs = useCallback(
+    ({ item }) => {
+      return (
+        <IconButton
+          key={item.id}
+          title={item.label}
+          icon={item.icon}
+          description={item.description}
+          onPress={() => handlePress(item.value)}
+        />
+      );
+    },
+    [handlePress],
+  );
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -32,7 +43,12 @@ export default function Curriculum() {
         <Image source={stpaul} style={styles.stpaulImg} />
       </View>
       <Text style={styles.sectionTitle}>الفروع</Text>
-      <FlatList data={curriculumTabs} renderItem={renderTabs} numColumns={2} />
+      <FlatList
+        data={curriculumTabs}
+        renderItem={renderTabs}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }

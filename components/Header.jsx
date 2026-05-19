@@ -10,7 +10,7 @@ export default function Header(props) {
   return (
     <SafeAreaView
       style={{
-        height: 120,
+        height: 100,
         backgroundColor: theme.secondary,
         flexDirection: "row-reverse",
         alignItems: "center",

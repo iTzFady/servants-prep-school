@@ -9,3 +9,12 @@ export const educationTypes = [
   { id: 7, label: "كلية", value: "college" },
   { id: 8, label: "خريج", value: "graduate" },
 ];
+
+export const serverntPrepYear = [
+  { id: 0, label: "السنة الأولى", value: 1 },
+  { id: 1, label: "السنة الثانية", value: 2 },
+];
+
+export function getEducationLabel(value) {
+  return educationTypes.find((item) => item.value === value)?.label || "";
+}

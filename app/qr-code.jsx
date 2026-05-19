@@ -1,4 +1,6 @@
 import { ThemeContext } from "@/context/ThemeContext";
+import { useAppSelector } from "@/store/hooks";
+
 import { fonts } from "@/theme/fonts";
 import { useContext, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
@@ -6,6 +8,7 @@ import QRCode from "react-native-qrcode-svg";
 export default function QrCode() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
+  const user = useAppSelector((state) => state.auth.user);
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.textContainer}>
@@ -14,7 +17,9 @@ export default function QrCode() {
           يرجي توجيه الرمز لهاتف الخادم المتواجد في الوقت الحالي
         </Text>
       </View>
-      <QRCode value="123" size={250} />
+      <View style={styles.qrContainer}>
+        <QRCode value={user?.id} size={200} />
+      </View>
     </ScrollView>
   );
 }
@@ -41,6 +46,16 @@ function createStyles(theme, fonts) {
       fontSize: 16,
       fontFamily: fonts.regular,
       textAlign: "center",
+    },
+    qrContainer: {
+      backgroundColor: "#f0f0f0",
+      padding: 25,
+      borderRadius: 10,
+      elevation: 5,
+      shadowColor: "#000",
+      shadowOffset: { width: 2, height: -4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
     },
   });
 }

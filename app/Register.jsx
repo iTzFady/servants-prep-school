@@ -4,9 +4,11 @@ import InputField from "@/components/InputField";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import Toast from "react-native-toast-message";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -18,16 +20,17 @@ import {
   View,
 } from "react-native";
 import { days } from "../data/days";
-
+import { useRegister } from "@/hooks/useApi";
 import UploadButton from "@/components/UploadButton";
-import { educationTypes } from "@/data/education_types";
+import { educationTypes, serverntPrepYear } from "@/data/education_types";
 import { gender } from "@/data/gender";
 import { SafeAreaView } from "react-native-safe-area-context";
+import dateUtils from "@/utils/dateFormatter";
 
 export default function Register() {
   const { theme } = useContext(ThemeContext);
+  const { mutate: register, isPending } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const {
@@ -39,30 +42,70 @@ export default function Register() {
   } = useForm({
     mode: "onBlur",
     defaultValues: {
-      profilePicture: null,
-      username: "",
+      userName: "",
       password: "",
       confirmPassword: "",
       name: "",
-      birthdate: new Date(),
       gender: "",
+      birthdate: new Date(),
       address: "",
-      father: "",
-      liturgy: "",
-      educationYear: "",
-      educationType: "",
-      school: "",
-      service: "",
-      prepYear: "",
-      mobile: "",
       whatsapp: "",
-      homePhone: "",
+      phoneNumber: "",
+      homeNumber: "",
+      schoolName: "",
+      educationType: "",
+      educationYear: "",
+      confessionFather: "",
+      liturgyDate: "",
+      servantPrepYear: "",
+      serviceType: "",
     },
   });
   const onSubmit = (data) => {
-    setLoading(true);
-    console.log(data);
-    setLoading(false);
+    const payload = { ...data };
+    if (payload.password !== payload.confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "خطأ في كلمة المرور",
+        text2: "يرجى التأكد من أن كلمة المرور وتأكيدها متطابقتان.",
+      });
+      return;
+    }
+    const formData = new FormData();
+    formData.append("userName", payload.userName);
+    formData.append("password", payload.password);
+    formData.append("name", payload.name);
+    formData.append("gender", payload.gender);
+    formData.append("birthdate", dateUtils.dateOnly(payload.birthdate));
+    formData.append("address", payload.address);
+    formData.append("whatsapp", payload.whatsapp);
+    formData.append("phoneNumber", payload.phoneNumber);
+    formData.append("homeNumber", payload.homeNumber);
+    formData.append("schoolName", payload.schoolName);
+    formData.append("educationType", payload.educationType);
+    formData.append("educationYear", payload.educationYear);
+    formData.append("confessionFather", payload.confessionFather);
+    formData.append("liturgyDate", payload.liturgyDate);
+    formData.append("servantPrepYear", payload.servantPrepYear);
+    formData.append("serviceType", payload.serviceType);
+    formData.append("pfp", payload.pfp);
+    register(formData, {
+      onSuccess: () => {
+        Toast.show({
+          type: "success",
+          text1: "تم تسجيل استمارتك بنجاح",
+          text2: "تم التسجيل بنجاح وسيتم التواصل معك في حالة قبولك",
+        });
+        router.replace("/login");
+      },
+      onError: (error) => {
+        Toast.show({
+          type: "error",
+          text1: "خطأ في تسجيل استمارتك",
+          text2: error.message || "حدث خطأ غير متوقع",
+        });
+      },
+    });
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -81,14 +124,15 @@ export default function Register() {
               <Text style={styles.sectionTitle}>البيانات الشخصية</Text>
               <Controller
                 control={control}
-                name="profilePicture"
+                name="pfp"
+                rules={{ required: "برجاء اضافة صورة شخصية" }}
                 render={({ field: { onChange, value } }) => (
                   <UploadButton onChange={onChange} value={value} />
                 )}
               />
               <Controller
                 control={control}
-                name="username"
+                name="userName"
                 rules={{ required: "اسم المستخدم مطلوب" }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
@@ -254,7 +298,7 @@ export default function Register() {
               />
               <Controller
                 control={control}
-                name="father"
+                name="confessionFather"
                 rules={{ required: "برجاء كتابة اسم الأب" }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
@@ -271,14 +315,14 @@ export default function Register() {
               />
               <Controller
                 control={control}
-                name="liturgy"
+                name="liturgyDate"
                 rules={{ required: "برجاء اختيار يوم حضورك للقداس" }}
                 render={({ field: { onChange, value } }) => (
                   <Dropdown
                     dropdownLabel="يوم حضور القداس"
                     data={days}
                     placeHolder="اختر اليوم"
-                    onChange={onChange}
+                    onChange={(item) => onChange(item.value)}
                     value={value}
                   />
                 )}
@@ -311,14 +355,14 @@ export default function Register() {
                     dropdownLabel="نوع الدراسة"
                     data={educationTypes}
                     placeHolder="اختر نوع الدراسة"
-                    onChange={onChange}
+                    onChange={(item) => onChange(item.value)}
                     value={value}
                   />
                 )}
               />
               <Controller
                 control={control}
-                name="school"
+                name="schoolName"
                 rules={{ required: "برجاء كتابة اسم المدرسة أو الكلية" }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
@@ -335,7 +379,7 @@ export default function Register() {
               />
               <Controller
                 control={control}
-                name="service"
+                name="serviceType"
                 rules={{ required: "برجاء كتابة اسم الخدمةالمنتسب لها" }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
@@ -350,11 +394,25 @@ export default function Register() {
                   />
                 )}
               />
+              <Controller
+                control={control}
+                name="servantPrepYear"
+                rules={{ required: "برجاء اختيار نوع دراستك" }}
+                render={({ field: { onChange, value } }) => (
+                  <Dropdown
+                    dropdownLabel="سنة دراستك في اعداد خدام"
+                    data={serverntPrepYear}
+                    placeHolder="اختر سنة دراستك في اعداد خدام"
+                    onChange={(item) => onChange(item.value)}
+                    value={value}
+                  />
+                )}
+              />
 
               <Text style={styles.sectionTitle}>بيانات الاتصال</Text>
               <Controller
                 control={control}
-                name="mobile"
+                name="phoneNumber"
                 rules={{
                   required: "برجاء كتابة رقم الموبايل",
                   pattern: {
@@ -400,7 +458,7 @@ export default function Register() {
               />
               <Controller
                 control={control}
-                name="landline"
+                name="homeNumber"
                 render={({ field: { onChange, value } }) => (
                   <InputField
                     text="الرقم الأرضي"
@@ -419,12 +477,16 @@ export default function Register() {
           <View style={styles.buttonContainer}>
             <Button
               text="ارسال الطلب"
-              loading={loading}
+              loading={isPending}
               style={styles.button}
               onPressEvent={handleSubmit(onSubmit, (errors) => {
                 const firstError = Object.values(errors)[0];
                 if (firstError) {
-                  console.log(firstError.message);
+                  Toast.show({
+                    type: "error",
+                    text1: "خطأ في تسجيل الاستمارة",
+                    text2: firstError.message || "حدث خطأ غير متوقع",
+                  });
                 }
               })}
               prefixIcon={<Feather name="send" size={24} color="white" />}
@@ -484,8 +546,8 @@ function createStyles(theme, fonts) {
       backgroundColor: theme.inputField.background,
     },
     dateTimeText: {
-      fontSize: 20,
-      fontFamily: fonts.light,
+      fontSize: 16,
+      fontFamily: fonts.medium,
       marginRight: 10,
       color: theme.inputField.color,
     },
@@ -495,7 +557,7 @@ function createStyles(theme, fonts) {
       marginVertical: 5,
       width: "100%",
       textAlign: "right",
-      color: theme.textSecondary,
+      color: theme.dropdown.label,
     },
     buttonContainer: {
       paddingHorizontal: 20,

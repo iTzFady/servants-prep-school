@@ -12,6 +12,8 @@ import { router } from "expo-router";
 import { Fragment, useCallback, useContext, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from "@/components/Button";
+import { secureStore } from "@/services/secureStore";
+import Toast from "react-native-toast-message";
 export default function Settings() {
   const [loading, setLoading] = useState(false);
   const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
@@ -38,6 +40,13 @@ export default function Settings() {
             icon={({ color }) => (
               <Feather name="lock" size={24} color={color} />
             )}
+            onPress={() =>
+              Toast.show({
+                type: "info",
+                text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+              })
+            }
           />
         </View>
       </Fragment>
@@ -62,12 +71,26 @@ export default function Settings() {
             icon={({ color }) => (
               <SimpleLineIcons name="question" size={24} color={color} />
             )}
+            onPress={() =>
+              Toast.show({
+                type: "info",
+                text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+              })
+            }
           />
           <TileButton
             text="عن التطبيق"
             icon={({ color }) => (
               <AntDesign name="exclamation-circle" size={24} color={color} />
             )}
+            onPress={() =>
+              Toast.show({
+                type: "info",
+                text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+              })
+            }
           />
         </View>
       </Fragment>
@@ -75,7 +98,11 @@ export default function Settings() {
         text="تسجيل الخروج"
         loading={loading}
         style={styles.button}
-        onPressEvent={() => router.navigate("/login")}
+        onPressEvent={() => {
+          router.dismissAll();
+          secureStore.clear();
+          router.replace("/login");
+        }}
         prefixIcon={<MaterialIcons name="logout" size={24} color="#DC2626" />}
       />
     </ScrollView>

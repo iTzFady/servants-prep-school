@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-const defaultProfilePic = require("@/assets/images/default-profile.png");
+const defaultProfilePic = require("@/assets/images/default-profile.webp");
 
 export default function UploadButton({ value, onChange }) {
   const [loading, setLoading] = useState(false);
