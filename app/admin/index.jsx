@@ -1,6 +1,6 @@
 import IconButton from "@/components/IconButton";
 import { ThemeContext } from "@/context/ThemeContext";
-import { dashboardTabs } from "@/data/tabs";
+import { AdmindashboardTabs, dashboardTabs } from "@/data/tabs";
 import { fonts } from "@/theme/fonts";
 import { useAppSelector } from "@/store/hooks";
 import { router } from "expo-router";
@@ -8,7 +8,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 
-export default function Index() {
+export default function AdminIndex() {
   const { theme } = useContext(ThemeContext);
   const user = useAppSelector((state) => state.auth.user);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
@@ -42,20 +42,15 @@ export default function Index() {
         />
         <View style={styles.textContainer}>
           <Text style={styles.studentName}>
-            {user?.gender === "MALE" ? " ابننا الغالي" : "ابنتنا الغالية "} ,
+            {user?.gender === "MALE" ? " باصون " : "تاسوني "} ,
             {user?.name.split(" ")[0] || ""}
           </Text>
           <Text style={styles.cardSubtext}>اهلا بك في مدرسة ماربولس</Text>
-          <Text style={styles.cardSubtext}>
-            {user?.level === "1"
-              ? "المستوي الاول"
-              : "المستوي الثاني" || "غير موجود"}
-          </Text>
         </View>
       </View>
       <Text style={styles.sectionTitle}>لوحة التحكم</Text>
       <FlatList
-        data={dashboardTabs}
+        data={AdmindashboardTabs}
         showsVerticalScrollIndicator={false}
         renderItem={renderTabs}
         numColumns={2}

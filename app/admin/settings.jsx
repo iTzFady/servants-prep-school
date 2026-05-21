@@ -1,0 +1,128 @@
+import TileButton from "@/components/TileButton";
+import ToggleButton from "@/components/ToggleButton";
+import { ThemeContext } from "@/context/ThemeContext";
+import { fonts } from "@/theme/fonts";
+import {
+  Feather,
+  AntDesign,
+  SimpleLineIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import { router } from "expo-router";
+import { Fragment, useCallback, useContext, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Button from "@/components/Button";
+import { secureStore } from "@/services/secureStore";
+import Toast from "react-native-toast-message";
+export default function AdminSettings() {
+  const [loading, setLoading] = useState(false);
+  const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
+  const toggleTheme = useCallback(
+    () => setColorScheme(colorScheme === "dark" ? "light" : "dark"),
+    [setColorScheme, colorScheme],
+  );
+
+  const styles = createStyles(theme, fonts);
+  return (
+    <ScrollView style={styles.container}>
+      <Fragment>
+        <Text style={styles.sectionTitle}>الحساب</Text>
+        <View style={styles.section}>
+          <TileButton
+            text="الأمان وكلمة المرور"
+            icon={({ color }) => (
+              <Feather name="lock" size={24} color={color} />
+            )}
+            onPress={() =>
+              Toast.show({
+                type: "info",
+                text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+              })
+            }
+          />
+        </View>
+      </Fragment>
+      <Fragment>
+        <Text style={styles.sectionTitle}>تفضيلات التطبيق</Text>
+        <View style={styles.section}>
+          <ToggleButton
+            text="الوضع الليلي"
+            icon={({ color }) => (
+              <Feather name="moon" size={24} color={color} />
+            )}
+            state={colorScheme !== "dark"}
+            onPress={toggleTheme}
+          />
+        </View>
+      </Fragment>
+      <Fragment>
+        <Text style={styles.sectionTitle}>المساعدة والدعم</Text>
+        <View style={styles.section}>
+          <TileButton
+            text="مركز المساعدة"
+            icon={({ color }) => (
+              <SimpleLineIcons name="question" size={24} color={color} />
+            )}
+            onPress={() =>
+              Toast.show({
+                type: "info",
+                text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+              })
+            }
+          />
+          <TileButton
+            text="عن التطبيق"
+            icon={({ color }) => (
+              <AntDesign name="exclamation-circle" size={24} color={color} />
+            )}
+            onPress={() =>
+              Toast.show({
+                type: "info",
+                text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+              })
+            }
+          />
+        </View>
+      </Fragment>
+      <Button
+        text="تسجيل الخروج"
+        loading={loading}
+        style={styles.button}
+        onPressEvent={() => {
+          router.dismissAll();
+          secureStore.clear();
+          router.replace("/login");
+        }}
+        prefixIcon={<MaterialIcons name="logout" size={24} color="#DC2626" />}
+      />
+    </ScrollView>
+  );
+}
+
+function createStyles(theme, fonts) {
+  return StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      padding: 8,
+    },
+    sectionTitle: {
+      textAlign: "right",
+      paddingHorizontal: 4,
+      paddingVertical: 6,
+      fontFamily: fonts.bold,
+      fontSize: 14,
+      color: theme.settings.section.title,
+    },
+    section: {
+      backgroundColor: theme.settings.section.background,
+      borderRadius: 10,
+    },
+    button: {
+      backgroundColor: theme.settings.button,
+      color: "#DC2626",
+    },
+  });
+}

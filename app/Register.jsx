@@ -37,8 +37,6 @@ export default function Register() {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
-    setValue,
   } = useForm({
     mode: "onBlur",
     defaultValues: {

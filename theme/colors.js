@@ -81,7 +81,7 @@ export const Colors = {
       borderColor: "#E2E8F0",
     },
     dropdown: {
-      background: "#FFFFFF",
+      background: "#F8FAFC",
       text: "#6B7280",
       border: "#E2E8F0",
       label: "#A71E34",
@@ -129,6 +129,9 @@ export const Colors = {
     textSecondary: "#475569",
     background: "#F1F5F9",
     borderColor: "#E2E8F0",
+    admin: {
+      button: "#A71E34",
+    },
   },
   dark: {
     login: {
@@ -259,5 +262,8 @@ export const Colors = {
     textSecondary: "#94A3B8",
     background: "#0F172A",
     borderColor: "#E2E8F0",
+    admin: {
+      button: "#1C2839",
+    },
   },
 };

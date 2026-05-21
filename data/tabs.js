@@ -3,6 +3,7 @@ import {
   Feather,
   FontAwesome,
   FontAwesome5,
+  Fontisto,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 
@@ -48,6 +49,86 @@ export const dashboardTabs = [
     description: "رحلات و مناسبات سابقة",
     icon: ({ color }) => <Feather name="archive" size={24} color={color} />,
     // value: "archive",
+  },
+];
+
+export const AdmindashboardTabs = [
+  {
+    id: 0,
+    label: " ادارة المنهج",
+    description: "ادارة و تصفح المناهج",
+    icon: ({ color }) => <Feather name="book-open" size={24} color={color} />,
+    value: "admin/curriculum",
+  },
+  {
+    id: 1,
+    label: "ادارة الحضور و الغياب",
+    description: "متابعة وتسجيل الحضور والغياب",
+    icon: ({ color }) => <Feather name="calendar" size={24} color={color} />,
+    value: "admin/attendance",
+  },
+  {
+    id: 2,
+    label: "قائمة المخدومين",
+    description: "عرض معلومات وسجل المخدوم",
+    icon: ({ color }) => <Feather name="users" size={24} color={color} />,
+    value: "admin/students",
+  },
+  {
+    id: 3,
+    label: "ادارة الحسابات",
+    description: "ادارة ومراجعة الحسابات",
+    icon: ({ color }) => <Feather name="user-check" size={24} color={color} />,
+    value: "admin/accounts",
+  },
+  {
+    id: 4,
+    label: "ادارة الواجبات",
+    description: "انشاء ومتابعة الواجبات",
+    icon: ({ color }) => <Feather name="clipboard" size={24} color={color} />,
+    // value: "assignments",
+  },
+
+  {
+    id: 5,
+    label: "ادارة النتائج",
+    description: "رصد ومتابعة درجات الاختبارات",
+    icon: ({ color }) => <Feather name="bar-chart-2" size={24} color={color} />,
+    // value: "results",
+  },
+
+  {
+    id: 6,
+    label: "ادارة النوتة الروحية",
+    description: "متابعة التزام المخدوم",
+    icon: ({ color }) => <Feather name="heart" size={24} color={color} />,
+    // value: "spiritual_note",
+  },
+  {
+    id: 7,
+    label: "ادارة الارشيف",
+    description: "رفع وتحديث الارشيف",
+    icon: ({ color }) => <Feather name="archive" size={24} color={color} />,
+    // value: "archive",
+  },
+];
+
+export const attendanceTabs = [
+  {
+    id: 0,
+    label: "تسجيل الحضور",
+    description: "تسجيل الحضور باستخدام رمز ال QR او يدويا",
+    icon: ({ color }) => (
+      <MaterialCommunityIcons name="typewriter" size={24} color={color} />
+    ),
+    value: "admin/attendance_check",
+  },
+  {
+    id: 1,
+    label: "متابعة الحضور والغياب",
+    description: "متابعة التزام المخدومين",
+    icon: ({ color }) => <Fontisto name="preview" size={24} color={color} />,
+    value: "admin/attendance_students_list",
   },
 ];
 

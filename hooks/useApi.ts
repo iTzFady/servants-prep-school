@@ -151,6 +151,84 @@ export const useLectureDetail = (
   });
 };
 
+export interface PendingUser {
+  id: string;
+  name: string;
+}
+
+export interface PendingUsersResponse {
+  users: PendingUser[];
+}
+
+export const usePendingUsers = (): UseQueryResult<PendingUser[], Error> => {
+  return useQuery({
+    queryKey: ["pendingUsers"],
+    queryFn: async () => {
+      const response = await apiClient.get<PendingUsersResponse>(
+        "/api/v1/admin/user/pending",
+      );
+      return response.data.users;
+    },
+    enabled: true,
+  });
+};
+
+export interface UserDetail {
+  id: string;
+  userName: string;
+  name: string;
+  gender: string;
+  birthdate: string;
+  address: string;
+  role: string;
+  whatsapp: string;
+  phoneNumber: string;
+  homeNumber: string;
+  schoolName: string;
+  educationType: string;
+  educationYear: string;
+  confessionFather: string;
+  liturgyDate: string;
+  servantPrepYear: string;
+  serviceType: string;
+  registerDate: string;
+  status: string;
+  pfpUrl?: string;
+}
+
+export const useUserDetail = (
+  userId: string,
+): UseQueryResult<UserDetail, Error> => {
+  return useQuery({
+    queryKey: ["userDetail", userId],
+    queryFn: async () => {
+      const response = await apiClient.get<UserDetail>(
+        `api/v1/admin/user/${userId}`,
+      );
+      return response.data;
+    },
+    enabled: !!userId,
+  });
+};
+
+export const useUpdateUserStatus = (
+  userId: string,
+): UseMutationResult<UserDetail, Error, { status: string }> => {
+  return useMutation({
+    mutationFn: async (payload) => {
+      const response = await apiClient.patch<UserDetail>(
+        `/admin/user/${userId}/status`,
+        payload,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pendingUsers"] });
+      queryClient.invalidateQueries({ queryKey: ["userDetail", userId] });
+    },
+  });
+};
+
 export const useGetProfile = (): UseQueryResult<User, Error> => {
   return useQuery({
     queryKey: ["user", "profile"],
@@ -214,6 +292,46 @@ export const useApiMutation = <T, V>(
           queryClient.invalidateQueries({ queryKey: key });
         });
       }
+    },
+  });
+};
+
+export interface UploadLecturePayload {
+  title: string;
+  subject: string;
+  date: Date | string;
+  file: any;
+}
+
+export const useUploadLecture = (): UseMutationResult<
+  Lecture,
+  Error,
+  UploadLecturePayload
+> => {
+  return useMutation({
+    mutationFn: async (data: UploadLecturePayload) => {
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("subject", data.subject);
+      formData.append(
+        "date",
+        data.date instanceof Date ? data.date.toISOString() : data.date,
+      );
+      formData.append("file", data.file);
+
+      const response = await apiClient.post<Lecture>(
+        "/api/v1/lectures",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lectures"] });
     },
   });
 };

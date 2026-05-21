@@ -44,10 +44,7 @@ export default function ThemedStack() {
             header: Header,
             headerTitle: "إعداد خدام",
             headerRight: () => (
-              <TouchableOpacity
-                onPress={() => router.navigate("/settings")}
-                href="/profile"
-              >
+              <TouchableOpacity onPress={() => router.navigate("/settings")}>
                 <Feather name="settings" size={24} color={theme.header.color} />
               </TouchableOpacity>
             ),
@@ -67,7 +64,6 @@ export default function ThemedStack() {
             ),
           }}
         />
-        <Stack.Screen name="admin" />
         <Stack.Screen name="login" />
         <Stack.Screen
           name="register"
@@ -133,6 +129,108 @@ export default function ThemedStack() {
             header: Header,
             headerTitle: `${getCurriculumLabel(route.params?.id)}`,
           })}
+        />
+        {/* Admin Screens */}
+        <Stack.Screen
+          name="admin/index"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "إعداد خدام",
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => router.navigate("admin/settings")}
+              >
+                <Feather name="settings" size={24} color={theme.header.color} />
+              </TouchableOpacity>
+            ),
+            headerLeft: () => (
+              <TouchableOpacity
+                // onPress={() => router.navigate("/notifications")}
+                onPress={() =>
+                  Toast.show({
+                    type: "info",
+                    text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
+                    text2: "سيتم اضافة هذه الميزة في اسرع وقت",
+                  })
+                }
+              >
+                <Feather name="bell" size={24} color={theme.header.color} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="admin/settings"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "الاعدادت",
+          }}
+        />
+        <Stack.Screen
+          name="admin/curriculum"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "ادارة المناهج",
+          }}
+        />
+        <Stack.Screen
+          name="admin/accounts"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "ادارة الحسابات",
+          }}
+        />
+        <Stack.Screen
+          name="admin/accounts/[id]"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "تفاصيل الحساب",
+          }}
+        />
+        <Stack.Screen
+          name="admin/newLecture"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "إضافة محاضرة جديدة",
+          }}
+        />
+        <Stack.Screen
+          name="admin/students"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "بيانات المخدومين",
+          }}
+        />
+        <Stack.Screen
+          name="admin/attendance_check"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "تسجيل الحضور",
+          }}
+        />
+        <Stack.Screen
+          name="admin/attendance"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "ادارة الحضور الغياب",
+          }}
+        />
+        <Stack.Screen
+          name="admin/attendance_students_list"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "متابعة الحضور",
+          }}
         />
       </Stack>
       <StatusBar style={colorScheme === "dark" ? "dark" : "light"} />

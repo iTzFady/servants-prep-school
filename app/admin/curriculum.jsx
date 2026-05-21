@@ -7,7 +7,7 @@ import { router } from "expo-router";
 import { useCallback, useContext, useMemo } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-export default function Curriculum() {
+export default function AdminCurriculum() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const stpaul = require("@/assets/images/saint-paul.webp");
@@ -43,6 +43,12 @@ export default function Curriculum() {
         </View>
         <Image source={stpaul} style={styles.stpaulImg} />
       </View>
+      <Button
+        text="اضافة محاضرة جديدة"
+        onPressEvent={() => router.push("/admin/newLecture")}
+        prefixIcon={<Feather name="upload-cloud" size={24} color="#ffffff" />}
+        style={styles.button}
+      />
       <Text style={styles.sectionTitle}>الفروع</Text>
       <FlatList
         data={curriculumTabs}

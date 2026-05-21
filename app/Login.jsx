@@ -50,8 +50,8 @@ export default function Login() {
           text1: "تم تسجيل الدخول بنجاح",
           text2: "مرحباً بك مجدداً",
         });
-        router.dismissAll();
-        router.replace("/");
+        if (data.userResponse.role === "ADMIN") router.replace("/admin");
+        else router.replace("/");
       },
       onError: (error) => {
         Toast.show({

@@ -1,10 +1,8 @@
-import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
-import { memo, useContext } from "react";
+import { memo } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 function Button({ text, prefixIcon, onPressEvent, style, loading, disabled }) {
-  const { theme } = useContext(ThemeContext);
   return (
     <Pressable
       style={[
