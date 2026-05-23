@@ -7,15 +7,21 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Modal,
+  Alert,
 } from "react-native";
-import { Feather, AntDesign } from "@expo/vector-icons";
+import { Feather, AntDesign, Entypo } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
-import { useUsersList, useMarkAttendance } from "@/hooks/useApi";
+import {
+  useUsersList,
+  useMarkAttendance,
+  useBulkAttendance,
+} from "@/hooks/useApi";
 import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
 import Toast from "react-native-toast-message";
+import Button from "@/components/Button";
 export default function AttendanceManual() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
@@ -29,6 +35,7 @@ export default function AttendanceManual() {
 
   const attendance = useMarkAttendance();
   const { data: users, isLoading, isError } = useUsersList(true);
+  const bulkAttendance = useBulkAttendance();
 
   const filteredUsers = useMemo(
     () =>
@@ -37,6 +44,38 @@ export default function AttendanceManual() {
       ) || [],
     [searchQuery, users],
   );
+
+  async function finishDay() {
+    try {
+      if (!users?.length) {
+        Toast.show({
+          type: "info",
+          text1: "لا يوجد طلاب",
+          text2: "لا يوجد طلاب لإنهاء الغياب",
+        });
+
+        return;
+      }
+
+      await bulkAttendance.mutateAsync({
+        userIds: users.map((user) => user.id),
+      });
+
+      Toast.show({
+        type: "success",
+        text1: "تم انهاء اليوم",
+        text2: "تم تسجيل الغياب للطلاب المتبقين",
+      });
+
+      router.back();
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "فشل انهاء اليوم",
+        text2: error?.message || "حدث خطأ غير متوقع",
+      });
+    }
+  }
 
   function resetState() {
     setModalVisible(false);
@@ -101,6 +140,25 @@ export default function AttendanceManual() {
           onChangeText={setSearchQuery}
         />
       </View>
+      <Button
+        text="انهاء غياب اليوم"
+        onPressEvent={() =>
+          Alert.alert(
+            "هل انت متأكد من هذا الامر؟",
+            "هل انت متأكد من انهاء اليوم؟ لا يمكن الغاء هذا الامر",
+            [
+              { text: "الغاء", style: "cancel" },
+              {
+                text: bulkAttendance.isPending ? "جاري التنفيذ" : "تأكيد",
+                style: "destructive",
+                onPress: finishDay,
+              },
+            ],
+          )
+        }
+        prefixIcon={<Entypo name="cross" size={24} color="#ffffff" />}
+        style={styles.endButton}
+      />
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionHeaderText}>الطلاب الحاليين</Text>
       </View>
@@ -324,6 +382,9 @@ function createStyles(theme, fonts) {
       padding: 14,
       borderRadius: 12,
       alignItems: "center",
+    },
+    endButton: {
+      backgroundColor: theme.admin.button,
     },
   });
 }

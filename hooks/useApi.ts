@@ -306,6 +306,32 @@ export const useAdminAttendance = (
   });
 };
 
+export interface BulkAttendancePayload {
+  userIds: string[];
+}
+
+export const useBulkAttendance = (): UseMutationResult<
+  void,
+  Error,
+  BulkAttendancePayload
+> => {
+  return useMutation({
+    mutationFn: async (payload) => {
+      await apiClient.post("/api/v1/attendance/admin/bulk", payload);
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["attendance"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["UsersList"],
+      });
+    },
+  });
+};
+
 // Not implemented
 export const useUpdateProfile = (): UseMutationResult<
   User,
