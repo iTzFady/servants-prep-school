@@ -1,4 +1,5 @@
 export const ERRORS: Record<string, string> = {
+  ATTENDANCE_RECORD_CREATED: "تم تسجيل الحضور بنجاح",
   INVALID_CREDENTIALS: "بيانات غير صحيحة. تأكد من اسم المستخدم وكلمة المرور.",
   USER_NOT_FOUND: "المستخدم غير موجود.",
   ACCOUNT_PENDING: "الحساب قيد المراجعة.",

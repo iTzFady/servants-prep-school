@@ -2,7 +2,8 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { secureStore } from "./secureStore";
 import { ERRORS } from "@/data/errors";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_BASEURL || "http://localhost:8000";
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_BASEURL || process.env.EXPO_BASEURL;
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,

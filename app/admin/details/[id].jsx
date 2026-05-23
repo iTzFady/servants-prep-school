@@ -17,7 +17,7 @@ import DetailTile from "@/components/DetailTile";
 import dateUtils from "@/utils/dateFormatter";
 import { getDayLabel } from "@/data/days";
 import { getEducationLabel } from "@/data/education_types";
-export default function PendingUserDetail() {
+export default function UserDetails() {
   const { id } = useLocalSearchParams();
   const userId = Array.isArray(id) ? id[0] : id;
   const { theme } = useContext(ThemeContext);
@@ -26,30 +26,6 @@ export default function PendingUserDetail() {
   const { data: user, isLoading, isError } = useUserDetail(userId || "");
 
   const { mutate: updateStatus, isPending } = useUpdateUserStatus(userId || "");
-
-  const handleStatusChange = (status) => {
-    updateStatus(
-      { status },
-      {
-        onSuccess: () => {
-          Toast.show({
-            type: "success",
-            text1: "تم تحديث الحالة",
-            text2: `${status === "APPROVED" ? "تم قبول الطالب بنجاح" : "تم رفض الطالب بنجاح"}`,
-          });
-          router.back();
-        },
-        onError: (error) => {
-          Toast.show({
-            type: "error",
-            text1: "فشل تحديث الحالة",
-            text2: error.message || "حاول مرة أخرى",
-          });
-          router.back();
-        },
-      },
-    );
-  };
 
   if (isLoading) {
     return (
@@ -125,23 +101,6 @@ export default function PendingUserDetail() {
         />
         <DetailTile text="العنوان" subText={user.address} />
       </View>
-
-      <View style={styles.buttonRow}>
-        <Button
-          text="رفض"
-          onPressEvent={() => handleStatusChange("REJECTED")}
-          style={styles.rejectButton}
-          loading={isPending}
-          disabled={isPending}
-        />
-        <Button
-          text="قبول"
-          onPressEvent={() => handleStatusChange("APPROVED")}
-          style={styles.acceptButton}
-          loading={isPending}
-          disabled={isPending}
-        />
-      </View>
     </ScrollView>
   );
 }
@@ -205,16 +164,6 @@ const createStyles = (theme, fonts) =>
       marginTop: 24,
       gap: 16,
       backgroundColor: theme.background,
-    },
-    acceptButton: {
-      backgroundColor: "#22c55e",
-      flex: 1,
-      color: "#fff",
-    },
-    rejectButton: {
-      backgroundColor: "#ef4444",
-      color: "#fff",
-      flex: 1,
     },
     errorText: {
       color: theme.section.color,

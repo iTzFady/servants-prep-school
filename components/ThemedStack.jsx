@@ -189,6 +189,14 @@ export default function ThemedStack() {
           options={{
             headerShown: true,
             header: Header,
+            headerTitle: "تفاصيل الاستمارة",
+          }}
+        />
+        <Stack.Screen
+          name="admin/details/[id]"
+          options={{
+            headerShown: true,
+            header: Header,
             headerTitle: "تفاصيل الحساب",
           }}
         />
@@ -217,12 +225,28 @@ export default function ThemedStack() {
           }}
         />
         <Stack.Screen
+          name="admin/attendance_manual"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "تسجيل الحضور يدويا",
+          }}
+        />
+        <Stack.Screen
           name="admin/attendance"
           options={{
             headerShown: true,
             header: Header,
             headerTitle: "ادارة الحضور الغياب",
           }}
+        />
+        <Stack.Screen
+          name="admin/attendance/[id]"
+          options={({ route }) => ({
+            headerShown: true,
+            header: Header,
+            headerTitle: `${route.params?.name}`,
+          })}
         />
         <Stack.Screen
           name="admin/attendance_students_list"

@@ -1,42 +1,42 @@
-import { CameraView, useCameraPermissions } from "expo-camera";
-import { useContext, useMemo, useState } from "react";
 import {
-  Modal,
-  Text,
-  TextInput,
-  TouchableOpacity,
   View,
+  TextInput,
   StyleSheet,
+  Text,
+  FlatList,
   ActivityIndicator,
+  TouchableOpacity,
+  Modal,
 } from "react-native";
-import Toast from "react-native-toast-message";
-import { useRouter } from "expo-router";
-import { useMarkAttendance } from "@/hooks/useApi";
+import { Feather, AntDesign } from "@expo/vector-icons";
+import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
-export default function AttendanceCheck() {
-  const [permission, requestPermission] = useCameraPermissions();
-  const router = useRouter();
-  const [studentId, setStudentId] = useState("");
-
+import { useUsersList, useMarkAttendance } from "@/hooks/useApi";
+import { useRouter } from "expo-router";
+import StudentCard from "@/components/StudentCard";
+import Toast from "react-native-toast-message";
+export default function AttendanceManual() {
+  const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
+  const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState("");
   const [note, setNote] = useState("");
   const [locked, setLocked] = useState(false);
+  const [studentId, setStudentId] = useState("");
 
   const attendance = useMarkAttendance();
+  const { data: users, isLoading, isError } = useUsersList(true);
 
-  if (!permission) return null;
-
-  if (!permission.granted) {
-    return (
-      <TouchableOpacity onPress={requestPermission}>
-        <Text>برجاء الموافقة علي الكاميرا</Text>
-      </TouchableOpacity>
-    );
-  }
+  const filteredUsers = useMemo(
+    () =>
+      users?.filter((user) =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      ) || [],
+    [searchQuery, users],
+  );
 
   function resetState() {
     setModalVisible(false);
@@ -76,36 +76,57 @@ export default function AttendanceCheck() {
     }
   }
 
+  const renderUser = useCallback(({ item }) => {
+    return (
+      <StudentCard
+        item={item}
+        onPress={() => {
+          setLocked(true);
+          setStudentId(item.id);
+          setModalVisible(true);
+        }}
+      />
+    );
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>امسح رمز QR</Text>
-      <Text style={styles.description}>
-        يرجى توجيه الكاميرا نحو الرمز الموجود في هاتف المخدوم
-      </Text>
-      <View style={styles.scannerContainer}>
-        <CameraView
-          style={styles.camera}
-          barcodeScannerSettings={{
-            barcodeTypes: ["qr"],
-          }}
-          onBarcodeScanned={
-            locked || attendance.isPending
-              ? undefined
-              : ({ data }) => {
-                  setLocked(true);
-                  setStudentId(data);
-                  setModalVisible(true);
-                }
+      <View style={styles.searchContainer}>
+        <Feather name="search" size={20} color={theme.inputField.color} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="ابحث عن مستخدم..."
+          placeholderTextColor={theme.inputField.color}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionHeaderText}>الطلاب الحاليين</Text>
+      </View>
+      {isLoading ? (
+        <View style={styles.emptyContainer}>
+          <ActivityIndicator size="large" color={theme.section.color} />
+        </View>
+      ) : isError ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.errorText}>حدث خطأ أثناء تحميل الطلبات.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredUsers}
+          keyExtractor={(item) => item.id}
+          renderItem={renderUser}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={[styles.container, styles.centerContent, { flex: 1 }]}>
+              <AntDesign name="dropbox" size={34} color={theme.section.color} />
+              <Text style={styles.errorText}>لا يوجد مستخدمين.</Text>
+            </View>
           }
         />
-
-        <View style={styles.overlay}>
-          <View style={styles.cornerTopLeft} />
-          <View style={styles.cornerTopRight} />
-          <View style={styles.cornerBottomLeft} />
-          <View style={styles.cornerBottomRight} />
-        </View>
-      </View>
+      )}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.overlayModal}>
           <View style={styles.card}>
@@ -139,6 +160,18 @@ export default function AttendanceCheck() {
               onPress={() => setStatus("UNEXCUSEDLATE")}
             >
               <Text style={styles.buttonText}>تأخير بعذر غير مقبول</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              disabled={attendance.isPending}
+              style={[styles.button, attendance.isPending && styles.disabled]}
+              onPress={() => submit("ABSENT")}
+            >
+              {attendance.isPending ? (
+                <ActivityIndicator />
+              ) : (
+                <Text style={styles.buttonText}>غائب</Text>
+              )}
             </TouchableOpacity>
 
             {(status === "EXCUSEDLATE" || status === "UNEXCUSEDLATE") && (
@@ -179,86 +212,73 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
+      padding: 16,
+      backgroundColor: theme.background,
+    },
+    centerContent: {
+      justifyContent: "center",
       alignItems: "center",
-      paddingTop: 80,
+    },
+    pageTitle: {
+      fontFamily: fonts.bold,
+      fontSize: 22,
+      color: theme.title,
+      textAlign: "right",
+      marginBottom: 16,
+    },
+    searchContainer: {
+      flexDirection: "row-reverse",
+      alignItems: "center",
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      backgroundColor: theme.inputField.background,
+      borderRadius: 14,
+      marginBottom: 16,
+      gap: 10,
+    },
+    searchInput: {
+      flex: 1,
+      fontFamily: fonts.regular,
+      fontSize: 14,
+      color: theme.inputField.color,
+      textAlign: "right",
+      padding: 0,
+    },
+    listContent: {
+      paddingBottom: 16,
+      gap: 12,
+      flexGrow: 1,
     },
 
-    title: {
-      fontSize: 28,
-      fontFamily: fonts.medium,
-      color: theme.title,
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingTop: 40,
     },
-    description: {
-      fontSize: 16,
-      fontFamily: fonts.light,
-      color: theme.title,
-      marginBottom: 40,
+    emptyText: {
+      fontFamily: fonts.regular,
+      fontSize: 14,
+      color: theme.textSecondary,
       textAlign: "center",
     },
-    disabled: {
-      opacity: 0.5,
+    errorText: {
+      fontFamily: fonts.regular,
+      fontSize: 14,
+      color: theme.section.color,
+      marginTop: 12,
+      textAlign: "center",
     },
-    scannerContainer: {
-      width: 300,
-      height: 300,
-      borderRadius: 24,
-      overflow: "hidden",
-      position: "relative",
-      backgroundColor: "#DDD",
-    },
-
-    camera: {
-      width: "100%",
-      height: "100%",
+    sectionHeader: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
     },
 
-    overlay: {
-      ...StyleSheet.absoluteFillObject,
-      pointerEvents: "none",
-    },
-
-    cornerTopLeft: {
-      position: "absolute",
-      top: 25,
-      left: 25,
-      width: 40,
-      height: 40,
-      borderTopWidth: 4,
-      borderLeftWidth: 4,
-      borderColor: "#D4B100",
-    },
-
-    cornerTopRight: {
-      position: "absolute",
-      top: 25,
-      right: 25,
-      width: 40,
-      height: 40,
-      borderTopWidth: 4,
-      borderRightWidth: 4,
-      borderColor: "#D4B100",
-    },
-
-    cornerBottomLeft: {
-      position: "absolute",
-      bottom: 25,
-      left: 25,
-      width: 40,
-      height: 40,
-      borderBottomWidth: 4,
-      borderLeftWidth: 4,
-      borderColor: "#D4B100",
-    },
-
-    cornerBottomRight: {
-      position: "absolute",
-      bottom: 25,
-      right: 25,
-      width: 40,
-      height: 40,
-      borderBottomWidth: 4,
-      borderRightWidth: 4,
-      borderColor: "#D4B100",
+    sectionHeaderText: {
+      fontFamily: fonts.bold,
+      fontSize: 14,
+      color: theme.title,
+      textAlign: "right",
     },
     overlayModal: {
       flex: 1,

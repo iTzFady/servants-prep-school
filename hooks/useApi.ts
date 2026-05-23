@@ -173,6 +173,31 @@ export const usePendingUsers = (): UseQueryResult<PendingUser[], Error> => {
   });
 };
 
+export interface UserList {
+  id: string;
+  name: string;
+  servantPrepYear: string;
+}
+
+export interface UsersListResponse {
+  users: UserList[];
+}
+
+export const useUsersList = (
+  state: boolean,
+): UseQueryResult<UserList[], Error> => {
+  return useQuery({
+    queryKey: ["UsersList"],
+    queryFn: async () => {
+      const response = await apiClient.get<UserList[]>(
+        `/api/v1/admin/user/students?notAttend=${state}`,
+      );
+      return response.data;
+    },
+    enabled: true,
+  });
+};
+
 export interface UserDetail {
   id: string;
   userName: string;
@@ -203,7 +228,7 @@ export const useUserDetail = (
     queryKey: ["userDetail", userId],
     queryFn: async () => {
       const response = await apiClient.get<UserDetail>(
-        `api/v1/admin/user/${userId}`,
+        `/api/v1/admin/user/${userId}`,
       );
       return response.data;
     },
@@ -217,7 +242,7 @@ export const useUpdateUserStatus = (
   return useMutation({
     mutationFn: async (payload) => {
       const response = await apiClient.patch<UserDetail>(
-        `/admin/user/${userId}/status`,
+        `/api/v1/admin/user/${userId}/status`,
         payload,
       );
       return response.data;
@@ -233,7 +258,48 @@ export const useGetProfile = (): UseQueryResult<User, Error> => {
   return useQuery({
     queryKey: ["user", "profile"],
     queryFn: async () => {
-      const response = await apiClient.get<User>("api/v1/user/");
+      const response = await apiClient.get<User>("/api/v1/user/");
+      return response.data;
+    },
+    enabled: true,
+  });
+};
+
+//Attendance
+
+export interface AttendanceAdminPayload {
+  id: string;
+  status: "PRESENT" | "EXCUSEDLATE" | "UNEXCUSEDLATE";
+  note?: string;
+}
+
+export const useMarkAttendance = () => {
+  return useMutation({
+    mutationFn: async (payload: AttendanceAdminPayload) => {
+      const response = await apiClient.post(
+        "/api/v1/attendance/admin",
+        payload,
+      );
+      return response.data;
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["attendance"],
+      });
+    },
+  });
+};
+
+export const useAdminAttendance = (
+  id: string,
+): UseQueryResult<AttendanceResponse, Error> => {
+  return useQuery({
+    queryKey: ["attendance"],
+    queryFn: async () => {
+      const response = await apiClient.get<AttendanceResponse>(
+        `/api/v1/attendance/admin/${id}`,
+      );
       return response.data;
     },
     enabled: true,

@@ -7,3 +7,7 @@ export const days = [
   { id: 5, label: "الخميس", value: "thursday" },
   { id: 6, label: "الجمعة", value: "friday" },
 ];
+
+export function getDayLabel(value) {
+  return days.find((item) => item.value === value)?.label || "";
+}

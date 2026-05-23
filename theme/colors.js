@@ -131,6 +131,11 @@ export const Colors = {
     borderColor: "#E2E8F0",
     admin: {
       button: "#A71E34",
+      StudentCard: {
+        color: "#475569",
+        background: "#FFFFFF",
+        border: "#f9f9f9",
+      },
     },
   },
   dark: {
@@ -264,6 +269,11 @@ export const Colors = {
     borderColor: "#E2E8F0",
     admin: {
       button: "#1C2839",
+      StudentCard: {
+        color: "#FFFFFF",
+        background: "#1C2839",
+        border: "#FFFFFF80",
+      },
     },
   },
 };

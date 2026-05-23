@@ -4,15 +4,15 @@ import {
   StyleSheet,
   Text,
   FlatList,
-  Pressable,
   ActivityIndicator,
 } from "react-native";
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { Feather, AntDesign } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
 import { usePendingUsers } from "@/hooks/useApi";
 import { useRouter } from "expo-router";
+import StudentCard from "@/components/StudentCard";
 
 export default function AccountsManagement() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,26 +31,13 @@ export default function AccountsManagement() {
   const renderUser = useCallback(
     ({ item }) => {
       return (
-        <Pressable
-          style={styles.userCard}
+        <StudentCard
+          item={item}
           onPress={() => router.push(`/admin/accounts/${item.id}`)}
-        >
-          <View style={styles.userInfo}>
-            <View style={styles.avatar}>{item.name.charAt(0)}</View>
-            <View style={styles.userText}>
-              <Text style={styles.userName}>{item.name}</Text>
-              <Text style={styles.userId}>{item.id}</Text>
-            </View>
-          </View>
-          <MaterialIcons
-            name="keyboard-arrow-left"
-            size={24}
-            color={theme.section.color}
-          />
-        </Pressable>
+        />
       );
     },
-    [router, styles, theme.section.color],
+    [router],
   );
 
   return (
@@ -76,10 +63,6 @@ export default function AccountsManagement() {
         <View style={styles.emptyContainer}>
           <Text style={styles.errorText}>حدث خطأ أثناء تحميل الطلبات.</Text>
         </View>
-      ) : filteredUsers.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>لا يوجد مستخدمين قيد الانتظار.</Text>
-        </View>
       ) : (
         <FlatList
           data={filteredUsers}
@@ -87,6 +70,14 @@ export default function AccountsManagement() {
           renderItem={renderUser}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={[styles.container, styles.centerContent, { flex: 1 }]}>
+              <AntDesign name="dropbox" size={34} color={theme.section.color} />
+              <Text style={styles.errorText}>
+                لا يوجد مستخدمين قيد الانتظار.
+              </Text>
+            </View>
+          }
         />
       )}
     </View>
@@ -99,6 +90,10 @@ function createStyles(theme, fonts) {
       flex: 1,
       padding: 16,
       backgroundColor: theme.background,
+    },
+    centerContent: {
+      justifyContent: "center",
+      alignItems: "center",
     },
     pageTitle: {
       fontFamily: fonts.bold,
@@ -128,51 +123,9 @@ function createStyles(theme, fonts) {
     listContent: {
       paddingBottom: 16,
       gap: 12,
+      flexGrow: 1,
     },
-    userCard: {
-      flexDirection: "row-reverse",
-      alignItems: "center",
-      justifyContent: "space-between",
-      backgroundColor: theme.card.background,
-      borderRadius: 18,
-      padding: 18,
-      borderWidth: 1,
-      borderColor: theme.borderColor,
-      shadowColor: "#000",
-      shadowOpacity: 0.05,
-      shadowRadius: 16,
-      elevation: 2,
-    },
-    userInfo: {
-      flexDirection: "row-reverse",
-      alignItems: "center",
-      gap: 12,
-      flex: 1,
-    },
-    avatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 14,
-      backgroundColor: theme.section.color,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    userText: {
-      flex: 1,
-    },
-    userName: {
-      fontFamily: fonts.bold,
-      fontSize: 16,
-      color: theme.title,
-      textAlign: "right",
-    },
-    userId: {
-      fontFamily: fonts.regular,
-      fontSize: 12,
-      color: theme.textSecondary,
-      marginTop: 4,
-      textAlign: "right",
-    },
+
     emptyContainer: {
       flex: 1,
       justifyContent: "center",
@@ -189,8 +142,8 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.regular,
       fontSize: 14,
       color: theme.section.color,
+      marginTop: 12,
       textAlign: "center",
-      paddingHorizontal: 20,
     },
     sectionHeader: {
       paddingHorizontal: 16,

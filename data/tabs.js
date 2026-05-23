@@ -117,14 +117,23 @@ export const attendanceTabs = [
   {
     id: 0,
     label: "تسجيل الحضور",
-    description: "تسجيل الحضور باستخدام رمز ال QR او يدويا",
+    description: "تسجيل الحضور باستخدام رمز ال QR",
     icon: ({ color }) => (
-      <MaterialCommunityIcons name="typewriter" size={24} color={color} />
+      <MaterialCommunityIcons name="qrcode" size={24} color={color} />
     ),
     value: "admin/attendance_check",
   },
   {
     id: 1,
+    label: " تسجيل الحضور",
+    description: "تسجيل الحضور يدويا",
+    icon: ({ color }) => (
+      <MaterialCommunityIcons name="typewriter" size={24} color={color} />
+    ),
+    value: "admin/attendance_manual",
+  },
+  {
+    id: 2,
     label: "متابعة الحضور والغياب",
     description: "متابعة التزام المخدومين",
     icon: ({ color }) => <Fontisto name="preview" size={24} color={color} />,

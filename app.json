@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "servants-prep-school",
-    "slug": "servants-prep-school",
+    "slug": "serveants-prep-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "be0ef0d9-c5b4-4195-8138-7c297b45ece6"
+      }
+    },
+    "owner": "faaady"
   }
 }
