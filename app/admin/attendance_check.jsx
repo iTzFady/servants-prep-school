@@ -1,5 +1,6 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useContext, useMemo, useState } from "react";
+import { FontAwesome } from "@expo/vector-icons";
 import {
   Modal,
   Text,
@@ -32,8 +33,9 @@ export default function AttendanceCheck() {
 
   if (!permission.granted) {
     return (
-      <TouchableOpacity onPress={requestPermission}>
-        <Text>برجاء الموافقة علي الكاميرا</Text>
+      <TouchableOpacity onPress={requestPermission} style={styles.permission}>
+        <FontAwesome name="camera" size={24} color={theme.title} />
+        <Text style={styles.permissionText}>برجاء الموافقة علي الكاميرا</Text>
       </TouchableOpacity>
     );
   }
@@ -215,6 +217,17 @@ function createStyles(theme, fonts) {
     overlay: {
       ...StyleSheet.absoluteFillObject,
       pointerEvents: "none",
+    },
+
+    permission: {
+      ...StyleSheet.absoluteFillObject,
+      alignContent: "center",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    permissionText: {
+      fontFamily: fonts.light,
+      color: theme.title,
     },
 
     cornerTopLeft: {

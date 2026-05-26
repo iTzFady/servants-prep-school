@@ -174,7 +174,12 @@ export default function NewLecture() {
                   <View style={styles.fileUploadContainer}>
                     <Text style={styles.fileUploadLabel}>رفع الملف</Text>
                     <View style={styles.fileUploadContainer}>
-                      <FileUploadButton value={value} onChange={onChange} />
+                      <FileUploadButton
+                        value={value}
+                        onChange={onChange}
+                        accept={["image", "video", "audio", "document"]}
+                        disabled={isPending}
+                      />
                     </View>
                   </View>
                 )}

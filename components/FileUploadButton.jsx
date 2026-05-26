@@ -18,6 +18,7 @@ export default function FileUploadButton({
   value,
   onChange,
   accept = ["image", "video", "document"],
+  disabled,
 }) {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
@@ -27,11 +28,18 @@ export default function FileUploadButton({
     try {
       setLoading(true);
 
+      const wantsImage = accept.includes("image");
+      const wantsVideo = accept.includes("video");
+      const wantsDocument = accept.includes("document");
+      const wantsAudio = accept.includes("audio");
+
+      const onlyMedia =
+        (wantsImage || wantsVideo) && !wantsDocument && !wantsAudio;
+
       let result;
 
-      const wantsMedia = accept.includes("image") || accept.includes("video");
-
-      if (wantsMedia) {
+      // Use image picker only if user wants media only
+      if (onlyMedia) {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -42,9 +50,9 @@ export default function FileUploadButton({
 
         result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes:
-            accept.includes("image") && accept.includes("video")
+            wantsImage && wantsVideo
               ? ["images", "videos"]
-              : accept.includes("video")
+              : wantsVideo
                 ? ["videos"]
                 : ["images"],
 
@@ -57,44 +65,54 @@ export default function FileUploadButton({
 
         setPreview(asset.type === "image" ? asset.uri : null);
 
-        let file;
-
-        if (Platform.OS === "web") {
-          file = asset.file;
-        } else {
-          file = {
-            uri: asset.uri,
-            name: asset.fileName || asset.uri.split("/").pop(),
-            type: asset.mimeType || `${asset.type}/*`,
-          };
-        }
+        const file =
+          Platform.OS === "web"
+            ? asset.file
+            : {
+                uri: asset.uri,
+                name: asset.fileName || asset.uri.split("/").pop(),
+                type: asset.mimeType || `${asset.type}/*`,
+              };
 
         onChange(file);
         return;
       }
 
+      // Use document picker for mixed files
       result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
+        type: [
+          ...(wantsImage ? ["image/*"] : []),
+          ...(wantsVideo ? ["video/*"] : []),
+          ...(wantsAudio ? ["audio/*"] : []),
+          ...(wantsDocument
+            ? [
+                "application/pdf",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "text/plain",
+                "*/*",
+              ]
+            : []),
+        ],
+
+        multiple: false,
         copyToCacheDirectory: true,
       });
 
       if (result.canceled) return;
 
-      const fileAsset = result.assets[0];
+      const asset = result.assets[0];
 
-      setPreview(null);
+      setPreview(asset.mimeType?.startsWith("image/") ? asset.uri : null);
 
-      let file;
-
-      if (Platform.OS === "web") {
-        file = fileAsset.file;
-      } else {
-        file = {
-          uri: fileAsset.uri,
-          name: fileAsset.name,
-          type: fileAsset.mimeType,
-        };
-      }
+      const file =
+        Platform.OS === "web"
+          ? asset.file
+          : {
+              uri: asset.uri,
+              name: asset.name,
+              type: asset.mimeType || "application/octet-stream",
+            };
 
       onChange(file);
     } catch (err) {
@@ -108,7 +126,7 @@ export default function FileUploadButton({
     value?.name || value?.fileName || "اسحب الملف هنا أو اضغط للرفع";
 
   return (
-    <Pressable onPress={pickFile} style={styles.container}>
+    <Pressable onPress={pickFile} style={styles.container} disabled={disabled}>
       {loading ? (
         <ActivityIndicator size="large" color="#5A47D6" />
       ) : (

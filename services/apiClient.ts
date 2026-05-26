@@ -38,6 +38,7 @@ apiClient.interceptors.response.use(
     let userMessage = ERRORS.DEFAULT;
 
     if (response) {
+      console.log(response);
       const data = response.data || {};
       const code = (data.code || data.error || data.message || "").toString();
       if (code && ERRORS[code]) {

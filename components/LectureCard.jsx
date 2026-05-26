@@ -44,6 +44,12 @@ const TYPES = {
     iconColor: "#7C3AED",
     type: "مستند",
   },
+  application: {
+    background: "#F5F3FF",
+    icon: "document",
+    iconColor: "#7C3AED",
+    type: "مستند",
+  },
 };
 
 export default function LectureCard({ typeConfig, item, subject }) {

@@ -24,7 +24,7 @@ export const Lecture_Types = {
     ),
     label: "صوت",
   },
-  document: {
+  application: {
     icon: ({ color }) => (
       <MaterialCommunityIcons name="file-document" size={16} color={color} />
     ),

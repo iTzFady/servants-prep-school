@@ -59,6 +59,7 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 16,
       color: theme.iconButton.title,
+      textAlign: "center",
     },
     description: {
       fontFamily: fonts.regular,

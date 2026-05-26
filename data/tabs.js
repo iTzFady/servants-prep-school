@@ -62,7 +62,7 @@ export const AdmindashboardTabs = [
   },
   {
     id: 1,
-    label: "ادارة الحضور و الغياب",
+    label: "ادارة الحضور",
     description: "متابعة وتسجيل الحضور والغياب",
     icon: ({ color }) => <Feather name="calendar" size={24} color={color} />,
     value: "admin/attendance",
