@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   FlatList,
 } from "react-native";
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import AttendanceCounter from "@/components/AttendanceCounter";
@@ -18,7 +18,9 @@ export default function AttendanceLogs() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const { id } = useLocalSearchParams();
-  const { data, isLoading, error } = useAdminAttendance(id);
+  const { data, isLoading, error, refetch } = useAdminAttendance(id);
+  const [refreshing, setRefreshing] = useState(false);
+
   const presentCount = data?.count.present ?? 0;
   const absentCount = data?.count.absent ?? 0;
   const lateCount =
@@ -31,10 +33,21 @@ export default function AttendanceLogs() {
     [],
   );
 
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
+
   if (isLoading)
     return (
       <ActivityIndicator
         style={{ flex: 1, marginHorizontal: "auto", marginVertical: "auto" }}
+        color={theme.title}
       />
     );
 
@@ -101,6 +114,8 @@ export default function AttendanceLogs() {
       <FlatList
         data={records}
         renderItem={renderItems}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 15 }}
       />

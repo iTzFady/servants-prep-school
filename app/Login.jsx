@@ -10,7 +10,6 @@ import { setUser, setToken } from "../store/authSlice";
 import { useContext, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -20,6 +19,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image } from "expo-image";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLogin } from "@/hooks/useApi";
 import Toast from "react-native-toast-message";
@@ -81,7 +82,7 @@ export default function Login() {
                 <Feather
                   name={colorScheme === "dark" ? "moon" : "sun"}
                   size={18}
-                  color={colorScheme === "dark" ? "#000" : "#ffffff"}
+                  color={colorScheme === "dark" ? "#ffffff" : "#000"}
                 />
               </Pressable>
               <View style={styles.appLogoContainer}>

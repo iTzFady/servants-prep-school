@@ -22,7 +22,7 @@ function Button({ text, prefixIcon, onPressEvent, style, loading, disabled }) {
         <ActivityIndicator
           style={{ marginVertical: "auto", paddingVertical: "auto" }}
           size="small"
-          color="#000"
+          color={style.color}
         />
       ) : (
         <View

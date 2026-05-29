@@ -6,7 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import { Feather, AntDesign } from "@expo/vector-icons";
+import { Feather, AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -18,7 +18,9 @@ export default function AttendanceStudentList() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const router = useRouter();
-  const { data: users, isLoading, isError } = useUsersList(false);
+  const { data: users, isLoading, isError, refetch } = useUsersList(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   const filteredUsers = useMemo(
     () =>
       users?.filter((user) =>
@@ -44,6 +46,16 @@ export default function AttendanceStudentList() {
     [router],
   );
 
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -61,11 +73,7 @@ export default function AttendanceStudentList() {
       </View>
       {isLoading ? (
         <View style={styles.emptyContainer}>
-          <ActivityIndicator size="large" color={theme.section.color} />
-        </View>
-      ) : isError ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.errorText}>حدث خطأ أثناء تحميل الطلبات.</Text>
+          <ActivityIndicator size="large" color={theme.title} />
         </View>
       ) : (
         <FlatList
@@ -74,11 +82,28 @@ export default function AttendanceStudentList() {
           renderItem={renderUser}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           ListEmptyComponent={
-            <View style={[styles.container, styles.centerContent, { flex: 1 }]}>
-              <AntDesign name="dropbox" size={34} color={theme.section.color} />
-              <Text style={styles.errorText}>لا يوجد مخدومين.</Text>
-            </View>
+            isError ? (
+              <View style={styles.emptyContainer}>
+                <MaterialIcons name="error" size={34} color={theme.title} />
+                <Text style={styles.errorText}>
+                  حدث خطأ أثناء تحميل قائمة المخدومين.
+                </Text>
+              </View>
+            ) : (
+              <View
+                style={[styles.container, styles.centerContent, { flex: 1 }]}
+              >
+                <AntDesign
+                  name="dropbox"
+                  size={34}
+                  color={theme.section.color}
+                />
+                <Text style={styles.errorText}>لا يوجد مخدومين.</Text>
+              </View>
+            )
           }
         />
       )}

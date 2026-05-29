@@ -14,12 +14,13 @@ import {
 import { useContext, useMemo } from "react";
 import {
   ActivityIndicator,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { Image } from "expo-image";
+
 import dateUtils from "@/utils/dateFormatter";
 import { getEducationLabel } from "@/data/education_types";
 export default function Profile() {
@@ -41,6 +42,7 @@ export default function Profile() {
     return (
       <ActivityIndicator
         style={{ flex: 1, marginHorizontal: "auto", marginVertical: "auto" }}
+        color={theme.title}
       />
     );
 

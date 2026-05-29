@@ -5,7 +5,9 @@ import { curriculumTabs } from "@/data/tabs";
 import { fonts } from "@/theme/fonts";
 import { router } from "expo-router";
 import { useCallback, useContext, useMemo } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Image } from "expo-image";
+
 import { Feather } from "@expo/vector-icons";
 export default function AdminCurriculum() {
   const { theme } = useContext(ThemeContext);
@@ -87,7 +89,7 @@ function createStyles(theme, fonts) {
     stpaulImg: {
       width: 80,
       height: 190,
-      resizeMode: "contain",
+      contentFit: "contain",
     },
     textContainer: {
       flex: 1,

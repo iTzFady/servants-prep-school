@@ -9,7 +9,7 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import { Feather, AntDesign, Entypo } from "@expo/vector-icons";
+import { Feather, AntDesign, Entypo, MaterialIcons } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -32,9 +32,10 @@ export default function AttendanceManual() {
   const [note, setNote] = useState("");
   const [locked, setLocked] = useState(false);
   const [studentId, setStudentId] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const attendance = useMarkAttendance();
-  const { data: users, isLoading, isError } = useUsersList(true);
+  const { data: users, isLoading, isError, refetch } = useUsersList(true);
   const bulkAttendance = useBulkAttendance();
 
   const filteredUsers = useMemo(
@@ -44,6 +45,15 @@ export default function AttendanceManual() {
       ) || [],
     [searchQuery, users],
   );
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   async function finishDay() {
     try {
@@ -166,22 +176,35 @@ export default function AttendanceManual() {
         <View style={styles.emptyContainer}>
           <ActivityIndicator size="large" color={theme.section.color} />
         </View>
-      ) : isError ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.errorText}>حدث خطأ أثناء تحميل الطلبات.</Text>
-        </View>
       ) : (
         <FlatList
           data={filteredUsers}
           keyExtractor={(item) => item.id}
           renderItem={renderUser}
           contentContainerStyle={styles.listContent}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <View style={[styles.container, styles.centerContent, { flex: 1 }]}>
-              <AntDesign name="dropbox" size={34} color={theme.section.color} />
-              <Text style={styles.errorText}>لا يوجد مستخدمين.</Text>
-            </View>
+            isError ? (
+              <View style={styles.emptyContainer}>
+                <MaterialIcons name="error" size={34} color={theme.title} />
+                <Text style={styles.errorText}>
+                  حدث خطأ أثناء تحميل الطلبات.
+                </Text>
+              </View>
+            ) : (
+              <View
+                style={[styles.container, styles.centerContent, { flex: 1 }]}
+              >
+                <AntDesign
+                  name="dropbox"
+                  size={34}
+                  color={theme.section.color}
+                />
+                <Text style={styles.errorText}>لا يوجد مستخدمين.</Text>
+              </View>
+            )
           }
         />
       )}

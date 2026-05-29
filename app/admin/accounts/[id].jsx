@@ -4,8 +4,9 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
-  Image,
 } from "react-native";
+import { Image } from "expo-image";
+
 import { useMemo, useContext } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -15,6 +16,7 @@ import Button from "@/components/Button";
 import Toast from "react-native-toast-message";
 import DetailTile from "@/components/DetailTile";
 import dateUtils from "@/utils/dateFormatter";
+import { MaterialIcons } from "@expo/vector-icons";
 import { getDayLabel } from "@/data/days";
 import { getEducationLabel } from "@/data/education_types";
 export default function PendingUserDetail() {
@@ -54,7 +56,7 @@ export default function PendingUserDetail() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.section.color} />
+        <ActivityIndicator size="large" color={theme.title} />
       </View>
     );
   }
@@ -62,6 +64,7 @@ export default function PendingUserDetail() {
   if (isError || !user) {
     return (
       <View style={styles.loadingContainer}>
+        <MaterialIcons name="error" size={34} color={theme.title} />
         <Text style={styles.errorText}>
           حدث خطأ أثناء تحميل بيانات المستخدم.
         </Text>

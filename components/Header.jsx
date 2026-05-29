@@ -2,7 +2,7 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { Feather } from "@expo/vector-icons";
 import { useContext } from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { Platform, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Header(props) {
   const { theme } = useContext(ThemeContext);
@@ -10,7 +10,7 @@ export default function Header(props) {
   return (
     <SafeAreaView
       style={{
-        height: 100,
+        height: Platform.OS === "ios" ? 130 : 100,
         backgroundColor: theme.secondary,
         flexDirection: "row-reverse",
         alignItems: "center",

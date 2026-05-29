@@ -1,11 +1,13 @@
 import IconButton from "@/components/IconButton";
 import { ThemeContext } from "@/context/ThemeContext";
-import { AdmindashboardTabs, dashboardTabs } from "@/data/tabs";
+import { AdmindashboardTabs } from "@/data/tabs";
 import { fonts } from "@/theme/fonts";
 import { useAppSelector } from "@/store/hooks";
 import { router } from "expo-router";
 import { useCallback, useContext, useMemo } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Image } from "expo-image";
+
 import Toast from "react-native-toast-message";
 
 export default function AdminIndex() {

@@ -35,6 +35,7 @@ export default function Attendance() {
     return (
       <ActivityIndicator
         style={{ flex: 1, marginHorizontal: "auto", marginVertical: "auto" }}
+        color={theme.title}
       />
     );
 

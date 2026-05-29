@@ -1,21 +1,66 @@
 import { Colors } from "@/theme/colors";
-import { createContext, useMemo, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Appearance } from "react-native";
 
 export const ThemeContext = createContext(null);
 
+const THEME_STORAGE_KEY = "APP_THEME";
+
 export function ThemeProvider({ children }) {
-  const [colorScheme, setColorScheme] = useState(
-    Appearance.getColorScheme() ?? "light",
-  );
+  const [colorScheme, setColorSchemeState] = useState(null);
+
+  useEffect(() => {
+    loadTheme();
+  }, []);
+
+  const loadTheme = async () => {
+    try {
+      const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+
+      if (savedTheme === "light" || savedTheme === "dark") {
+        setColorSchemeState(savedTheme);
+      } else {
+        setColorSchemeState(Appearance.getColorScheme() ?? "light");
+      }
+    } catch (error) {
+      console.log("Failed to load theme", error);
+
+      setColorSchemeState(Appearance.getColorScheme() ?? "light");
+    }
+  };
+
+  const setColorScheme = useCallback(async (scheme) => {
+    try {
+      setColorSchemeState(scheme);
+
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, scheme);
+    } catch (error) {
+      console.log("Failed to save theme", error);
+    }
+  }, []);
 
   const theme = useMemo(
-    () => (colorScheme === "light" ? Colors.dark : Colors.light),
+    () => (colorScheme === "light" ? Colors.light : Colors.dark),
     [colorScheme],
   );
 
+  if (!colorScheme) return null;
+
   return (
-    <ThemeContext.Provider value={{ colorScheme, setColorScheme, theme }}>
+    <ThemeContext.Provider
+      value={{
+        colorScheme,
+        setColorScheme,
+        theme,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

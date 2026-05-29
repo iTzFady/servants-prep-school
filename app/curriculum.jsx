@@ -1,12 +1,12 @@
-import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
 import { ThemeContext } from "@/context/ThemeContext";
 import { curriculumTabs } from "@/data/tabs";
 import { fonts } from "@/theme/fonts";
 import { router } from "expo-router";
 import { useCallback, useContext, useMemo } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Image } from "expo-image";
+
 export default function Curriculum() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
@@ -81,7 +81,7 @@ function createStyles(theme, fonts) {
     stpaulImg: {
       width: 80,
       height: 190,
-      resizeMode: "contain",
+      contentFit: "contain",
     },
     textContainer: {
       flex: 1,

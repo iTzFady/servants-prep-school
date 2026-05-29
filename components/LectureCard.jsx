@@ -67,10 +67,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
     item.id,
   );
 
-  // =========================================
-  // DERIVED STATE
-  // =========================================
-
   const isDownloaded = useMemo(() => {
     return downloadedLectures.some((lecture) => lecture.id === item.id);
   }, [downloadedLectures, item.id]);
@@ -78,10 +74,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
   const progress = downloadProgress[item.id];
 
   const isDownloading = progress !== undefined && progress < 100;
-
-  // =========================================
-  // HANDLERS
-  // =========================================
 
   const handleDownload = useCallback(async () => {
     if (!lectureDetail?.lectureUrl) {
@@ -100,10 +92,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
     await openLecture(item.id);
   }, [item.id, openLecture]);
 
-  // =========================================
-  // RENDER HELPERS
-  // =========================================
-
   const renderLectureIcon = useCallback(() => {
     return (
       <View
@@ -120,10 +108,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
   }, [config.background, config.icon, config.iconColor, styles.lectureLeft]);
 
   const renderActionButton = () => {
-    // =====================================
-    // DOWNLOADING
-    // =====================================
-
     if (isDownloading) {
       return (
         <View style={styles.downloadContainer}>
@@ -133,10 +117,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
         </View>
       );
     }
-
-    // =====================================
-    // DOWNLOADED
-    // =====================================
 
     if (isDownloaded) {
       return (
@@ -154,10 +134,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
       );
     }
 
-    // =====================================
-    // LOADING URL
-    // =====================================
-
     if (isLoadingUrl) {
       return (
         <View style={styles.downloadContainer}>
@@ -165,10 +141,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
         </View>
       );
     }
-
-    // =====================================
-    // DOWNLOAD BUTTON
-    // =====================================
 
     return (
       <TouchableOpacity
@@ -181,10 +153,6 @@ export default function LectureCard({ typeConfig, item, subject }) {
       </TouchableOpacity>
     );
   };
-
-  // =========================================
-  // RENDER
-  // =========================================
 
   return (
     <View style={styles.lectureCard}>
@@ -225,32 +193,23 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     lectureCard: {
       flexDirection: "row-reverse",
-
       alignItems: "center",
-
       paddingHorizontal: 16,
       paddingVertical: 12,
-
       marginHorizontal: 16,
       marginBottom: 8,
-
       backgroundColor: theme.LectureCard.background,
-
       borderRadius: 12,
-
       borderWidth: 1,
       borderColor: theme.LectureCard.border,
-
       gap: 12,
     },
 
     lectureLeft: {
       width: 56,
       height: 56,
-
       justifyContent: "center",
       alignItems: "center",
-
       borderRadius: 8,
     },
 
@@ -262,30 +221,25 @@ function createStyles(theme, fonts) {
     lectureTitle: {
       fontFamily: fonts.bold,
       fontSize: 16,
-
       color: theme.LectureCard.color,
-
       textAlign: "right",
     },
 
     lectureMetaRow: {
       flexDirection: "row-reverse",
       gap: 15,
-
       marginTop: 4,
     },
 
     lectureMeta: {
       fontFamily: fonts.regular,
       fontSize: 12,
-
       color: theme.LectureCard.color,
     },
 
     lectureRight: {
       minWidth: 50,
       minHeight: 50,
-
       justifyContent: "center",
       alignItems: "center",
     },
@@ -293,16 +247,13 @@ function createStyles(theme, fonts) {
     metaContainer: {
       flexDirection: "row-reverse",
       alignItems: "center",
-
       gap: 4,
     },
 
     downloadButton: {
       width: 40,
       height: 40,
-
       borderRadius: 10,
-
       justifyContent: "center",
       alignItems: "center",
     },
@@ -310,26 +261,21 @@ function createStyles(theme, fonts) {
     openButton: {
       width: 40,
       height: 40,
-
       borderRadius: 10,
-
       justifyContent: "center",
       alignItems: "center",
     },
 
     downloadContainer: {
       width: 50,
-
       justifyContent: "center",
       alignItems: "center",
-
       gap: 4,
     },
 
     progressText: {
       fontFamily: fonts.regular,
       fontSize: 10,
-
       color: theme.LectureCard.color,
     },
   });

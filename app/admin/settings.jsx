@@ -51,7 +51,7 @@ export default function AdminSettings() {
             icon={({ color }) => (
               <Feather name="moon" size={24} color={color} />
             )}
-            state={colorScheme !== "dark"}
+            state={colorScheme === "dark"}
             onPress={toggleTheme}
           />
         </View>
@@ -98,6 +98,9 @@ export default function AdminSettings() {
         }}
         prefixIcon={<MaterialIcons name="logout" size={24} color="#DC2626" />}
       />
+      <Text style={{ color: theme.title, textAlign: "center" }}>
+        {`اصدار البرنامج: ${process.env.EXPO_PUBLIC_VERSION}`}
+      </Text>
     </ScrollView>
   );
 }

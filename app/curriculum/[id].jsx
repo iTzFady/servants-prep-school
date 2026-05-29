@@ -20,9 +20,10 @@ export default function CurriculumList() {
   const { id } = useLocalSearchParams();
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const { data: lectures, isLoading, error } = useLectures(id);
+  const { data: lectures, isLoading, error, refetch } = useLectures(id);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("الكل");
+  const [refreshing, setRefreshing] = useState(false);
 
   const filteredLectures = useMemo(() => {
     if (!lectures) return [];
@@ -36,6 +37,16 @@ export default function CurriculumList() {
       return matchesSearch && matchesType;
     });
   }, [lectures, searchQuery, selectedType]);
+
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
+
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   const groupedLectures = useMemo(() => {
     const grouped = {};
@@ -71,16 +82,7 @@ export default function CurriculumList() {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={theme.section.color} />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={[styles.container, styles.centerContent]}>
-        <MaterialIcons name="error" size={34} color={theme.section.color} />
-        <Text style={styles.errorText}>حدث خطأ أثناء تحميل الدروس</Text>
+        <ActivityIndicator size="large" color={theme.title} />
       </View>
     );
   }
@@ -129,6 +131,8 @@ export default function CurriculumList() {
         sections={groupedLectures}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderLecture}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderText}>{`● ${title}`}</Text>
@@ -140,10 +144,21 @@ export default function CurriculumList() {
           gap: 10,
         }}
         ListEmptyComponent={
-          <View style={[styles.container, styles.centerContent, { flex: 1 }]}>
-            <AntDesign name="dropbox" size={34} color={theme.section.color} />
-            <Text style={styles.errorText}>لا يوجد محاضرات لهذا الفرع</Text>
-          </View>
+          error ? (
+            <View style={[styles.container, styles.centerContent]}>
+              <MaterialIcons
+                name="error"
+                size={34}
+                color={theme.section.color}
+              />
+              <Text style={styles.errorText}>حدث خطأ أثناء تحميل الدروس</Text>
+            </View>
+          ) : (
+            <View style={[styles.container, styles.centerContent, { flex: 1 }]}>
+              <AntDesign name="dropbox" size={34} color={theme.section.color} />
+              <Text style={styles.errorText}>لا يوجد محاضرات لهذا الفرع</Text>
+            </View>
+          )
         }
       />
     </View>

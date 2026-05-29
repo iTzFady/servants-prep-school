@@ -3,12 +3,13 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   Platform,
   Pressable,
   StyleSheet,
   View,
 } from "react-native";
+
+import { Image } from "expo-image";
 
 const defaultProfilePic = require("@/assets/images/default-profile.webp");
 

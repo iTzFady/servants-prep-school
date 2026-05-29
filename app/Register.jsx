@@ -131,16 +131,26 @@ export default function Register() {
               <Controller
                 control={control}
                 name="userName"
-                rules={{ required: "اسم المستخدم مطلوب" }}
+                rules={{
+                  required: "اسم المستخدم مطلوب",
+                  pattern: {
+                    value: /^[a-zA-Z0-9_-]+$/,
+                    message:
+                      "اسم المستخدم يجب أن يحتوي على أحرف إنجليزية فقط و بدون مسافات",
+                  },
+                }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <InputField
                     text="اسم المستخدم"
                     placeholder="أدخل اسم المستخدم"
                     autoCapitalize="none"
                     autoComplete="username"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     inputMode="text"
-                    onChangeText={onChange}
+                    onChangeText={(text) => {
+                      const cleaned = text.replace(/[^a-zA-Z0-9_-]/g, "");
+                      onChange(cleaned);
+                    }}
                     onBlur={onBlur}
                     value={value}
                   />

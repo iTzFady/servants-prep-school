@@ -4,25 +4,23 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
-  Image,
 } from "react-native";
 import { useMemo, useContext } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { useUserDetail, useUpdateUserStatus } from "@/hooks/useApi";
-import Button from "@/components/Button";
-import Toast from "react-native-toast-message";
 import DetailTile from "@/components/DetailTile";
 import dateUtils from "@/utils/dateFormatter";
 import { getDayLabel } from "@/data/days";
 import { getEducationLabel } from "@/data/education_types";
+import { Image } from "expo-image";
+
 export default function UserDetails() {
   const { id } = useLocalSearchParams();
   const userId = Array.isArray(id) ? id[0] : id;
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const router = useRouter();
   const { data: user, isLoading, isError } = useUserDetail(userId || "");
 
   const { mutate: updateStatus, isPending } = useUpdateUserStatus(userId || "");
@@ -30,7 +28,7 @@ export default function UserDetails() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.section.color} />
+        <ActivityIndicator size="large" color={theme.title} />
       </View>
     );
   }

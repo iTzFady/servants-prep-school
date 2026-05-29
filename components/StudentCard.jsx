@@ -1,4 +1,5 @@
-import { Pressable, View, Text, StyleSheet, Image } from "react-native";
+import { Pressable, View, Text, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useContext, useMemo } from "react";
 import { fonts } from "@/theme/fonts";
