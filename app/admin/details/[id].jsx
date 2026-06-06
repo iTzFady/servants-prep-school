@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useMemo, useContext } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { useUserDetail, useUpdateUserStatus } from "@/hooks/useApi";
@@ -46,7 +46,7 @@ export default function UserDetails() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.nameContainer}>
-        <Image style={styles.pfp} src={user.pfpUrl} />
+        <Image style={styles.pfp} source={user.pfpUrl} />
         <Text style={styles.name}>{user.name}</Text>
       </View>
 

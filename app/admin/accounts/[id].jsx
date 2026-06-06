@@ -28,7 +28,7 @@ export default function PendingUserDetail() {
   const { data: user, isLoading, isError } = useUserDetail(userId || "");
 
   const { mutate: updateStatus, isPending } = useUpdateUserStatus(userId || "");
-
+  console.log(user);
   const handleStatusChange = (status) => {
     updateStatus(
       { status },
@@ -75,7 +75,7 @@ export default function PendingUserDetail() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.nameContainer}>
-        <Image style={styles.pfp} src={user.pfpUrl} />
+        <Image style={styles.pfp} source={user.pfpUrl} />
         <Text style={styles.name}>{user.name}</Text>
       </View>
 
