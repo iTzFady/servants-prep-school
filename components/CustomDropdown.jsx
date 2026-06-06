@@ -32,7 +32,6 @@ function CustomDropdown({ data, dropdownLabel, value, onChange, placeHolder }) {
               );
 
               if (selectedItem) {
-                console.log("Selected item:", selectedItem.value);
                 onChange(selectedItem);
               }
             }}

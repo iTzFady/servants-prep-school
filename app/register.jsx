@@ -60,7 +60,6 @@ export default function Register() {
     },
   });
   const onSubmit = (data) => {
-    console.log("Form data:", data.educationType);
     const payload = { ...data };
     if (payload.password !== payload.confirmPassword) {
       Toast.show({

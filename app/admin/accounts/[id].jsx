@@ -28,7 +28,6 @@ export default function PendingUserDetail() {
   const { data: user, isLoading, isError } = useUserDetail(userId || "");
 
   const { mutate: updateStatus, isPending } = useUpdateUserStatus(userId || "");
-  console.log(user);
   const handleStatusChange = (status) => {
     updateStatus(
       { status },
