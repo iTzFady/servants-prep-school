@@ -11,8 +11,8 @@ export const educationTypes = [
 ];
 
 export const serverntPrepYear = [
-  { id: 0, label: "السنة الأولى", value: 1 },
-  { id: 1, label: "السنة الثانية", value: 2 },
+  { id: 0, label: "السنة الأولى", value: "1" },
+  { id: 1, label: "السنة الثانية", value: "2" },
 ];
 
 export function getEducationLabel(value) {

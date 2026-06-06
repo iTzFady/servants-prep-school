@@ -20,15 +20,29 @@ function CustomDropdown({ data, dropdownLabel, value, onChange, placeHolder }) {
     <>
       {Platform.OS === "web" ? (
         <View style={styles.container}>
-          {dropdownLabel && <Text style={styles.label}>{dropdownLabel}</Text>}
+          {dropdownLabel && (
+            <Text style={styles.dropdownLabel}>{dropdownLabel}</Text>
+          )}
           <select
             value={value}
-            onChange={(e) => onChange(e.currentTarget.value)}
             style={styles.select}
-            placeholder={placeHolder}
+            onChange={(e) => {
+              const selectedItem = data.find(
+                (item) => item.value === e.currentTarget.value,
+              );
+
+              if (selectedItem) {
+                console.log("Selected item:", selectedItem.value);
+                onChange(selectedItem);
+              }
+            }}
           >
+            <option value="" disabled>
+              {placeHolder}
+            </option>
+
             {data.map((item) => (
-              <option key={item.value} value={item.value}>
+              <option key={item.id} value={item.value}>
                 {item.label}
               </option>
             ))}

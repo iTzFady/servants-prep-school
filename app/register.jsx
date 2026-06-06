@@ -60,6 +60,7 @@ export default function Register() {
     },
   });
   const onSubmit = (data) => {
+    console.log("Form data:", data.educationType);
     const payload = { ...data };
     if (payload.password !== payload.confirmPassword) {
       Toast.show({
@@ -105,6 +106,7 @@ export default function Register() {
       },
     });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -467,6 +469,9 @@ export default function Register() {
               <Controller
                 control={control}
                 name="homeNumber"
+                rules={{
+                  required: "برجاء كتابة رقم التليفون الأرضي",
+                }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
                     text="الرقم الأرضي"

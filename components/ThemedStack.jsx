@@ -216,14 +216,16 @@ export default function ThemedStack() {
             headerTitle: "بيانات المخدومين",
           }}
         />
-        <Stack.Screen
-          name="admin/attendance_check"
-          options={{
-            headerShown: true,
-            header: Header,
-            headerTitle: "تسجيل الحضور",
-          }}
-        />
+        {
+          <Stack.Screen
+            name="admin/attendance_check"
+            options={{
+              headerShown: true,
+              header: Header,
+              headerTitle: "تسجيل الحضور",
+            }}
+          />
+        }
         <Stack.Screen
           name="admin/attendance_manual"
           options={{

@@ -1,59 +1,118 @@
-import * as SecureStore from "expo-secure-store";
 import type { User } from "../store/authSlice";
+import { Platform } from "react-native";
 
 const USER_KEY = "authUser";
 const TOKEN_KEY = "authToken";
 
-export const secureStore = {
-  async getToken(): Promise<string | null> {
+// Web storage service for localStorage (web only)
+const webStorage = {
+  getItem(key: string): string | null {
+    if (typeof window === "undefined") return null;
     try {
-      return await SecureStore.getItemAsync(TOKEN_KEY);
+      return localStorage.getItem(key);
     } catch (error) {
-      console.error("Error retrieving token:", error);
+      console.error("Error retrieving from localStorage:", error);
+      return null;
+    }
+  },
+  setItem(key: string, value: string): void {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error("Error storing in localStorage:", error);
+    }
+  },
+  removeItem(key: string): void {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error("Error removing from localStorage:", error);
+    }
+  },
+};
+
+// Native storage service for SecureStore (mobile only)
+let nativeStorage: typeof import("expo-secure-store") | null = null;
+if (Platform.OS !== "web") {
+  try {
+    nativeStorage = require("expo-secure-store");
+  } catch (e) {
+    console.warn("SecureStore not available");
+  }
+}
+
+// Unified storage interface
+const storage = {
+  async getItem(key: string): Promise<string | null> {
+    try {
+      if (Platform.OS === "web") {
+        return webStorage.getItem(key);
+      } else if (nativeStorage) {
+        return await nativeStorage.getItemAsync(key);
+      }
+      return null;
+    } catch (error) {
+      console.error(`Error retrieving ${key}:`, error);
       return null;
     }
   },
 
-  async setToken(token: string): Promise<void> {
+  async setItem(key: string, value: string): Promise<void> {
     try {
-      await SecureStore.setItemAsync(TOKEN_KEY, token);
+      if (Platform.OS === "web") {
+        webStorage.setItem(key, value);
+      } else if (nativeStorage) {
+        await nativeStorage.setItemAsync(key, value);
+      }
     } catch (error) {
-      console.error("Error storing token:", error);
+      console.error(`Error storing ${key}:`, error);
     }
   },
 
-  async removeToken(): Promise<void> {
+  async removeItem(key: string): Promise<void> {
     try {
-      await SecureStore.deleteItemAsync(TOKEN_KEY);
+      if (Platform.OS === "web") {
+        webStorage.removeItem(key);
+      } else if (nativeStorage) {
+        await nativeStorage.deleteItemAsync(key);
+      }
     } catch (error) {
-      console.error("Error removing token:", error);
+      console.error(`Error removing ${key}:`, error);
     }
+  },
+};
+
+export const secureStore = {
+  async getToken(): Promise<string | null> {
+    return storage.getItem(TOKEN_KEY);
+  },
+
+  async setToken(token: string): Promise<void> {
+    return storage.setItem(TOKEN_KEY, token);
+  },
+
+  async removeToken(): Promise<void> {
+    return storage.removeItem(TOKEN_KEY);
   },
 
   async getUser(): Promise<User | null> {
     try {
-      const raw = await SecureStore.getItemAsync(USER_KEY);
+      const raw = await storage.getItem(USER_KEY);
       return raw ? (JSON.parse(raw) as User) : null;
     } catch (error) {
-      console.error("Error retrieving user:", error);
+      console.error("Error parsing user:", error);
       return null;
     }
   },
 
   async setUser(user: User): Promise<void> {
-    try {
-      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
-    } catch (error) {
-      console.error("Error storing user:", error);
-    }
+    return storage.setItem(USER_KEY, JSON.stringify(user));
   },
 
   async removeUser(): Promise<void> {
-    try {
-      await SecureStore.deleteItemAsync(USER_KEY);
-    } catch (error) {
-      console.error("Error removing user:", error);
-    }
+    return storage.removeItem(USER_KEY);
   },
 
   async clear(): Promise<void> {

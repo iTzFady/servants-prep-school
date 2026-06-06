@@ -1,11 +1,20 @@
 import { useState, useCallback, useEffect } from "react";
-import * as FileSystem from "expo-file-system/legacy";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-
-import * as IntentLauncher from "expo-intent-launcher";
-
 import { Platform, Linking } from "react-native";
+
+// Only import platform-specific modules when not on web
+let FileSystem: typeof import("expo-file-system/legacy") | null = null;
+let IntentLauncher: typeof import("expo-intent-launcher") | null = null;
+
+if (Platform.OS !== "web") {
+  try {
+    FileSystem = require("expo-file-system/legacy");
+    IntentLauncher = require("expo-intent-launcher");
+  } catch (e) {
+    console.warn("Platform-specific modules not available");
+  }
+}
 
 export interface DownloadedLecture {
   id: string;
@@ -15,9 +24,11 @@ export interface DownloadedLecture {
   extension: string;
 }
 
-const DOWNLOADS_DIR = `${FileSystem.documentDirectory}lectures/`;
-
 const STORAGE_KEY = "@downloaded_lectures";
+const DOWNLOADS_DIR =
+  Platform.OS === "web"
+    ? "web-downloads"
+    : `${FileSystem?.documentDirectory}lectures/`;
 
 export const useDownload = () => {
   const [downloadProgress, setDownloadProgress] = useState<{
@@ -35,6 +46,12 @@ export const useDownload = () => {
   // =========================================
 
   const ensureDownloadsDirectory = useCallback(async () => {
+    if (Platform.OS === "web") {
+      return;
+    }
+
+    if (!FileSystem) return;
+
     const dirInfo = await FileSystem.getInfoAsync(DOWNLOADS_DIR);
 
     if (!dirInfo.exists) {
@@ -102,6 +119,17 @@ export const useDownload = () => {
 
   const initializeDownloads = useCallback(async () => {
     try {
+      if (Platform.OS === "web") {
+        // On web, just load from AsyncStorage without file validation
+        const storedLectures = await AsyncStorage.getItem(STORAGE_KEY);
+        if (storedLectures) {
+          const parsedLectures: DownloadedLecture[] =
+            JSON.parse(storedLectures);
+          setDownloadedLectures(parsedLectures);
+        }
+        return;
+      }
+
       await ensureDownloadsDirectory();
 
       const storedLectures = await AsyncStorage.getItem(STORAGE_KEY);
@@ -113,6 +141,11 @@ export const useDownload = () => {
       const parsedLectures: DownloadedLecture[] = JSON.parse(storedLectures);
 
       const validLectures: DownloadedLecture[] = [];
+
+      if (!FileSystem) {
+        setDownloadedLectures(parsedLectures);
+        return;
+      }
 
       for (const lecture of parsedLectures) {
         const fileInfo = await FileSystem.getInfoAsync(lecture.path);
@@ -158,11 +191,21 @@ export const useDownload = () => {
       try {
         setIsLoading(true);
 
-        await ensureDownloadsDirectory();
-
         const existingLecture = getLectureById(lectureId);
 
         if (existingLecture) {
+          if (Platform.OS === "web") {
+            // On web, just mark as downloaded
+            Toast.show({
+              type: "info",
+              text1: "معلومة",
+              text2: "تم تحميل هذه المحاضرة بالفعل",
+            });
+            return;
+          }
+
+          if (!FileSystem) return;
+
           const fileInfo = await FileSystem.getInfoAsync(existingLecture.path);
 
           if (fileInfo.exists) {
@@ -181,6 +224,73 @@ export const useDownload = () => {
         const sanitizedTitle = title.replace(/[<>:"/\\|?*]/g, "").trim();
 
         const fileName = `${lectureId}.${extension}`;
+
+        // =====================================
+        // WEB DOWNLOAD
+        // =====================================
+
+        if (Platform.OS === "web") {
+          try {
+            const response = await fetch(lectureUrl);
+            const blob = await response.blob();
+
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${sanitizedTitle}.${extension}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            setDownloadProgress((prev) => ({
+              ...prev,
+              [lectureId]: 100,
+            }));
+
+            const lectureData: DownloadedLecture = {
+              id: lectureId,
+              title: sanitizedTitle,
+              type,
+              path: url, // Store blob URL for web
+              extension,
+            };
+
+            const updatedLectures = [
+              ...downloadedLectures.filter((l) => l.id !== lectureId),
+              lectureData,
+            ];
+
+            setDownloadedLectures(updatedLectures);
+            await saveDownloadsToStorage(updatedLectures);
+
+            Toast.show({
+              type: "success",
+              text1: "نجح التحميل",
+              text2: `تم تحميل: ${sanitizedTitle}`,
+            });
+
+            setTimeout(() => {
+              setDownloadProgress((prev) => {
+                const updated = { ...prev };
+                delete updated[lectureId];
+                return updated;
+              });
+            }, 1500);
+          } catch (error) {
+            console.error("Web download error:", error);
+            throw error;
+          }
+          return;
+        }
+
+        // =====================================
+        // NATIVE DOWNLOAD
+        // =====================================
+
+        if (!FileSystem) return;
+
+        await ensureDownloadsDirectory();
 
         const filePath = `${DOWNLOADS_DIR}${fileName}`;
 
@@ -283,6 +393,27 @@ export const useDownload = () => {
           return;
         }
 
+        if (Platform.OS === "web") {
+          // On web, just remove from list
+          const updatedLectures = downloadedLectures.filter(
+            (l) => l.id !== lectureId,
+          );
+
+          setDownloadedLectures(updatedLectures);
+
+          await saveDownloadsToStorage(updatedLectures);
+
+          Toast.show({
+            type: "success",
+            text1: "تم الحذف",
+            text2: "تم حذف المحاضرة بنجاح",
+          });
+
+          return;
+        }
+
+        if (!FileSystem) return;
+
         const fileInfo = await FileSystem.getInfoAsync(lecture.path);
 
         if (fileInfo.exists) {
@@ -334,6 +465,26 @@ export const useDownload = () => {
           return;
         }
 
+        // =====================================
+        // WEB OPEN
+        // =====================================
+
+        if (Platform.OS === "web") {
+          if (
+            lecture.path.startsWith("blob:") ||
+            lecture.path.startsWith("http")
+          ) {
+            // For blob URLs or direct URLs, just open them
+            window.open(lecture.path, "_blank");
+          } else {
+            // Try to open as a link
+            Linking.openURL(lecture.path);
+          }
+          return;
+        }
+
+        if (!FileSystem) return;
+
         const fileInfo = await FileSystem.getInfoAsync(lecture.path);
 
         if (!fileInfo.exists) {
@@ -353,6 +504,8 @@ export const useDownload = () => {
         // =====================================
 
         if (Platform.OS === "android") {
+          if (!IntentLauncher) return;
+
           const contentUri = await FileSystem.getContentUriAsync(lecture.path);
 
           await IntentLauncher.startActivityAsync(
@@ -397,6 +550,12 @@ export const useDownload = () => {
         if (!lecture) {
           return false;
         }
+
+        if (Platform.OS === "web") {
+          return true;
+        }
+
+        if (!FileSystem) return false;
 
         const fileInfo = await FileSystem.getInfoAsync(lecture.path);
 
