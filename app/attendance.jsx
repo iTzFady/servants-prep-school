@@ -5,18 +5,21 @@ import {
   ActivityIndicator,
   FlatList,
 } from "react-native";
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import AttendanceCounter from "@/components/AttendanceCounter";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import AttendanceTile from "@/components/AttendanceTile";
 import { useAttendance } from "@/hooks/useApi";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ErrorIndicator from "@/components/ErrorIndicator";
 
 export default function Attendance() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const { data, isLoading, error } = useAttendance();
+  const [refreshing, setRefreshing] = useState(false);
+  const { data, isLoading, error, refetch } = useAttendance();
 
   const presentCount = data?.count.present ?? 0;
   const absentCount = data?.count.absent ?? 0;
@@ -31,34 +34,20 @@ export default function Attendance() {
     [],
   );
 
-  if (isLoading)
-    return (
-      <ActivityIndicator
-        style={{ flex: 1, marginHorizontal: "auto", marginVertical: "auto" }}
-        color={theme.title}
-      />
-    );
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
 
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
+
+  if (isLoading) return <LoadingIndicator />;
   if (error)
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <MaterialIcons name="error" size={34} color={theme.title} />
-        <Text
-          style={{
-            textAlign: "center",
-            color: theme.title,
-            fontFamily: fonts.medium,
-          }}
-        >
-          لقد حدث خطأ
-        </Text>
-      </View>
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
 
   return (
@@ -78,32 +67,17 @@ export default function Attendance() {
         <Text style={styles.sectionTitle}>تفاصيل الغياب والحضور</Text>
       </View>
 
-      {!isLoading && !error && records.length === 0 && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <MaterialIcons name="error" size={34} color={theme.title} />
-          <Text
-            style={{
-              textAlign: "center",
-              color: theme.title,
-              fontFamily: fonts.medium,
-            }}
-          >
-            لا توجد سجلات حضور حتى الآن
-          </Text>
-        </View>
-      )}
-
       <FlatList
         data={records}
+        keyExtractor={(item) => item.id}
         renderItem={renderItems}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 15 }}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <ErrorIndicator text="لا توجد سجلات حضور حتى الآن" />
+        }
       />
     </View>
   );
@@ -130,6 +104,11 @@ function createStyles(theme, fonts) {
       color: theme.attendance.section.title,
       fontSize: 16,
       fontFamily: fonts.bold,
+    },
+    listContent: {
+      paddingBottom: 16,
+      gap: 12,
+      flexGrow: 1,
     },
   });
 }

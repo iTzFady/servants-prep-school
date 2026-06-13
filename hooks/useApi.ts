@@ -295,7 +295,7 @@ export const useAdminAttendance = (
   id: string,
 ): UseQueryResult<AttendanceResponse, Error> => {
   return useQuery({
-    queryKey: ["attendance"],
+    queryKey: ["attendance", id],
     queryFn: async () => {
       const response = await apiClient.get<AttendanceResponse>(
         `/api/v1/attendance/admin/${id}`,

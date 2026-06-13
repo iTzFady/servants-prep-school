@@ -36,6 +36,7 @@ export default function Header(props) {
           fontFamily: fonts.bold,
           marginHorizontal: "auto",
         }}
+        ellipsizeMode="tail"
       >
         {props.options.headerTitle}
       </Text>

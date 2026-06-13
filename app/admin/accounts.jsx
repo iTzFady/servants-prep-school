@@ -1,25 +1,20 @@
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
-import { Feather, AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { View, TextInput, StyleSheet, Text, FlatList } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
 import { usePendingUsers } from "@/hooks/useApi";
 import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
+import ErrorIndicator from "@/components/ErrorIndicator";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 export default function AccountsManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const router = useRouter();
-  const { data: users, isLoading, isError, refetch } = usePendingUsers();
+  const { data: users, isLoading, error, refetch } = usePendingUsers();
   const [refreshing, setRefreshing] = useState(false);
 
   const filteredUsers = useMemo(
@@ -51,6 +46,11 @@ export default function AccountsManagement() {
       setRefreshing(false);
     }
   }, [refetch]);
+  if (isLoading) return <LoadingIndicator />;
+  if (error)
+    return (
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
+    );
 
   return (
     <View style={styles.container}>
@@ -67,44 +67,19 @@ export default function AccountsManagement() {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionHeaderText}>طلبات قد الانتظار</Text>
       </View>
-      {isLoading ? (
-        <View style={styles.emptyContainer}>
-          <ActivityIndicator size="large" color={theme.title} />
-        </View>
-      ) : (
-        <FlatList
-          data={filteredUsers}
-          keyExtractor={(item) => item.id}
-          renderItem={renderUser}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          ListEmptyComponent={
-            isError ? (
-              <View style={styles.emptyContainer}>
-                <MaterialIcons name="error" size={34} color={theme.title} />
-                <Text style={styles.errorText}>
-                  حدث خطأ أثناء تحميل الطلبات.
-                </Text>
-              </View>
-            ) : (
-              <View
-                style={[styles.container, styles.centerContent, { flex: 1 }]}
-              >
-                <AntDesign
-                  name="dropbox"
-                  size={34}
-                  color={theme.section.color}
-                />
-                <Text style={styles.errorText}>
-                  لا يوجد مستخدمين قيد الانتظار.
-                </Text>
-              </View>
-            )
-          }
-        />
-      )}
+
+      <FlatList
+        data={filteredUsers}
+        keyExtractor={(item) => item.id}
+        renderItem={renderUser}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        ListEmptyComponent={
+          <ErrorIndicator text="لا يوجد مستخدمين قيد الانتظار" />
+        }
+      />
     </View>
   );
 }

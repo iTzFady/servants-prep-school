@@ -1,13 +1,8 @@
-import {
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { ScrollView, View, Text, StyleSheet } from "react-native";
 import { Image } from "expo-image";
+import { blurhash } from "@/theme/constants";
 
-import { useMemo, useContext } from "react";
+import { useMemo, useContext, useCallback } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
@@ -16,16 +11,17 @@ import Button from "@/components/Button";
 import Toast from "react-native-toast-message";
 import DetailTile from "@/components/DetailTile";
 import dateUtils from "@/utils/dateFormatter";
-import { MaterialIcons } from "@expo/vector-icons";
 import { getDayLabel } from "@/data/days";
 import { getEducationLabel } from "@/data/education_types";
+import ErrorIndicator from "@/components/ErrorIndicator";
+import LoadingIndicator from "@/components/LoadingIndicator";
 export default function PendingUserDetail() {
   const { id } = useLocalSearchParams();
   const userId = Array.isArray(id) ? id[0] : id;
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const router = useRouter();
-  const { data: user, isLoading, isError } = useUserDetail(userId || "");
+  const { data: user, isLoading, error, refetch } = useUserDetail(userId || "");
 
   const { mutate: updateStatus, isPending } = useUpdateUserStatus(userId || "");
   const handleStatusChange = (status) => {
@@ -52,30 +48,28 @@ export default function PendingUserDetail() {
     );
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.title} />
-      </View>
-    );
-  }
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
-  if (isError || !user) {
+  if (isLoading) return <LoadingIndicator />;
+
+  if (error || !user)
     return (
-      <View style={styles.loadingContainer}>
-        <MaterialIcons name="error" size={34} color={theme.title} />
-        <Text style={styles.errorText}>
-          حدث خطأ أثناء تحميل بيانات المستخدم.
-        </Text>
-      </View>
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
-  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.nameContainer}>
-        <Image style={styles.pfp} source={user.pfpUrl} />
-        <Text style={styles.name}>{user.name}</Text>
+        <Image
+          placeholder={{ blurhash: blurhash }}
+          style={styles.pfp}
+          source={user.pfpUrl}
+        />
+        <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
+          {user.name}
+        </Text>
       </View>
 
       <View style={styles.detailsCard}>
@@ -148,8 +142,8 @@ export default function PendingUserDetail() {
   );
 }
 
-const createStyles = (theme, fonts) =>
-  StyleSheet.create({
+function createStyles(theme, fonts) {
+  return StyleSheet.create({
     container: {
       flex: 1,
     },
@@ -174,7 +168,7 @@ const createStyles = (theme, fonts) =>
       fontFamily: fonts.bold,
       fontSize: 22,
       color: theme.title,
-      textAlign: "right",
+      textAlign: "center",
     },
     nameContainer: {
       justifyContent: "center",
@@ -209,19 +203,14 @@ const createStyles = (theme, fonts) =>
       backgroundColor: theme.background,
     },
     acceptButton: {
-      backgroundColor: "#22c55e",
+      backgroundColor: "#22c55eae",
       flex: 1,
       color: "#fff",
     },
     rejectButton: {
-      backgroundColor: "#ef4444",
+      backgroundColor: "#cb1212",
       color: "#fff",
       flex: 1,
     },
-    errorText: {
-      color: theme.section.color,
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      textAlign: "center",
-    },
   });
+}

@@ -2,13 +2,21 @@ import { fonts } from "@/theme/fonts";
 import { memo } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
-function Button({ text, prefixIcon, onPressEvent, style, loading, disabled }) {
+function Button({
+  text,
+  prefixIcon,
+  onPressEvent,
+  style,
+  loading,
+  disabled,
+  width = "100%",
+}) {
   return (
     <Pressable
       style={[
         {
           borderRadius: 10,
-          width: "100%",
+          width,
           height: 50,
           justifyContent: "center",
           marginBlock: 25,

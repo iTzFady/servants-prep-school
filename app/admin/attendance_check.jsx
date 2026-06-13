@@ -120,11 +120,7 @@ export default function AttendanceCheck() {
               style={[styles.button, attendance.isPending && styles.disabled]}
               onPress={() => submit("PRESENT")}
             >
-              {attendance.isPending ? (
-                <ActivityIndicator />
-              ) : (
-                <Text style={styles.buttonText}>حاضر</Text>
-              )}
+              <Text style={styles.buttonText}>حاضر</Text>
             </TouchableOpacity>
 
             <TouchableOpacity

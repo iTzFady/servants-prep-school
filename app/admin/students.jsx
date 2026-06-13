@@ -1,24 +1,19 @@
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
-import { Feather, AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { View, TextInput, StyleSheet, Text, FlatList } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useUsersList } from "@/hooks/useApi";
 import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
+import ErrorIndicator from "@/components/ErrorIndicator";
+import LoadingIndicator from "@/components/LoadingIndicator";
 export default function StudentManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const router = useRouter();
-  const { data: users, isLoading, isError, refetch } = useUsersList(false);
+  const { data: users, isLoading, error, refetch } = useUsersList(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const filteredUsers = useMemo(
@@ -50,6 +45,11 @@ export default function StudentManagement() {
       setRefreshing(false);
     }
   }, [refetch]);
+  if (isLoading) return <LoadingIndicator />;
+  if (error)
+    return (
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
+    );
 
   return (
     <View style={styles.container}>
@@ -66,42 +66,17 @@ export default function StudentManagement() {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionHeaderText}>الطلاب الحاليين</Text>
       </View>
-      {isLoading ? (
-        <View style={styles.emptyContainer}>
-          <ActivityIndicator size="large" color={theme.title} />
-        </View>
-      ) : (
-        <FlatList
-          data={filteredUsers}
-          keyExtractor={(item) => item.id}
-          renderItem={renderUser}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            isError ? (
-              <View style={styles.emptyContainer}>
-                <MaterialIcons name="error" size={34} color={theme.title} />
-                <Text style={styles.errorText}>
-                  حدث خطأ أثناء تحميل الطلبات.
-                </Text>
-              </View>
-            ) : (
-              <View
-                style={[styles.container, styles.centerContent, { flex: 1 }]}
-              >
-                <AntDesign
-                  name="dropbox"
-                  size={34}
-                  color={theme.section.color}
-                />
-                <Text style={styles.errorText}>لا يوجد مخدومين.</Text>
-              </View>
-            )
-          }
-        />
-      )}
+
+      <FlatList
+        data={filteredUsers}
+        keyExtractor={(item) => item.id}
+        renderItem={renderUser}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={<ErrorIndicator text="لا يوجد مستخدمين" />}
+      />
     </View>
   );
 }
@@ -112,17 +87,6 @@ function createStyles(theme, fonts) {
       flex: 1,
       padding: 16,
       backgroundColor: theme.background,
-    },
-    centerContent: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    pageTitle: {
-      fontFamily: fonts.bold,
-      fontSize: 22,
-      color: theme.title,
-      textAlign: "right",
-      marginBottom: 16,
     },
     searchContainer: {
       flexDirection: "row-reverse",
@@ -146,26 +110,6 @@ function createStyles(theme, fonts) {
       paddingBottom: 16,
       gap: 12,
       flexGrow: 1,
-    },
-
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      paddingTop: 40,
-    },
-    emptyText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.textSecondary,
-      textAlign: "center",
-    },
-    errorText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.section.color,
-      marginTop: 12,
-      textAlign: "center",
     },
     sectionHeader: {
       paddingHorizontal: 16,

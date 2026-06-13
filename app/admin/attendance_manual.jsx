@@ -9,7 +9,7 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import { Feather, AntDesign, Entypo, MaterialIcons } from "@expo/vector-icons";
+import { Feather, Entypo } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -22,6 +22,8 @@ import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
 import Toast from "react-native-toast-message";
 import Button from "@/components/Button";
+import ErrorIndicator from "@/components/ErrorIndicator";
+import LoadingIndicator from "@/components/LoadingIndicator";
 export default function AttendanceManual() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
@@ -35,7 +37,7 @@ export default function AttendanceManual() {
   const [refreshing, setRefreshing] = useState(false);
 
   const attendance = useMarkAttendance();
-  const { data: users, isLoading, isError, refetch } = useUsersList(true);
+  const { data: users, isLoading, error, refetch } = useUsersList(true);
   const bulkAttendance = useBulkAttendance();
 
   const filteredUsers = useMemo(
@@ -78,11 +80,11 @@ export default function AttendanceManual() {
       });
 
       router.back();
-    } catch (error) {
+    } catch (e) {
       Toast.show({
         type: "error",
         text1: "فشل انهاء اليوم",
-        text2: error?.message || "حدث خطأ غير متوقع",
+        text2: e?.message || "حدث خطأ غير متوقع",
       });
     }
   }
@@ -138,6 +140,12 @@ export default function AttendanceManual() {
     );
   }, []);
 
+  if (isLoading) return <LoadingIndicator />;
+  if (error)
+    return (
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
+    );
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -172,42 +180,16 @@ export default function AttendanceManual() {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionHeaderText}>الطلاب الحاليين</Text>
       </View>
-      {isLoading ? (
-        <View style={styles.emptyContainer}>
-          <ActivityIndicator size="large" color={theme.section.color} />
-        </View>
-      ) : (
-        <FlatList
-          data={filteredUsers}
-          keyExtractor={(item) => item.id}
-          renderItem={renderUser}
-          contentContainerStyle={styles.listContent}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            isError ? (
-              <View style={styles.emptyContainer}>
-                <MaterialIcons name="error" size={34} color={theme.title} />
-                <Text style={styles.errorText}>
-                  حدث خطأ أثناء تحميل الطلبات.
-                </Text>
-              </View>
-            ) : (
-              <View
-                style={[styles.container, styles.centerContent, { flex: 1 }]}
-              >
-                <AntDesign
-                  name="dropbox"
-                  size={34}
-                  color={theme.section.color}
-                />
-                <Text style={styles.errorText}>لا يوجد مستخدمين.</Text>
-              </View>
-            )
-          }
-        />
-      )}
+      <FlatList
+        data={filteredUsers}
+        keyExtractor={(item) => item.id}
+        renderItem={renderUser}
+        contentContainerStyle={styles.listContent}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={<ErrorIndicator text="لا يوجد مستخدمين" />}
+      />
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.overlayModal}>
           <View style={styles.card}>
@@ -220,11 +202,7 @@ export default function AttendanceManual() {
               style={[styles.button, attendance.isPending && styles.disabled]}
               onPress={() => submit("PRESENT")}
             >
-              {attendance.isPending ? (
-                <ActivityIndicator />
-              ) : (
-                <Text style={styles.buttonText}>حاضر</Text>
-              )}
+              <Text style={styles.buttonText}>حاضر</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -248,11 +226,7 @@ export default function AttendanceManual() {
               style={[styles.button, attendance.isPending && styles.disabled]}
               onPress={() => submit("ABSENT")}
             >
-              {attendance.isPending ? (
-                <ActivityIndicator />
-              ) : (
-                <Text style={styles.buttonText}>غائب</Text>
-              )}
+              <Text style={styles.buttonText}>غائب</Text>
             </TouchableOpacity>
 
             {(status === "EXCUSEDLATE" || status === "UNEXCUSEDLATE") && (

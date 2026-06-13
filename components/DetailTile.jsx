@@ -33,6 +33,7 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.medium,
       fontSize: 16,
       color: theme.admin.StudentCard.color,
+      textAlign: "right",
     },
   });
 }

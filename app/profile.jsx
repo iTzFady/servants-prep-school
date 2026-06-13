@@ -9,68 +9,48 @@ import {
   FontAwesome,
   FontAwesome5,
   MaterialCommunityIcons,
-  MaterialIcons,
 } from "@expo/vector-icons";
-import { useContext, useMemo } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { useCallback, useContext, useMemo } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 
 import dateUtils from "@/utils/dateFormatter";
 import { getEducationLabel } from "@/data/education_types";
+import { blurhash } from "@/theme/constants";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ErrorIndicator from "@/components/ErrorIndicator";
 export default function Profile() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const defaultProfilePic = require("@/assets/images/default-profile.webp");
-  const { data: profile, isLoading, error } = useGetProfile();
+  const { data: profile, isLoading, error, refetch } = useGetProfile();
   const {
     data: attendance,
     isLoading: isAttendanceLoading,
     error: attendanceError,
+    refetch: attendanceReFetch,
   } = useAttendance();
 
   const presentCount = attendance?.count.present ?? 0;
   const absentCount = attendance?.count.absent ?? 0;
   const isBusy = isLoading || isAttendanceLoading;
 
-  if (isBusy)
-    return (
-      <ActivityIndicator
-        style={{ flex: 1, marginHorizontal: "auto", marginVertical: "auto" }}
-        color={theme.title}
-      />
-    );
+  const onRefresh = useCallback(async () => {
+    await refetch();
+    await attendanceReFetch();
+  }, [refetch, attendanceReFetch]);
+
+  if (isBusy) return <LoadingIndicator />;
 
   if (error || attendanceError)
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <MaterialIcons name="error" size={34} color={theme.title} />
-        <Text
-          style={{
-            textAlign: "center",
-            color: theme.title,
-            fontFamily: fonts.medium,
-          }}
-        >
-          لقد حدث خطأ
-        </Text>
-      </View>
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
   return (
     <ScrollView style={styles.container}>
       <View style={styles.dataContainer}>
         <Image
+          placeholder={{ blurhash: blurhash }}
           source={
             profile?.pfpUrl ? { uri: profile?.pfpUrl } : defaultProfilePic
           }

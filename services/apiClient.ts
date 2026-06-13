@@ -1,6 +1,8 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { secureStore } from "./secureStore";
 import { ERRORS } from "@/data/errors";
+import { store } from "@/store/store";
+import { clearAuth } from "@/store/authSlice";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_BASEURL || process.env.EXPO_BASEURL;
@@ -36,24 +38,26 @@ apiClient.interceptors.response.use(
   async (error) => {
     const { response } = error as any;
     let userMessage = ERRORS.DEFAULT;
+    let isTokenInvalid = false;
 
     if (response) {
       const data = response.data || {};
       const code = (data.code || data.error || data.message || "").toString();
+
       if (code && ERRORS[code]) {
         userMessage = ERRORS[code];
+        if (code === "INVALID_TOKEN") {
+          isTokenInvalid = true;
+        }
       } else {
         switch (response.status) {
           case 401:
             userMessage = ERRORS.INVALID_TOKEN;
-            try {
-              await secureStore.removeToken();
-            } catch (e) {
-              console.error("Error removing token on 401:", e);
-            }
+            isTokenInvalid = true;
             break;
           case 403:
             userMessage = ERRORS.ACCESS_DENIED;
+            isTokenInvalid = true;
             break;
           case 500:
           default:
@@ -63,6 +67,16 @@ apiClient.interceptors.response.use(
     } else if (error.request) {
       userMessage =
         "خطأ في الاتصال بالخادم. تأكد من اتصال الإنترنت وحاول مرة أخرى.";
+    }
+
+    if (isTokenInvalid) {
+      try {
+        await secureStore.removeToken();
+        await secureStore.clear();
+        store.dispatch(clearAuth());
+      } catch (e) {
+        console.error("Error clearing auth on invalid token:", e);
+      }
     }
 
     (error as any).userMessage = userMessage;

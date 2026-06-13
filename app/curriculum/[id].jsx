@@ -3,7 +3,6 @@ import {
   View,
   FlatList,
   StyleSheet,
-  ActivityIndicator,
   TextInput,
   SectionList,
 } from "react-native";
@@ -12,10 +11,12 @@ import { fonts } from "@/theme/fonts";
 import { useContext, useMemo, useCallback, useState } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useLectures } from "@/hooks/useApi";
-import { MaterialIcons, Feather, AntDesign } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { Lecture_Types } from "@/data/lectures";
 import CurriculumTypeChip from "@/components/CurriculumTypeChip";
 import LectureCard from "@/components/LectureCard";
+import ErrorIndicator from "@/components/ErrorIndicator";
+import LoadingIndicator from "@/components/LoadingIndicator";
 export default function CurriculumList() {
   const { id } = useLocalSearchParams();
   const { theme } = useContext(ThemeContext);
@@ -79,13 +80,11 @@ export default function CurriculumList() {
     [id],
   );
 
-  if (isLoading) {
+  if (isLoading) return <LoadingIndicator />;
+  if (error)
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={theme.title} />
-      </View>
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
-  }
 
   return (
     <View style={styles.container}>
@@ -129,7 +128,7 @@ export default function CurriculumList() {
       />
       <SectionList
         sections={groupedLectures}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id}
         renderItem={renderLecture}
         refreshing={refreshing}
         onRefresh={onRefresh}
@@ -144,21 +143,7 @@ export default function CurriculumList() {
           gap: 10,
         }}
         ListEmptyComponent={
-          error ? (
-            <View style={[styles.container, styles.centerContent]}>
-              <MaterialIcons
-                name="error"
-                size={34}
-                color={theme.section.color}
-              />
-              <Text style={styles.errorText}>حدث خطأ أثناء تحميل الدروس</Text>
-            </View>
-          ) : (
-            <View style={[styles.container, styles.centerContent, { flex: 1 }]}>
-              <AntDesign name="dropbox" size={34} color={theme.section.color} />
-              <Text style={styles.errorText}>لا يوجد محاضرات لهذا الفرع</Text>
-            </View>
-          )
+          <ErrorIndicator text="لا يوجد محاضرات لهذا الفرع" />
         }
       />
     </View>
@@ -170,10 +155,6 @@ function createStyles(theme, fonts) {
       flex: 1,
       gap: 5,
       backgroundColor: theme.background,
-    },
-    centerContent: {
-      justifyContent: "center",
-      alignItems: "center",
     },
     searchContainer: {
       flexDirection: "row-reverse",
@@ -198,25 +179,6 @@ function createStyles(theme, fonts) {
       color: theme.inputField.color,
       textAlign: "right",
       padding: 0,
-    },
-
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    emptyText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: "#999",
-      textAlign: "center",
-    },
-    errorText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.section.color,
-      marginTop: 12,
-      textAlign: "center",
     },
     sectionHeader: {
       paddingHorizontal: 16,

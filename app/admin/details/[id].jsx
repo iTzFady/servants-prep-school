@@ -1,53 +1,47 @@
-import {
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
-import { useMemo, useContext } from "react";
+import { ScrollView, View, Text, StyleSheet } from "react-native";
+import { useMemo, useContext, useCallback } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
-import { useUserDetail, useUpdateUserStatus } from "@/hooks/useApi";
+import { useUserDetail } from "@/hooks/useApi";
 import DetailTile from "@/components/DetailTile";
 import dateUtils from "@/utils/dateFormatter";
 import { getDayLabel } from "@/data/days";
 import { getEducationLabel } from "@/data/education_types";
 import { Image } from "expo-image";
+import { blurhash } from "@/theme/constants";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ErrorIndicator from "@/components/ErrorIndicator";
 
 export default function UserDetails() {
   const { id } = useLocalSearchParams();
   const userId = Array.isArray(id) ? id[0] : id;
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const { data: user, isLoading, isError } = useUserDetail(userId || "");
+  const { data: user, isLoading, error, refetch } = useUserDetail(userId || "");
 
-  const { mutate: updateStatus, isPending } = useUpdateUserStatus(userId || "");
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
-  if (isLoading) {
+  if (isLoading) return <LoadingIndicator />;
+
+  if (error || !user)
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.title} />
-      </View>
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
-  }
-
-  if (isError || !user) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.errorText}>
-          حدث خطأ أثناء تحميل بيانات المستخدم.
-        </Text>
-      </View>
-    );
-  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.nameContainer}>
-        <Image style={styles.pfp} source={user.pfpUrl} />
-        <Text style={styles.name}>{user.name}</Text>
+        <Image
+          placeholder={{ blurhash: blurhash }}
+          style={styles.pfp}
+          source={user.pfpUrl}
+        />
+        <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
+          {user.name}
+        </Text>
       </View>
 
       <View style={styles.detailsCard}>
@@ -129,7 +123,7 @@ const createStyles = (theme, fonts) =>
       fontFamily: fonts.bold,
       fontSize: 22,
       color: theme.title,
-      textAlign: "right",
+      textAlign: "center",
     },
     nameContainer: {
       justifyContent: "center",
@@ -156,17 +150,5 @@ const createStyles = (theme, fonts) =>
       color: theme.title,
       textAlign: "right",
       marginBottom: 14,
-    },
-    buttonRow: {
-      flexDirection: "row",
-      marginTop: 24,
-      gap: 16,
-      backgroundColor: theme.background,
-    },
-    errorText: {
-      color: theme.section.color,
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      textAlign: "center",
     },
   });
