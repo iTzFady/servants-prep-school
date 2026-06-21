@@ -5,7 +5,6 @@ import { useContext, useMemo } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
 import dateUtils from "@/utils/dateFormatter";
-import { blurhash } from "@/theme/constants";
 export default function StudentCard({ item, onPress }) {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyle(theme, fonts), [theme]);
@@ -13,11 +12,7 @@ export default function StudentCard({ item, onPress }) {
     <Pressable style={styles.userCard} onPress={onPress}>
       <View style={styles.userInfo}>
         {item.pfpUrl ? (
-          <Image
-            placeholder={{ blurhash }}
-            source={item.pfpUrl}
-            style={styles.avatar}
-          />
+          <Image source={item.pfpUrl} style={styles.avatar} />
         ) : (
           <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
         )}

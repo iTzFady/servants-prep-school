@@ -9,7 +9,6 @@ import dateUtils from "@/utils/dateFormatter";
 import { getDayLabel } from "@/data/days";
 import { getEducationLabel } from "@/data/education_types";
 import { Image } from "expo-image";
-import { blurhash } from "@/theme/constants";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
 
@@ -34,11 +33,7 @@ export default function UserDetails() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.nameContainer}>
-        <Image
-          placeholder={{ blurhash: blurhash }}
-          style={styles.pfp}
-          source={user.pfpUrl}
-        />
+        <Image style={styles.pfp} source={user.pfpUrl} />
         <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
           {user.name}
         </Text>

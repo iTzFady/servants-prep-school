@@ -16,7 +16,6 @@ import { Image } from "expo-image";
 
 import dateUtils from "@/utils/dateFormatter";
 import { getEducationLabel } from "@/data/education_types";
-import { blurhash } from "@/theme/constants";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
 export default function Profile() {
@@ -50,7 +49,6 @@ export default function Profile() {
     <ScrollView style={styles.container}>
       <View style={styles.dataContainer}>
         <Image
-          placeholder={{ blurhash: blurhash }}
           source={
             profile?.pfpUrl ? { uri: profile?.pfpUrl } : defaultProfilePic
           }

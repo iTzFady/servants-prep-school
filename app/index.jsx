@@ -9,7 +9,6 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 
 import Toast from "react-native-toast-message";
-import { blurhash } from "@/theme/constants";
 
 export default function Index() {
   const { theme } = useContext(ThemeContext);
@@ -40,7 +39,6 @@ export default function Index() {
     <View style={styles.container}>
       <View style={styles.studentCard}>
         <Image
-          placeholder={{ blurhash: blurhash }}
           source={user?.pfpUrl ? { uri: user.pfpUrl } : defaultProfilePic}
           style={styles.profilePicture}
         />

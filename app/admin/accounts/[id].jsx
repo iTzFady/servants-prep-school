@@ -1,7 +1,5 @@
 import { ScrollView, View, Text, StyleSheet } from "react-native";
 import { Image } from "expo-image";
-import { blurhash } from "@/theme/constants";
-
 import { useMemo, useContext, useCallback } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
@@ -62,11 +60,7 @@ export default function PendingUserDetail() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.nameContainer}>
-        <Image
-          placeholder={{ blurhash: blurhash }}
-          style={styles.pfp}
-          source={user.pfpUrl}
-        />
+        <Image style={styles.pfp} source={user.pfpUrl} />
         <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
           {user.name}
         </Text>
