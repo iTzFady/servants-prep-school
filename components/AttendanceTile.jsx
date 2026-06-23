@@ -54,7 +54,7 @@ function AttendanceTile({ date, time, status }) {
       <View
         style={{
           flex: 1,
-          flexDirection: "row-reverse",
+          flexDirection: "row",
           alignItems: "center",
           gap: 12,
         }}
@@ -90,7 +90,7 @@ export default memo(AttendanceTile);
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       backgroundColor: theme.attendance.tile.background,
       borderWidth: 1,
       borderColor: theme.attendance.tile.border,
@@ -107,13 +107,11 @@ function createStyles(theme, fonts) {
     title: {
       fontSize: 14,
       fontFamily: fonts.bold,
-      textAlign: "right",
       color: theme.attendance.tile.color,
     },
     describtion: {
       fontSize: 12,
       fontFamily: fonts.regular,
-      textAlign: "right",
       color: theme.attendance.tile.color,
     },
     status: {

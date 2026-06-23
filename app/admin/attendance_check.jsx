@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import { useMarkAttendance } from "@/hooks/useApi";
+import { useMarkAttendance } from "@/hooks/useAttendance";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
 export default function AttendanceCheck() {

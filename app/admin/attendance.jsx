@@ -43,10 +43,9 @@ function createStyles(theme, fonts) {
       padding: 10,
     },
     sectionTitle: {
-      borderRightWidth: 4,
-      borderRightColor: theme.section.color,
-      textAlign: "right",
-      paddingRight: 10,
+      borderStartWidth: 4,
+      borderColor: theme.section.color,
+      paddingStart: 10,
       fontFamily: fonts.bold,
       fontSize: 18,
       marginVertical: 10,

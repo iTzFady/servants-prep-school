@@ -14,7 +14,7 @@ import {
 import { Ionicons, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useDownload } from "@/hooks/useDownload";
-import { useLectureDetail } from "@/hooks/useApi";
+import { useLectureDetail } from "@/hooks/useLectures";
 
 const TYPES = {
   audio: {
@@ -192,7 +192,7 @@ export default function LectureCard({ typeConfig, item, subject }) {
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     lectureCard: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 12,
@@ -215,18 +215,16 @@ function createStyles(theme, fonts) {
 
     lectureMiddle: {
       flex: 1,
-      alignItems: "flex-end",
     },
 
     lectureTitle: {
       fontFamily: fonts.bold,
       fontSize: 16,
       color: theme.LectureCard.color,
-      textAlign: "right",
     },
 
     lectureMetaRow: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 15,
       marginTop: 4,
     },
@@ -245,7 +243,7 @@ function createStyles(theme, fonts) {
     },
 
     metaContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       gap: 4,
     },

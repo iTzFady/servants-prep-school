@@ -26,7 +26,7 @@ export default function ErrorIndicator({ state, text, onRetry, loading }) {
     </View>
   ) : (
     <View style={styles.container}>
-      <AntDesign name="dropbox" size={34} color={styles.icon} />
+      <AntDesign name="dropbox" size={34} color={styles.icon.color} />
       <Text style={styles.text}>{text}</Text>
     </View>
   );
@@ -49,6 +49,8 @@ function createStyles(theme, fonts) {
     button: {
       backgroundColor: theme.login.button,
     },
-    icon: theme.section.color,
+    icon: {
+      color: theme.section.color,
+    },
   });
 }

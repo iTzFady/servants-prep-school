@@ -78,7 +78,6 @@ function createStyles(theme, fonts) {
       alignSelf: "center",
     },
     label: {
-      textAlign: "right",
       fontSize: 12,
       marginBottom: 5,
       fontFamily: fonts.medium,
@@ -98,7 +97,6 @@ function createStyles(theme, fonts) {
       fontSize: 14,
       marginVertical: 5,
       width: "100%",
-      textAlign: "right",
       color: theme.dropdown.label,
     },
     dropdown: {
@@ -112,27 +110,24 @@ function createStyles(theme, fonts) {
       backgroundColor: theme.dropdown.background,
     },
     dropdownSelectText: {
-      textAlign: "right",
       fontSize: 14,
       fontFamily: fonts.medium,
       color: theme.dropdown.text,
     },
     dropdownPlaceholder: {
-      textAlign: "right",
-      marginRight: 8,
+      marginStart: 8,
       fontSize: 14,
       fontFamily: fonts.medium,
       color: theme.dropdown.text,
     },
     dropdownItemContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       margin: 10,
     },
     dropdownItem: {
-      textAlign: "right",
       fontSize: 14,
-      marginRight: 15,
+      marginStart: 15,
       fontFamily: fonts.medium,
     },
   });

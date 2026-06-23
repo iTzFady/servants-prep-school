@@ -60,10 +60,9 @@ function createStyles(theme, fonts) {
       padding: 10,
     },
     sectionTitle: {
-      borderRightWidth: 4,
-      borderRightColor: theme.section.color,
-      textAlign: "right",
-      paddingRight: 10,
+      borderStartWidth: 4,
+      borderColor: theme.section.color,
+      paddingStart: 10,
       fontFamily: fonts.bold,
       fontSize: 18,
       marginVertical: 10,
@@ -74,7 +73,7 @@ function createStyles(theme, fonts) {
       width: "100%",
       alignItems: "center",
       backgroundColor: theme.card.background,
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       padding: 20,
       gap: 8,
     },
@@ -85,7 +84,6 @@ function createStyles(theme, fonts) {
     },
     textContainer: {
       flex: 1,
-      alignItems: "flex-end",
     },
     title: {
       fontFamily: fonts.bold,
@@ -96,7 +94,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.regular,
       fontSize: 14,
       color: "white",
-      textAlign: "right",
     },
     button: {
       backgroundColor: theme.admin.button,

@@ -5,7 +5,7 @@ import { fonts } from "@/theme/fonts";
 import AttendanceCounter from "@/components/AttendanceCounter";
 import { FontAwesome } from "@expo/vector-icons";
 import AttendanceTile from "@/components/AttendanceTile";
-import { useAdminAttendance } from "@/hooks/useApi";
+import { useAdminAttendance } from "@/hooks/useAttendance";
 import { useLocalSearchParams } from "expo-router";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -86,12 +86,12 @@ function createStyles(theme, fonts) {
       gap: 10,
     },
     counterContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 12,
       padding: 16,
     },
     sectionTitleContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 6,
       alignItems: "center",
     },

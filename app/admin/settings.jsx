@@ -112,7 +112,6 @@ function createStyles(theme, fonts) {
       padding: 8,
     },
     sectionTitle: {
-      textAlign: "right",
       paddingHorizontal: 4,
       paddingVertical: 6,
       fontFamily: fonts.bold,

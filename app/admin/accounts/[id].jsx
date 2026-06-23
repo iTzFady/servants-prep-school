@@ -4,7 +4,7 @@ import { useMemo, useContext, useCallback } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
-import { useUserDetail, useUpdateUserStatus } from "@/hooks/useApi";
+import { useUserDetail, useUpdateUserStatus } from "@/hooks/useUser";
 import Button from "@/components/Button";
 import Toast from "react-native-toast-message";
 import DetailTile from "@/components/DetailTile";
@@ -149,7 +149,7 @@ function createStyles(theme, fonts) {
       gap: 10,
     },
     row: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 15,
     },
     loadingContainer: {
@@ -169,13 +169,6 @@ function createStyles(theme, fonts) {
       alignItems: "center",
       gap: 10,
     },
-    subtitle: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      marginTop: 6,
-      color: theme.textSecondary,
-      textAlign: "right",
-    },
     pfp: {
       width: 120,
       height: 120,
@@ -187,7 +180,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 16,
       color: theme.title,
-      textAlign: "right",
       marginBottom: 14,
     },
     buttonRow: {

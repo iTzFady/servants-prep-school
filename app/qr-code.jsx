@@ -5,12 +5,13 @@ import { fonts } from "@/theme/fonts";
 import { useContext, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function QrCode() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const user = useAppSelector((state) => state.auth.user);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.textContainer}>
         <Text style={styles.title}> رمز QR</Text>
         <Text style={styles.subTitle}>
@@ -18,9 +19,9 @@ export default function QrCode() {
         </Text>
       </View>
       <View style={styles.qrContainer}>
-        <QRCode value={user?.id} size={200} />
+        <QRCode value={String(user?.id)} size={200} />
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -32,7 +33,6 @@ function createStyles(theme, fonts) {
       alignItems: "center",
       justifyContent: "center",
       gap: 32,
-      marginBottom: 75,
     },
     textContainer: { gap: 8 },
     title: {

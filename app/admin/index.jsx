@@ -42,7 +42,7 @@ export default function AdminIndex() {
           source={user?.pfpUrl ? { uri: user.pfpUrl } : defaultProfilePic}
           style={styles.profilePicture}
         />
-        <View style={styles.textContainer}>
+        <View>
           <Text style={styles.studentName}>
             {user?.gender === "MALE" ? " باصون " : "تاسوني "} ,
             {user?.name.split(" ")[0] || ""}
@@ -67,10 +67,9 @@ function createStyles(theme, fonts) {
       padding: 10,
     },
     sectionTitle: {
-      borderRightWidth: 4,
-      borderRightColor: theme.section.color,
-      textAlign: "right",
-      paddingRight: 10,
+      borderLeftWidth: 4,
+      borderColor: theme.section.color,
+      paddingStart: 10,
       fontFamily: fonts.bold,
       fontSize: 18,
       marginVertical: 10,
@@ -79,7 +78,7 @@ function createStyles(theme, fonts) {
     studentCard: {
       height: 200,
       backgroundColor: theme.card.background,
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 20,
       gap: 20,
@@ -90,9 +89,6 @@ function createStyles(theme, fonts) {
       borderRadius: 50,
       borderColor: theme.card.imageBorder,
       borderWidth: 5,
-    },
-    textContainer: {
-      alignItems: "flex-end",
     },
     studentName: {
       fontFamily: fonts.bold,

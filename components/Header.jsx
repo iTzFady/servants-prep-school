@@ -2,45 +2,43 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { Feather } from "@expo/vector-icons";
 import { useContext } from "react";
-import { Platform, Text, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function Header(props) {
   const { theme } = useContext(ThemeContext);
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView
-      style={{
-        height: Platform.OS === "ios" ? 130 : 100,
-        backgroundColor: theme.secondary,
-        flexDirection: "row-reverse",
-        alignItems: "center",
-        paddingHorizontal: 20,
-        elevation: 4,
-        shadowColor: "#000",
-        shadowOffset: { width: 2, height: -4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      }}
-    >
-      {props.options.headerRight ? (
-        props.options.headerRight()
-      ) : (
-        <TouchableOpacity onPress={() => props.navigation.goBack()}>
-          <Feather name="arrow-right" size={20} color={theme.header.color} />
-        </TouchableOpacity>
-      )}
-      <Text
+    <View style={{ paddingTop: insets.top, backgroundColor: theme.secondary }}>
+      <View
         style={{
-          color: theme.header.color,
-          fontSize: 18,
-          fontFamily: fonts.bold,
-          marginHorizontal: "auto",
+          height: 60,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 20,
         }}
-        ellipsizeMode="tail"
       >
-        {props.options.headerTitle}
-      </Text>
-      {props.options.headerLeft && props.options.headerLeft()}
-    </SafeAreaView>
+        {props.options.headerRight ? (
+          props.options.headerRight()
+        ) : (
+          <TouchableOpacity onPress={() => props.navigation.goBack()}>
+            <Feather name="arrow-right" size={20} color={theme.header.color} />
+          </TouchableOpacity>
+        )}
+        <Text
+          style={{
+            color: theme.header.color,
+            fontSize: 18,
+            fontFamily: fonts.bold,
+            textAlign: "center",
+          }}
+          ellipsizeMode="tail"
+        >
+          {props.options.headerTitle}
+        </Text>
+        {props.options.headerLeft ? props.options.headerLeft() : <View></View>}
+      </View>
+    </View>
   );
 }

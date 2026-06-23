@@ -11,7 +11,7 @@ function TileButton({ text, icon, onPress }) {
       <View
         style={{
           flex: 1,
-          flexDirection: "row-reverse",
+          flexDirection: "row",
           alignItems: "center",
           gap: 12,
         }}
@@ -39,7 +39,7 @@ function createStyles(theme, fonts) {
       paddingHorizontal: 16,
       gap: 16,
       alignItems: "center",
-      flexDirection: "row-reverse",
+      flexDirection: "row",
     },
     iconContainer: {
       padding: 14,

@@ -22,6 +22,9 @@ function Button({
           marginBlock: 25,
         },
         style,
+        disabled && {
+          opacity: 0.5,
+        },
       ]}
       disabled={loading || disabled}
       onPress={onPressEvent}
@@ -35,7 +38,7 @@ function Button({
       ) : (
         <View
           style={{
-            flexDirection: "row-reverse",
+            flexDirection: "row",
             gap: 10,
             justifyContent: "center",
           }}

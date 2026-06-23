@@ -11,7 +11,7 @@ function Tile({ icon, title, data }) {
       <View style={styles.iconContainer}>
         {icon && icon({ color: theme.profile.sectionTile.icon })}
       </View>
-      <View style={styles.tileTextContainer}>
+      <View>
         <Text style={styles.tileTitle}>{title}</Text>
         <Text style={styles.tileData}>{data}</Text>
       </View>
@@ -27,7 +27,7 @@ function createStyles(theme, fonts) {
       padding: 16,
       gap: 16,
       alignItems: "center",
-      flexDirection: "row-reverse",
+      flexDirection: "row",
     },
     iconContainer: {
       padding: 20,
@@ -43,9 +43,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.medium,
       fontSize: 14,
       color: theme.profile.sectionTile.info,
-    },
-    tileTextContainer: {
-      alignItems: "flex-end",
     },
   });
 }

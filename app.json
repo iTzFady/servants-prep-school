@@ -26,6 +26,8 @@
       "package": "com.faaady.serveantsprepapp"
     },
     "web": {
+      "dir": "rtl",
+      "lang": "ar",
       "output": "static",
       "favicon": "./assets/images/favicon.png",
       "preferRelatedApplications": false
@@ -45,13 +47,16 @@
         }
       ],
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
     "extra": {
+      "supportsRTL": true,
+      "forcesRTL": true,
       "router": {},
       "eas": {
         "projectId": "be0ef0d9-c5b4-4195-8138-7c297b45ece6"

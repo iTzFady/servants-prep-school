@@ -20,7 +20,7 @@ import {
   View,
 } from "react-native";
 import { days } from "../data/days";
-import { useRegister } from "@/hooks/useApi";
+import { useRegister } from "@/hooks/useAuth";
 import UploadButton from "@/components/UploadButton";
 import { educationTypes, serverntPrepYear } from "@/data/education_types";
 import { gender } from "@/data/gender";
@@ -36,7 +36,9 @@ export default function Register() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    watch,
+
+    formState: { errors, isDirty, isValid },
   } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -59,16 +61,13 @@ export default function Register() {
       serviceType: "",
     },
   });
+  const password = watch("password");
   const onSubmit = (data) => {
-    const payload = { ...data };
-    if (payload.password !== payload.confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: "خطأ في كلمة المرور",
-        text2: "يرجى التأكد من أن كلمة المرور وتأكيدها متطابقتان.",
-      });
-      return;
-    }
+    const payload = {
+      ...data,
+      userName: data.userName.trim(),
+      name: data.name.trim(),
+    };
     const formData = new FormData();
     formData.append("userName", payload.userName);
     formData.append("password", payload.password);
@@ -154,6 +153,7 @@ export default function Register() {
                     }}
                     onBlur={onBlur}
                     value={value}
+                    error={errors.userName?.message}
                   />
                 )}
               />
@@ -165,12 +165,13 @@ export default function Register() {
                   <InputField
                     text="الاسم رباعي"
                     autoComplete="name"
-                    autoCorrect="name"
+                    autoCorrect={false}
                     inputMode="text"
                     placeholder="أدخل اسمك الكامل"
                     onChangeText={onChange}
                     onBlur={onBlur}
                     value={value}
+                    error={errors.name?.message}
                   />
                 )}
               />
@@ -189,7 +190,7 @@ export default function Register() {
                     text="كلمة المرور"
                     autoCapitalize="none"
                     autoComplete="password"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     inputMode="text"
                     onChangeText={onChange}
                     value={value}
@@ -208,24 +209,30 @@ export default function Register() {
                     }
                     placeholder="أدخل كلمة المرور"
                     secureTextEntry={!showPassword}
+                    error={errors.password?.message}
                   />
                 )}
               />
               <Controller
                 control={control}
                 name="confirmPassword"
-                rules={{ required: "برجاء تأكيد كلمة المرور" }}
+                rules={{
+                  required: "برجاء تأكيد كلمة المرور",
+                  validate: (value) =>
+                    value === password || "كلمتا المرور غير متطابقتين",
+                }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
                     text="تأكيد كلمة المرور"
                     autoCapitalize="none"
                     autoComplete="password"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     inputMode="text"
                     onChangeText={onChange}
                     value={value}
                     placeholder="أدخل كلمة المرور مرة اخري"
                     secureTextEntry={!showPassword}
+                    error={errors.confirmPassword?.message}
                   />
                 )}
               />
@@ -259,6 +266,7 @@ export default function Register() {
                           </Pressable>
                           {showDate && (
                             <DateTimePicker
+                              maximumDate={new Date()}
                               mode="date"
                               display="default"
                               value={value}
@@ -297,11 +305,12 @@ export default function Register() {
                     text="العنوان بالتفصيل"
                     autoCapitalize="none"
                     autoComplete="address-line1"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     inputMode="text"
                     onChangeText={onChange}
                     value={value}
                     placeholder="المنطقة، الشارع، رقم العقار"
+                    error={errors.address?.message}
                   />
                 )}
               />
@@ -314,11 +323,12 @@ export default function Register() {
                     text="أب الاعتراف"
                     autoCapitalize="none"
                     autoComplete="name"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     inputMode="text"
                     placeholder="اسم اب الاعتراف"
+                    error={errors.confessionFather?.message}
                   />
                 )}
               />
@@ -347,11 +357,12 @@ export default function Register() {
                     text="السنة الدراسية"
                     autoCapitalize="none"
                     autoComplete="name"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     inputMode="text"
                     placeholder="مثال:خريج / ثانية ثانوي"
                     onChangeText={onChange}
                     value={value}
+                    error={errors.educationYear?.message}
                   />
                 )}
               />
@@ -379,10 +390,11 @@ export default function Register() {
                     placeholder="اسم المؤسسة التعليمية"
                     autoCapitalize="none"
                     autoComplete="name"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     inputMode="text"
                     onChangeText={onChange}
                     value={value}
+                    error={errors.schoolName?.message}
                   />
                 )}
               />
@@ -396,7 +408,7 @@ export default function Register() {
                     placeholder="مثال: ثانوي بنين / شباب وشابات"
                     autoCapitalize="none"
                     autoComplete="name"
-                    autoCorrect="false"
+                    autoCorrect={false}
                     inputMode="text"
                     onChangeText={onChange}
                     value={value}
@@ -435,10 +447,14 @@ export default function Register() {
                     placeholder="01xxxxxxxxx"
                     autoCapitalize="none"
                     autoComplete="tel"
-                    autoCorrect="false"
-                    inputMode="tel"
-                    onChangeText={onChange}
+                    autoCorrect={false}
+                    keyboardType="phone-pad"
+                    onChangeText={(text) => {
+                      onChange(text.replace(/\D/g, ""));
+                    }}
+                    maxLength={11}
                     value={value}
+                    error={errors.phoneNumber?.message}
                   />
                 )}
               />
@@ -458,29 +474,34 @@ export default function Register() {
                     placeholder="رقم الواتساب الفعال"
                     autoCapitalize="none"
                     autoComplete="tel"
-                    autoCorrect="false"
-                    inputMode="tel"
-                    onChangeText={onChange}
+                    autoCorrect={false}
+                    keyboardType="phone-pad"
+                    maxLength={11}
+                    onChangeText={(text) => {
+                      onChange(text.replace(/\D/g, ""));
+                    }}
                     value={value}
+                    error={errors.whatsapp?.message}
                   />
                 )}
               />
               <Controller
                 control={control}
                 name="homeNumber"
-                rules={{
-                  required: "برجاء كتابة رقم التليفون الأرضي",
-                }}
                 render={({ field: { onChange, value } }) => (
                   <InputField
                     text="الرقم الأرضي"
                     placeholder="رقم التليفون المنزلي"
                     autoCapitalize="none"
                     autoComplete="tel"
-                    autoCorrect="false"
-                    inputMode="tel"
-                    onChangeText={onChange}
+                    autoCorrect={false}
+                    keyboardType="phone-pad"
+                    maxLength={9}
+                    onChangeText={(text) => {
+                      onChange(text.replace(/\D/g, ""));
+                    }}
                     value={value}
+                    error={errors.homeNumber?.message}
                   />
                 )}
               />
@@ -489,6 +510,7 @@ export default function Register() {
           <View style={styles.buttonContainer}>
             <Button
               text="ارسال الطلب"
+              disabled={isPending}
               loading={isPending}
               style={styles.button}
               onPressEvent={handleSubmit(onSubmit, (errors) => {
@@ -523,10 +545,9 @@ function createStyles(theme, fonts) {
       flexGrow: 1,
     },
     sectionTitle: {
-      borderRightWidth: 4,
-      borderRightColor: theme.register.text,
-      textAlign: "right",
-      paddingRight: 10,
+      borderStartWidth: 4,
+      borderColor: theme.register.text,
+      paddingStart: 10,
       fontFamily: fonts.bold,
       fontSize: 18,
       marginVertical: 10,
@@ -550,7 +571,7 @@ function createStyles(theme, fonts) {
     },
     dateTimeSelector: {
       height: 50,
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       borderRadius: 10,
       borderWidth: 1,
@@ -568,7 +589,6 @@ function createStyles(theme, fonts) {
       fontSize: 14,
       marginVertical: 5,
       width: "100%",
-      textAlign: "right",
       color: theme.dropdown.label,
     },
     buttonContainer: {

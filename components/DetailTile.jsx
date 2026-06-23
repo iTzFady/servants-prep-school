@@ -19,7 +19,6 @@ function createStyles(theme, fonts) {
     container: {
       backgroundColor: theme.admin.StudentCard.background,
       padding: 16,
-      alignItems: "flex-end",
       gap: 5,
       borderRadius: 10,
       flex: 1,
@@ -33,7 +32,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.medium,
       fontSize: 16,
       color: theme.admin.StudentCard.color,
-      textAlign: "right",
     },
   });
 }

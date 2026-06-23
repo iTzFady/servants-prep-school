@@ -1,46 +1,36 @@
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
-import { useContext, useMemo } from "react";
+import { memo, useContext, useMemo } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-export default function InputField({
-  text,
-  autoCapitalize,
-  autoComplete,
-  inputMode,
-  keyboardType,
-  onChangeText,
-  placeholder,
-  suffixIcon,
-  prefixIcon,
-  secureTextEntry,
-  value,
-}) {
+function InputField({ text, prefixIcon, suffixIcon, style, error, ...props }) {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   return (
     <View style={styles.container}>
       <Text style={styles.TextFieldLabel}>{text}</Text>
-      <View style={styles.TextFieldContainer}>
+      <View style={[styles.TextFieldContainer, error && styles.errorContainer]}>
         {prefixIcon}
+
         <TextInput
+          {...props}
+          accessibilityLabel={text}
+          accessibilityState={{
+            invalid: !!error,
+          }}
           cursorColor={theme.textColor}
-          style={styles.TextField}
-          autoCapitalize={autoCapitalize}
-          autoComplete={autoComplete}
-          inputMode={inputMode}
-          keyboardType={keyboardType}
-          secureTextEntry={secureTextEntry}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
+          style={[styles.TextField, style]}
           placeholderTextColor={styles.TextFieldPlaceHolder.color}
-          value={value}
-          textAlignVertical="center"
         />
+
         {suffixIcon}
       </View>
+
+      {!!error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
+
+export default memo(InputField);
 
 function createStyles(theme, fonts) {
   return StyleSheet.create({
@@ -49,7 +39,7 @@ function createStyles(theme, fonts) {
     },
     TextFieldContainer: {
       height: 50,
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 10,
       alignItems: "center",
       paddingHorizontal: 10,
@@ -63,7 +53,6 @@ function createStyles(theme, fonts) {
       fontSize: 14,
       marginVertical: 5,
       width: "100%",
-      textAlign: "right",
       color: theme.inputField.label,
     },
     TextField: {
@@ -74,6 +63,15 @@ function createStyles(theme, fonts) {
     },
     TextFieldPlaceHolder: {
       color: theme.inputField.color,
+    },
+    errorText: {
+      color: "#ef4444",
+      marginTop: 4,
+      fontSize: 12,
+      fontFamily: fonts.light,
+    },
+    errorContainer: {
+      borderColor: "#ef4444",
     },
   });
 }

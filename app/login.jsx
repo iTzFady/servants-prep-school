@@ -7,7 +7,7 @@ import { Feather } from "@expo/vector-icons/";
 import { Link, router } from "expo-router";
 import { useAppDispatch } from "../store/hooks";
 import { setUser, setToken } from "../store/authSlice";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   KeyboardAvoidingView,
@@ -22,7 +22,7 @@ import {
 import { Image } from "expo-image";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLogin } from "@/hooks/useApi";
+import { useLogin } from "@/hooks/useAuth";
 import Toast from "react-native-toast-message";
 const logo = require("../assets/images/logo.webp");
 export default function Login() {
@@ -30,11 +30,13 @@ export default function Login() {
   const { mutate: login, isPending } = useLogin();
   const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
   const [showPassword, setShowPassword] = useState(false);
+  const passwordRef = useRef(null);
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, isDirty },
   } = useForm({
+    mode: "onChange",
     defaultValues: {
       userName: "",
       password: "",
@@ -42,26 +44,29 @@ export default function Login() {
   });
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const onSubmit = (data) => {
-    login(data, {
-      onSuccess: (data) => {
-        dispatch(setToken(data.token));
-        dispatch(setUser(data.userResponse));
-        Toast.show({
-          type: "success",
-          text1: "تم تسجيل الدخول بنجاح",
-          text2: "مرحباً بك مجدداً",
-        });
-        if (data.userResponse.role === "ADMIN") router.replace("/admin");
-        else router.replace("/");
+    login(
+      { ...data, userName: data.userName.trim() },
+      {
+        onSuccess: (data) => {
+          dispatch(setToken(data.token));
+          dispatch(setUser(data.userResponse));
+          Toast.show({
+            type: "success",
+            text1: "تم تسجيل الدخول بنجاح",
+            text2: "مرحباً بك مجدداً",
+          });
+          if (data.userResponse.role === "ADMIN") router.replace("/admin");
+          else router.replace("/");
+        },
+        onError: (error) => {
+          Toast.show({
+            type: "error",
+            text1: "خطأ في تسجيل الدخول",
+            text2: error.message || "حدث خطأ غير متوقع",
+          });
+        },
       },
-      onError: (error) => {
-        Toast.show({
-          type: "error",
-          text1: "خطأ في تسجيل الدخول",
-          text2: error.message || "حدث خطأ غير متوقع",
-        });
-      },
-    });
+    );
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -105,16 +110,9 @@ export default function Login() {
                   control={control}
                   name="userName"
                   rules={{ required: "برجاء كتابة اسم المستخدم" }}
-                  render={({ field: { onChange, value } }) => (
+                  render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
                       text="اسم المستخدم"
-                      autoCapitalize="none"
-                      autoComplete="username"
-                      autoCorrect="false"
-                      inputMode="text"
-                      onChangeText={onChange}
-                      value={value}
-                      placeholder="أدخل اسم المستخدم"
                       prefixIcon={
                         <Feather
                           name="user"
@@ -122,23 +120,45 @@ export default function Login() {
                           color={theme.inputField.color}
                         />
                       }
+                      autoCapitalize="none"
+                      autoComplete="username"
+                      textContentType="username"
+                      autoCorrect={false}
+                      inputMode="text"
+                      onChangeText={onChange}
+                      value={value}
+                      placeholder="أدخل اسم المستخدم"
+                      returnKeyType="next"
+                      onSubmitEditing={() => passwordRef.current?.focus()}
+                      error={errors.userName?.message}
+                      onBlur={onBlur}
                     />
                   )}
                 />
                 <Controller
                   control={control}
                   name="password"
-                  rules={{ required: "برجاء كتابة كلمة المرور" }}
-                  render={({ field: { onChange, value } }) => (
+                  rules={{
+                    required: "برجاء كتابة كلمة المرور",
+                    minLength: {
+                      value: 6,
+                      message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+                    },
+                  }}
+                  render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
                       text="كلمة المرور"
                       autoCapitalize="none"
-                      autoComplete="password"
-                      autoCorrect="false"
+                      autoComplete="current-password"
+                      textContentType="password"
+                      autoCorrect={false}
                       inputMode="text"
                       onChangeText={onChange}
+                      onBlur={onBlur}
                       value={value}
                       placeholder="أدخل كلمة المرور"
+                      importantForAutofill="yes"
+                      passwordRules="minlength: 6;"
                       prefixIcon={
                         <Feather
                           name="lock"
@@ -160,6 +180,10 @@ export default function Login() {
                         </TouchableOpacity>
                       }
                       secureTextEntry={!showPassword}
+                      error={errors.password?.message}
+                      returnKeyType="done"
+                      ref={passwordRef}
+                      onSubmitEditing={handleSubmit(onSubmit)}
                     />
                   )}
                 />
@@ -167,16 +191,8 @@ export default function Login() {
               <Button
                 text="تسجيل الدخول"
                 loading={isPending}
-                onPressEvent={handleSubmit(onSubmit, (errors) => {
-                  const firstError = Object.values(errors)[0];
-                  if (firstError) {
-                    Toast.show({
-                      type: "error",
-                      text1: "خطأ في تسجيل الدخول",
-                      text2: firstError.message || "حدث خطأ غير متوقع",
-                    });
-                  }
-                })}
+                disabled={!isValid || isPending || !isDirty}
+                onPressEvent={handleSubmit(onSubmit)}
                 prefixIcon={<Feather name="log-in" size={24} color="#ffffff" />}
                 style={styles.button}
               />
@@ -265,7 +281,7 @@ function createStyles(theme, fonts) {
     linkContainer: {
       alignItems: "center",
       padding: 15,
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 8,
       marginHorizontal: "auto",
     },
@@ -288,7 +304,7 @@ function createStyles(theme, fonts) {
       padding: 10,
       borderRadius: 10,
       backgroundColor: theme.background,
-      alignSelf: "flex-end",
+      alignSelf: "flex-start",
     },
   });
 }

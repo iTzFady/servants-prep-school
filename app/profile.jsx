@@ -1,7 +1,9 @@
 import Counter from "@/components/Counter";
 import Tile from "@/components/Tile";
 import { ThemeContext } from "@/context/ThemeContext";
-import { useGetProfile, useAttendance } from "@/hooks/useApi";
+import { useGetProfile } from "@/hooks/useAuth";
+import { useAttendance } from "@/hooks/useAttendance";
+
 import { fonts } from "@/theme/fonts";
 import {
   Entypo,
@@ -11,16 +13,24 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useCallback, useContext, useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Image } from "expo-image";
 
 import dateUtils from "@/utils/dateFormatter";
 import { getEducationLabel } from "@/data/education_types";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function Profile() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
+  const insets = useSafeAreaInsets();
   const defaultProfilePic = require("@/assets/images/default-profile.webp");
   const { data: profile, isLoading, error, refetch } = useGetProfile();
   const {
@@ -43,16 +53,30 @@ export default function Profile() {
 
   if (error || attendanceError)
     return (
-      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
+      <ErrorIndicator
+        state="error"
+        text={error?.message || attendanceError?.message}
+        onRetry={onRefresh}
+      />
     );
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: insets.bottom + 20 },
+      ]}
+      refreshControl={
+        <RefreshControl refreshing={isBusy} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.dataContainer}>
         <Image
           source={
             profile?.pfpUrl ? { uri: profile?.pfpUrl } : defaultProfilePic
           }
           style={styles.profilePicture}
+          contentFit="cover"
         />
         <Text style={styles.name}>{profile?.name}</Text>
         <View style={styles.tagContainer}>
@@ -146,8 +170,7 @@ export default function Profile() {
 
 function createStyles(theme, fonts) {
   return StyleSheet.create({
-    container: {
-      flex: 1,
+    content: {
       padding: 10,
     },
     dataContainer: {
@@ -167,7 +190,7 @@ function createStyles(theme, fonts) {
       overflow: "hidden",
     },
     tagContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 8,
     },
     tag: {
@@ -181,7 +204,7 @@ function createStyles(theme, fonts) {
       borderRadius: 15,
     },
     counterContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 12,
       padding: 16,
     },
@@ -192,7 +215,7 @@ function createStyles(theme, fonts) {
       gap: 12,
     },
     sectionTitleContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 6,
       alignItems: "center",
     },

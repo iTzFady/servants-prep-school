@@ -1,17 +1,11 @@
-import {
-  Text,
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import { Text, View, StyleSheet, FlatList } from "react-native";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import AttendanceCounter from "@/components/AttendanceCounter";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import AttendanceTile from "@/components/AttendanceTile";
-import { useAttendance } from "@/hooks/useApi";
+import { useAttendance } from "@/hooks/useAttendance";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
 
@@ -91,12 +85,12 @@ function createStyles(theme, fonts) {
       gap: 10,
     },
     counterContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 12,
       padding: 16,
     },
     sectionTitleContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 6,
       alignItems: "center",
     },

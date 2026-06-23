@@ -3,7 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
-import { usePendingUsers } from "@/hooks/useApi";
+import { usePendingUsers } from "@/hooks/useUser";
 import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
 import ErrorIndicator from "@/components/ErrorIndicator";
@@ -91,19 +91,8 @@ function createStyles(theme, fonts) {
       padding: 16,
       backgroundColor: theme.background,
     },
-    centerContent: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    pageTitle: {
-      fontFamily: fonts.bold,
-      fontSize: 22,
-      color: theme.title,
-      textAlign: "right",
-      marginBottom: 16,
-    },
     searchContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 14,
       paddingVertical: 12,
@@ -126,25 +115,6 @@ function createStyles(theme, fonts) {
       flexGrow: 1,
     },
 
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      paddingTop: 40,
-    },
-    emptyText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.textSecondary,
-      textAlign: "center",
-    },
-    errorText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.section.color,
-      marginTop: 12,
-      textAlign: "center",
-    },
     sectionHeader: {
       paddingHorizontal: 16,
       paddingVertical: 8,
@@ -154,7 +124,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 14,
       color: theme.title,
-      textAlign: "right",
     },
   });
 }

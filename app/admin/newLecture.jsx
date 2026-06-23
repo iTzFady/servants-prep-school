@@ -20,7 +20,7 @@ import { Feather } from "@expo/vector-icons";
 import Dropdown from "@/components/CustomDropdown";
 import { curriculumTabs } from "@/data/tabs";
 import FileUploadButton from "@/components/FileUploadButton";
-import { useUploadLecture } from "@/hooks/useApi";
+import { useUploadLecture } from "@/hooks/useLectures";
 import { useRouter } from "expo-router";
 export default function NewLecture() {
   const { theme } = useContext(ThemeContext);
@@ -96,7 +96,7 @@ export default function NewLecture() {
                   <InputField
                     text="اسم المحاضرة"
                     autoComplete="name"
-                    autoCorrect="name"
+                    autoCorrect={false}
                     inputMode="text"
                     placeholder="أدخل اسم المحاضرة"
                     onChangeText={onChange}
@@ -233,7 +233,6 @@ function createStyles(theme, fonts) {
       fontSize: 14,
       marginVertical: 5,
       width: "100%",
-      textAlign: "right",
       color: theme.dropdown.label,
     },
     dateTimeContainer: {
@@ -241,7 +240,7 @@ function createStyles(theme, fonts) {
     },
     dateTimeSelector: {
       height: 50,
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       borderRadius: 10,
       borderWidth: 1,
@@ -259,7 +258,6 @@ function createStyles(theme, fonts) {
       fontSize: 14,
       marginVertical: 5,
       width: "100%",
-      textAlign: "right",
       color: theme.dropdown.label,
     },
     buttonContainer: {

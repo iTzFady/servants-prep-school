@@ -33,7 +33,7 @@ function CurriculumTypeChip({ text, icon, selected, onPressEvent }) {
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       height: 38,
       justifyContent: "center",
       alignItems: "center",

@@ -3,7 +3,7 @@ import { useMemo, useContext, useCallback } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
-import { useUserDetail } from "@/hooks/useApi";
+import { useUserDetail } from "@/hooks/useUser";
 import DetailTile from "@/components/DetailTile";
 import dateUtils from "@/utils/dateFormatter";
 import { getDayLabel } from "@/data/days";
@@ -105,7 +105,7 @@ const createStyles = (theme, fonts) =>
       gap: 10,
     },
     row: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       gap: 15,
     },
     loadingContainer: {
@@ -125,13 +125,6 @@ const createStyles = (theme, fonts) =>
       alignItems: "center",
       gap: 10,
     },
-    subtitle: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      marginTop: 6,
-      color: theme.textSecondary,
-      textAlign: "right",
-    },
     pfp: {
       width: 120,
       height: 120,
@@ -143,7 +136,6 @@ const createStyles = (theme, fonts) =>
       fontFamily: fonts.bold,
       fontSize: 16,
       color: theme.title,
-      textAlign: "right",
       marginBottom: 14,
     },
   });

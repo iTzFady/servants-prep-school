@@ -42,7 +42,7 @@ export default function StudentCard({ item, onPress }) {
 function createStyle(theme, fonts) {
   return StyleSheet.create({
     userCard: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       backgroundColor: theme.admin.StudentCard.background,
@@ -56,7 +56,7 @@ function createStyle(theme, fonts) {
       elevation: 2,
     },
     userInfo: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       gap: 12,
       flex: 1,
@@ -90,13 +90,11 @@ function createStyle(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 16,
       color: theme.title,
-      textAlign: "right",
     },
     regDate: {
       fontFamily: fonts.regular,
       fontSize: 12,
       color: theme.textSecondary,
-      textAlign: "right",
     },
   });
 }

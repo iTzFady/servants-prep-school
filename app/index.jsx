@@ -9,6 +9,7 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const { theme } = useContext(ThemeContext);
@@ -36,13 +37,13 @@ export default function Index() {
     );
   }, []);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.studentCard}>
         <Image
           source={user?.pfpUrl ? { uri: user.pfpUrl } : defaultProfilePic}
           style={styles.profilePicture}
         />
-        <View style={styles.textContainer}>
+        <View>
           <Text style={styles.studentName}>
             {user?.gender === "MALE" ? " ابننا الغالي" : "ابنتنا الغالية "} ,
             {user?.name.split(" ")[0] || ""}
@@ -62,7 +63,7 @@ export default function Index() {
         renderItem={renderTabs}
         numColumns={2}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
@@ -72,10 +73,9 @@ function createStyles(theme, fonts) {
       padding: 10,
     },
     sectionTitle: {
-      borderRightWidth: 4,
-      borderRightColor: theme.section.color,
-      textAlign: "right",
-      paddingRight: 10,
+      borderStartWidth: 4,
+      borderColor: theme.section.color,
+      paddingStart: 10,
       fontFamily: fonts.bold,
       fontSize: 18,
       marginVertical: 10,
@@ -84,7 +84,7 @@ function createStyles(theme, fonts) {
     studentCard: {
       height: 200,
       backgroundColor: theme.card.background,
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 20,
       gap: 20,
@@ -96,9 +96,7 @@ function createStyles(theme, fonts) {
       borderColor: theme.card.imageBorder,
       borderWidth: 5,
     },
-    textContainer: {
-      alignItems: "flex-end",
-    },
+
     studentName: {
       fontFamily: fonts.bold,
       fontSize: 24,

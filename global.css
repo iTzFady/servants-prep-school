@@ -1,0 +1,6 @@
+html,
+body,
+#root {
+  direction: rtl;
+  text-align: right;
+}

@@ -10,7 +10,7 @@ import { useLocalSearchParams } from "expo-router";
 import { fonts } from "@/theme/fonts";
 import { useContext, useMemo, useCallback, useState } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
-import { useLectures } from "@/hooks/useApi";
+import { useLectures } from "@/hooks/useLectures";
 import { Feather } from "@expo/vector-icons";
 import { Lecture_Types } from "@/data/lectures";
 import CurriculumTypeChip from "@/components/CurriculumTypeChip";
@@ -111,7 +111,6 @@ export default function CurriculumList() {
           paddingHorizontal: 10,
           alignItems: "center",
         }}
-        inverted={true}
         renderItem={({ item: [key, value] }) => (
           <CurriculumTypeChip
             key={key}
@@ -157,7 +156,7 @@ function createStyles(theme, fonts) {
       backgroundColor: theme.background,
     },
     searchContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 16,
       paddingVertical: 12,
@@ -177,7 +176,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.regular,
       fontSize: 14,
       color: theme.inputField.color,
-      textAlign: "right",
       padding: 0,
     },
     sectionHeader: {
@@ -189,7 +187,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 14,
       color: theme.title,
-      textAlign: "right",
     },
   });
 }

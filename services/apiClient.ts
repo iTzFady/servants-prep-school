@@ -3,6 +3,7 @@ import { secureStore } from "./secureStore";
 import { ERRORS } from "@/data/errors";
 import { store } from "@/store/store";
 import { clearAuth } from "@/store/authSlice";
+import Toast from "react-native-toast-message";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_BASEURL || process.env.EXPO_BASEURL;
@@ -74,6 +75,11 @@ apiClient.interceptors.response.use(
         await secureStore.removeToken();
         await secureStore.clear();
         store.dispatch(clearAuth());
+        Toast.show({
+          type: "error",
+          text1: "انتهت جلستك",
+          text2: "برجاء تسجيل الدخول مرة اخري",
+        });
       } catch (e) {
         console.error("Error clearing auth on invalid token:", e);
       }

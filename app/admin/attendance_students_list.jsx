@@ -3,7 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
-import { useUsersList } from "@/hooks/useApi";
+import { useUsersList } from "@/hooks/useUser";
 import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -93,7 +93,7 @@ function createStyles(theme, fonts) {
       backgroundColor: theme.background,
     },
     searchContainer: {
-      flexDirection: "row-reverse",
+      flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 14,
       paddingVertical: 12,
@@ -107,7 +107,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.regular,
       fontSize: 14,
       color: theme.inputField.color,
-      textAlign: "right",
       padding: 0,
     },
     listContent: {
@@ -125,7 +124,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 14,
       color: theme.title,
-      textAlign: "right",
     },
   });
 }

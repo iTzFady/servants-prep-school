@@ -16,6 +16,7 @@ import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import AppProviders from "@/providers/AppProviders";
 import toastConfig from "@/theme/toast";
+import "../global.css";
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     Cairo_200ExtraLight,
