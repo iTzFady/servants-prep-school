@@ -1,6 +1,8 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useContext, useMemo, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
+import * as Sentry from "@sentry/react-native";
+
 import {
   Modal,
   Text,
@@ -71,6 +73,8 @@ export default function AttendanceCheck() {
         text1: "فشل تسجيل الحضور",
         text2: error.message || "حدث خطأ غير متوقع",
       });
+
+      Sentry.captureException(new Error(error));
 
       resetState();
 

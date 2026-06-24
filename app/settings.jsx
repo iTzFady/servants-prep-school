@@ -9,7 +9,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Fragment, useCallback, useContext, useState } from "react";
+import { Fragment, useCallback, useContext, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from "@/components/Button";
 import { secureStore } from "@/services/secureStore";
@@ -23,7 +23,7 @@ export default function Settings() {
     [setColorScheme, colorScheme],
   );
 
-  const styles = createStyles(theme, fonts);
+  const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>

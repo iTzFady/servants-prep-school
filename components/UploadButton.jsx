@@ -1,6 +1,7 @@
 import { Entypo, Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
+import * as Sentry from "@sentry/react-native";
 import {
   ActivityIndicator,
   Platform,
@@ -50,8 +51,8 @@ export default function UploadButton({ value, onChange }) {
 
         onChange(file);
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      Sentry.captureException(new Error(error));
     } finally {
       setLoading(false);
     }

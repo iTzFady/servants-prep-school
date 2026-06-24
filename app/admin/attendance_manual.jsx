@@ -9,6 +9,8 @@ import {
   Modal,
   Alert,
 } from "react-native";
+import * as Sentry from "@sentry/react-native";
+
 import { Feather, Entypo } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
@@ -77,12 +79,14 @@ export default function AttendanceManual() {
       });
 
       router.back();
-    } catch (e) {
+    } catch (error) {
       Toast.show({
         type: "error",
         text1: "فشل انهاء اليوم",
-        text2: e?.message || "حدث خطأ غير متوقع",
+        text2: error?.message || "حدث خطأ غير متوقع",
       });
+
+      Sentry.captureException(new Error(error));
     }
   }
 
@@ -117,6 +121,7 @@ export default function AttendanceManual() {
         text1: "فشل تسجيل الحضور",
         text2: error.message || "حدث خطأ غير متوقع",
       });
+      Sentry.captureException(new Error(error));
 
       resetState();
 

@@ -44,3 +44,7 @@ app-example
 
 .vscode/
 .env
+
+.env.local
+
+.env.local

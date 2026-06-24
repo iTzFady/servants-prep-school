@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { Platform, Linking } from "react-native";
+import * as Sentry from "@sentry/react-native";
 
 // Only import platform-specific modules when not on web
 let FileSystem: typeof import("expo-file-system/legacy") | null = null;

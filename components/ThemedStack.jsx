@@ -130,6 +130,14 @@ export default function ThemedStack() {
             headerTitle: `${getCurriculumLabel(route.params?.id)}`,
           })}
         />
+        <Stack.Screen
+          name="spiritual-note"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "النوتة الروحية",
+          }}
+        />
         {/* Admin Screens */}
         <Stack.Screen
           name="admin/index"

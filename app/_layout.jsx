@@ -16,8 +16,13 @@ import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import AppProviders from "@/providers/AppProviders";
 import toastConfig from "@/theme/toast";
+import * as Sentry from "@sentry/react-native";
+import { initializeSentry } from "@/services/sentryClient";
 import "../global.css";
-export default function RootLayout() {
+
+initializeSentry();
+
+export default Sentry.wrap(function RootLayout() {
   const [loaded, error] = useFonts({
     Cairo_200ExtraLight,
     Cairo_300Light,
@@ -49,4 +54,4 @@ export default function RootLayout() {
       </SafeAreaProvider>
     </ThemeProvider>
   );
-}
+});

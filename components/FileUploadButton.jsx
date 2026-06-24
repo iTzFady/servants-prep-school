@@ -3,6 +3,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { useContext, useMemo, useState } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
+import * as Sentry from "@sentry/react-native";
 import { fonts } from "@/theme/fonts";
 import {
   ActivityIndicator,
@@ -115,8 +116,8 @@ export default function FileUploadButton({
             };
 
       onChange(file);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      Sentry.captureException(new Error(error));
     } finally {
       setLoading(false);
     }

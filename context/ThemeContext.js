@@ -1,5 +1,7 @@
 import { Colors } from "@/theme/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Sentry from "@sentry/react-native";
+
 import {
   createContext,
   useCallback,
@@ -30,7 +32,7 @@ export function ThemeProvider({ children }) {
         setColorSchemeState(Appearance.getColorScheme() ?? "light");
       }
     } catch (error) {
-      console.log("Failed to load theme", error);
+      Sentry.captureException(new Error(error));
 
       setColorSchemeState(Appearance.getColorScheme() ?? "light");
     }
@@ -42,7 +44,7 @@ export function ThemeProvider({ children }) {
 
       await AsyncStorage.setItem(THEME_STORAGE_KEY, scheme);
     } catch (error) {
-      console.log("Failed to save theme", error);
+      Sentry.captureException(new Error(error));
     }
   }, []);
 

@@ -6,6 +6,7 @@ import { queryClient } from "../services/queryClient";
 import { initializeAuth } from "../store/authSlice";
 import { secureStore } from "../services/secureStore";
 import { useAppDispatch } from "../store/hooks";
+import { setSentryUser, clearSentryUser } from "../services/sentryClient";
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -16,6 +17,16 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       const token = await secureStore.getToken();
       const user = await secureStore.getUser();
       dispatch(initializeAuth({ token, user }));
+
+      if (user?.id) {
+        setSentryUser(user.id, {
+          email: user.email,
+          role: user.role,
+        });
+      } else {
+        clearSentryUser();
+      }
+
       setReady(true);
     };
     restoreAuth();

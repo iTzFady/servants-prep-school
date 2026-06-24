@@ -27,7 +27,7 @@ export const dashboardTabs = [
     label: "النوتة الروحية",
     description: "متابعة صلواتك والتزامك",
     icon: ({ color }) => <Feather name="heart" size={24} color={color} />,
-    // value: "spiritual_note",
+    value: "spiritual-note",
   },
   {
     id: 3,

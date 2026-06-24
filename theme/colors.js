@@ -74,6 +74,13 @@ export const Colors = {
       title: "#0F172A",
       subTitle: "#475569",
     },
+    spiritualNote: {
+      title: "#000",
+      cardBackground: "#fff",
+      text: "#000",
+      qr: "#A71E34",
+      modal: "#f4f4f4",
+    },
     inputField: {
       label: "#A71E34",
       background: "#F8FAFC",
@@ -211,6 +218,13 @@ export const Colors = {
     qr: {
       title: "#FFFFFF",
       subTitle: "#FFFFFF",
+    },
+    spiritualNote: {
+      title: "#fff",
+      cardBackground: "#1C2839",
+      text: "#fff",
+      qr: "#0F172A",
+      modal: "#0F172A",
     },
     inputField: {
       label: "#FFFFFF",
