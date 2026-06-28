@@ -28,7 +28,7 @@ export const useLogin = (): UseMutationResult<
   return useMutation({
     mutationFn: async (credentials: LoginPayload) => {
       const response = await apiClient.post<AuthResponse>(
-        "/auth/login",
+        "/v1/auth/login",
         credentials,
       );
       return response.data;
@@ -47,7 +47,7 @@ export const useRegister = (): UseMutationResult<AuthResponse, Error, any> => {
   return useMutation({
     mutationFn: async (userData) => {
       const response = await apiClient.post<AuthResponse>(
-        "/auth/register",
+        "/v1/auth/register",
         userData,
         {
           headers: {
@@ -76,7 +76,7 @@ export const useGetProfile = (): UseQueryResult<User, Error> => {
   return useQuery({
     queryKey: ["user", "profile"],
     queryFn: async () => {
-      const response = await apiClient.get<User>("/user/");
+      const response = await apiClient.get<User>("/v1/user/");
       return response.data;
     },
     enabled: true,

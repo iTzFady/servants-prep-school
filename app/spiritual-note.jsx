@@ -1,7 +1,7 @@
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import "@/utils/calendarLocale";
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -11,11 +11,14 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import Checkbox from "expo-checkbox";
+import { Checkbox } from "expo-checkbox";
 import { Calendar } from "react-native-calendars";
 import QRCode from "react-native-qrcode-svg";
 import * as Sentry from "@sentry/react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { spiritualNoteActivities } from "@/data/spiritual-note";
 import {
   Entypo,
@@ -23,28 +26,18 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import Button from "@/components/Button";
+import Toast from "react-native-toast-message";
+import { useAppSelector } from "@/store/hooks";
+import {
+  useSpiritualNoteSubmissions,
+  useSubmitSpiritualNote,
+} from "@/hooks/useSpiritualNote";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ErrorIndicator from "@/components/ErrorIndicator";
 
 const today = new Date().toISOString().split("T")[0];
 
 const initialRecords = {
-  "2025-09-09": {
-    bible: true,
-    morning: true,
-    evening: false,
-    sleep: false,
-    mass: false,
-    confession: false,
-  },
-
-  "2025-09-10": {
-    bible: true,
-    morning: true,
-    evening: true,
-    sleep: true,
-    mass: true,
-    confession: true,
-  },
-
   [today]: {
     bible: false,
     morning: false,
@@ -55,7 +48,6 @@ const initialRecords = {
   },
 };
 export default function SpiritualNote() {
-  const [loading, setLoading] = useState(false);
   const { colorScheme, theme } = useContext(ThemeContext);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -63,6 +55,49 @@ export default function SpiritualNote() {
   const [selectedDate, setSelectedDate] = useState(today);
 
   const [records, setRecords] = useState(initialRecords);
+  const [submittedToday, setSubmittedToday] = useState({
+    bible: false,
+    morning: false,
+    evening: false,
+    sleep: false,
+    mass: false,
+    confession: false,
+  });
+
+  const user = useAppSelector((state) => state.auth.user);
+  const monthKey = useMemo(() => selectedDate.slice(0, 7), [selectedDate]);
+  const {
+    data: submissions,
+    error,
+    isPending,
+    refetch,
+  } = useSpiritualNoteSubmissions(monthKey);
+  const submitSpiritualNote = useSubmitSpiritualNote();
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (!submissions) return;
+
+    setRecords((prev) => ({
+      ...prev,
+      ...submissions,
+    }));
+
+    setSubmittedToday(
+      submissions[today] || {
+        bible: false,
+        morning: false,
+        evening: false,
+        sleep: false,
+        mass: false,
+        confession: false,
+      },
+    );
+  }, [submissions]);
+
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   const isToday = selectedDate === today;
 
@@ -74,6 +109,35 @@ export default function SpiritualNote() {
     mass: false,
     confession: false,
   };
+
+  const getApiSubmissionValues = (record, alreadySubmitted = {}) => {
+    const map = {
+      morning: "MORNINGPRAYER",
+      evening: "NOONPRAYER",
+      sleep: "NIGHTPRAYER",
+      mass: "LITURGY",
+      bible: "BIBLE",
+      confession: "CONFESSION",
+    };
+
+    return Object.entries(record)
+      .filter(([key, value]) => value && !alreadySubmitted[key])
+      .map(([key]) => map[key])
+      .filter(Boolean);
+  };
+
+  const activitiesToDisplay = error
+    ? spiritualNoteActivities.filter(
+        (activity) => activity.key === "confession",
+      )
+    : spiritualNoteActivities;
+
+  const submissionValuesToSend = getApiSubmissionValues(
+    selectedRecord,
+    isToday ? submittedToday : {},
+  );
+
+  const isSubmitDisabled = isToday && submissionValuesToSend.length === 0;
 
   const markedDates = useMemo(() => {
     const result = {};
@@ -117,6 +181,13 @@ export default function SpiritualNote() {
       },
     }));
   };
+
+  if (isPending) return <LoadingIndicator />;
+
+  if (error)
+    return (
+      <ErrorIndicator state="error" text={error?.message} onRetry={onRefresh} />
+    );
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -166,7 +237,7 @@ export default function SpiritualNote() {
         </View>
         <Text style={styles.sectionTitle}>قائمة المتابعة الروحية</Text>
         <View style={styles.list}>
-          {spiritualNoteActivities.map((activity) => (
+          {activitiesToDisplay.map((activity) => (
             <View key={activity.key} style={styles.row}>
               <View
                 style={{
@@ -196,7 +267,7 @@ export default function SpiritualNote() {
                         color="#fff"
                       />
                     </View>
-                  ) : !selectedRecord.confession && !isToday ? (
+                  ) : !selectedRecord.confession && !isToday && !error ? (
                     <View style={[styles.disapprovedBadge, styles.badge]}>
                       <Entypo
                         name="cross"
@@ -236,7 +307,9 @@ export default function SpiritualNote() {
                 ) : (
                   <Checkbox
                     value={selectedRecord[activity.key]}
-                    disabled={!isToday}
+                    disabled={
+                      !isToday || (isToday && submittedToday[activity.key])
+                    }
                     onValueChange={(value) =>
                       updateActivity(activity.key, value)
                     }
@@ -247,36 +320,64 @@ export default function SpiritualNote() {
             </View>
           ))}
         </View>
-        <Button
-          text="ارسال"
-          onPressEvent={() => {
-            Sentry.captureException(new Error("First error"));
-          }}
-          style={styles.button}
-        />
+        {isToday && (
+          <Button
+            text={"ارسال"}
+            loading={submitSpiritualNote.isPending}
+            disabled={isSubmitDisabled}
+            onPressEvent={() => {
+              if (!submissionValuesToSend.length) {
+                Toast.show({
+                  type: "info",
+                  text1: "لا يوجد نشاط جديد للإرسال",
+                  text2: "لقد سبق إرسال الأنشطة الحالية",
+                });
+                return;
+              }
+
+              submitSpiritualNote.mutate(
+                { submission: submissionValuesToSend },
+                {
+                  onSuccess: () => {
+                    Toast.show({
+                      type: "success",
+                      text1: "تمت العملية",
+                      text2: "تم حفظ المتابعة الروحية",
+                    });
+                  },
+                  onError: (error) => {
+                    Sentry.captureException(error);
+                    Toast.show({
+                      type: "error",
+                      text1: "تعذر حفظ المتابعة الروحية",
+                      text2: error?.message || "حاول مرة أخرى",
+                    });
+                  },
+                },
+              );
+            }}
+            style={styles.button}
+          />
+        )}
       </ScrollView>
       <Modal
         onRequestClose={() => setModalVisible(false)}
         visible={modalVisible}
         transparent
+        statusBarTranslucent
+        navigationBarTranslucent
         animationType="fade"
       >
         <Pressable
           onPress={() => setModalVisible(false)}
           style={styles.overlayModal}
         >
-          <View style={styles.card}>
+          <View style={[styles.card, { paddingBottom: insets.bottom }]}>
             <Text style={styles.titleModal}>
               برجاء توجيه الهاتف نحو هاتف اب الاعتراف
             </Text>
             <View style={styles.qrContainer}>
-              <QRCode
-                size={180}
-                value={JSON.stringify({
-                  studentId: "123",
-                  date: selectedDate,
-                })}
-              />
+              <QRCode size={180} value={String(user?.id)} />
             </View>
           </View>
         </Pressable>
@@ -365,7 +466,7 @@ function createStyles(theme, fonts) {
     },
 
     overlayModal: {
-      flex: 1,
+      ...StyleSheet.absoluteFill,
       backgroundColor: "rgba(0,0,0,.5)",
       justifyContent: "flex-end",
     },

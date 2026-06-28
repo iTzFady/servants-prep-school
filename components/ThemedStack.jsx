@@ -7,12 +7,12 @@ import { TouchableOpacity } from "react-native";
 import Header from "./Header";
 import { getCurriculumLabel } from "@/data/tabs";
 import { useAppSelector } from "@/store/hooks";
+import * as NavigationBar from "expo-navigation-bar";
 import Toast from "react-native-toast-message";
 export default function ThemedStack() {
   const { theme, colorScheme } = useContext(ThemeContext);
   const { user, isAuthenticated } = useAppSelector((s) => s.auth);
   const router = useRouter();
-
   useEffect(() => {
     if (isAuthenticated) {
       const role = user?.role?.toLowerCase?.() || "";
@@ -25,6 +25,10 @@ export default function ThemedStack() {
       router.replace("/login");
     }
   }, [isAuthenticated, user?.role, router]);
+
+  useEffect(() => {
+    NavigationBar.setStyle(colorScheme === "dark" ? "dark" : "light");
+  }, [colorScheme]);
   return (
     <>
       <Stack

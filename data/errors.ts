@@ -31,6 +31,6 @@ export const ERRORS: Record<string, string> = {
   ERROR_FETCHING_PENDING_USERS: "حدث خطأ أثناء جلب المستخدمين قيد المراجعة.",
   ERROR_UPDATING_USER_ROLE: "حدث خطأ أثناء تحديث صلاحية المستخدم.",
   ERROR_UPDATING_STATUS: "حدث خطأ أثناء تحديث الحالة.",
-
+  SPIRITUAL_NOTE_ALREADY_EXISTS: "تم ارسال هذه النوتة مسبقا",
   DEFAULT: "حدث خطأ ما. حاول مرة أخرى لاحقاً.",
 };

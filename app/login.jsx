@@ -113,6 +113,7 @@ export default function Login() {
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
                       text="اسم المستخدم"
+                      editable={!isPending}
                       prefixIcon={
                         <Feather
                           name="user"
@@ -148,6 +149,7 @@ export default function Login() {
                   render={({ field: { onChange, value, onBlur } }) => (
                     <InputField
                       text="كلمة المرور"
+                      editable={!isPending}
                       autoCapitalize="none"
                       autoComplete="current-password"
                       textContentType="password"

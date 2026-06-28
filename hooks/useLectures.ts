@@ -22,7 +22,9 @@ export const useLectures = (
   return useQuery({
     queryKey: ["lectures", subject],
     queryFn: async () => {
-      const response = await apiClient.get<Lecture[]>(`/lectures/${subject}`);
+      const response = await apiClient.get<Lecture[]>(
+        `/v1/lectures/${subject}`,
+      );
       return response.data;
     },
     enabled: !!subject,
@@ -41,7 +43,7 @@ export const useLectureDetail = (
     queryKey: ["lecture", subject, lectureId],
     queryFn: async () => {
       const response = await apiClient.get<LectureDetail>(
-        `/lectures/${subject}?lectureId=${lectureId}`,
+        `/v1/lectures/${subject}?lectureId=${lectureId}`,
       );
       return response.data;
     },
@@ -73,7 +75,7 @@ export const useUploadLecture = (): UseMutationResult<
       );
       formData.append("file", data.file);
 
-      const response = await apiClient.post<Lecture>(" /lectures", formData, {
+      const response = await apiClient.post<Lecture>("/v1/lectures", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
