@@ -7,7 +7,7 @@ import { TouchableOpacity } from "react-native";
 import Header from "./Header";
 import { getCurriculumLabel } from "@/data/tabs";
 import { useAppSelector } from "@/store/hooks";
-import * as NavigationBar from "expo-navigation-bar";
+import { NavigationBar } from "expo-navigation-bar";
 import Toast from "react-native-toast-message";
 export default function ThemedStack() {
   const { theme, colorScheme } = useContext(ThemeContext);
@@ -25,10 +25,6 @@ export default function ThemedStack() {
       router.replace("/login");
     }
   }, [isAuthenticated, user?.role, router]);
-
-  useEffect(() => {
-    NavigationBar.setStyle(colorScheme === "dark" ? "dark" : "light");
-  }, [colorScheme]);
   return (
     <>
       <Stack
@@ -271,7 +267,11 @@ export default function ThemedStack() {
           }}
         />
       </Stack>
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <StatusBar
+        animated={true}
+        style={colorScheme === "dark" ? "light" : "dark"}
+      />
+      <NavigationBar style={colorScheme === "dark" ? "light" : "dark"} />
     </>
   );
 }
