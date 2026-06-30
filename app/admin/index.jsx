@@ -9,6 +9,7 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
 
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AdminIndex() {
   const { theme } = useContext(ThemeContext);
@@ -36,7 +37,7 @@ export default function AdminIndex() {
     );
   }, []);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.studentCard}>
         <Image
           source={user?.pfpUrl ? { uri: user.pfpUrl } : defaultProfilePic}
@@ -57,7 +58,7 @@ export default function AdminIndex() {
         renderItem={renderTabs}
         numColumns={2}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {

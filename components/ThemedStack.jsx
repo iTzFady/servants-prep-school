@@ -247,7 +247,7 @@ export default function ThemedStack() {
           options={{
             headerShown: true,
             header: Header,
-            headerTitle: "ادارة الحضور الغياب",
+            headerTitle: "ادارة الحضور و الغياب",
           }}
         />
         <Stack.Screen
@@ -264,6 +264,46 @@ export default function ThemedStack() {
             headerShown: true,
             header: Header,
             headerTitle: "متابعة الحضور",
+          }}
+        />
+        <Stack.Screen
+          name="admin/spiritual-note"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "ادارة النوتة الروحية",
+          }}
+        />
+        <Stack.Screen
+          name="admin/spiritual-note/[id]"
+          options={({ route }) => ({
+            headerShown: true,
+            header: Header,
+            headerTitle: `${route.params?.name}`,
+          })}
+        />
+        <Stack.Screen
+          name="admin/spiritual-note/list"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "قائمة الطلاب",
+          }}
+        />
+        <Stack.Screen
+          name="admin/spiritual-note/confession"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "الاعتراف",
+          }}
+        />
+        <Stack.Screen
+          name="admin/spiritual-note/qr"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "الاعتراف",
           }}
         />
       </Stack>

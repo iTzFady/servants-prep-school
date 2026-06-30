@@ -5,6 +5,7 @@ import {
   FontAwesome5,
   Fontisto,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 
 export const dashboardTabs = [
@@ -83,27 +84,26 @@ export const AdmindashboardTabs = [
   },
   {
     id: 4,
+    label: "ادارة النوتة الروحية",
+    description: "متابعة التزام المخدوم",
+    icon: ({ color }) => <Feather name="heart" size={24} color={color} />,
+    value: "admin/spiritual-note",
+  },
+  {
+    id: 5,
     label: "ادارة الواجبات",
     description: "انشاء ومتابعة الواجبات",
     icon: ({ color }) => <Feather name="clipboard" size={24} color={color} />,
     // value: "assignments",
   },
-
   {
-    id: 5,
+    id: 6,
     label: "ادارة النتائج",
     description: "رصد ومتابعة درجات الاختبارات",
     icon: ({ color }) => <Feather name="bar-chart-2" size={24} color={color} />,
     // value: "results",
   },
 
-  {
-    id: 6,
-    label: "ادارة النوتة الروحية",
-    description: "متابعة التزام المخدوم",
-    icon: ({ color }) => <Feather name="heart" size={24} color={color} />,
-    // value: "spiritual_note",
-  },
   {
     id: 7,
     label: "ادارة الارشيف",
@@ -138,6 +138,34 @@ export const attendanceTabs = [
     description: "متابعة التزام المخدومين",
     icon: ({ color }) => <Fontisto name="preview" size={24} color={color} />,
     value: "admin/attendance_students_list",
+  },
+];
+
+export const noteTabs = [
+  {
+    id: 0,
+    label: "تسجيل الاعتراف",
+    description: "تسجيل الاعتراف للمخدومين",
+    icon: ({ color }) => (
+      <MaterialIcons name="qr-code-scanner" size={24} color={color} />
+    ),
+    value: "admin/spiritual-note/qr",
+  },
+  {
+    id: 1,
+    label: "تسجيل الاعتراف يدويا",
+    description: "تسجيل الاعتراف للمخدومين يدويا",
+    icon: ({ color }) => (
+      <MaterialCommunityIcons name="typewriter" size={24} color={color} />
+    ),
+    value: "admin/spiritual-note/confession",
+  },
+  {
+    id: 2,
+    label: "متابعة النوتة الروحية",
+    description: "متابعة الالتزام الروحي للمخدومين",
+    icon: ({ color }) => <Fontisto name="preview" size={24} color={color} />,
+    value: "admin/spiritual-note/list",
   },
 ];
 

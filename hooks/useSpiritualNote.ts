@@ -251,3 +251,21 @@ export const useSubmitSpiritualNote = (): UseMutationResult<
     },
   });
 };
+
+// Admin
+
+export const useAdminSpiritualNoteSubmissions = (
+  id: string,
+  month?: string,
+): UseQueryResult<Record<string, { [key: string]: boolean }>, Error> => {
+  return useQuery({
+    queryKey: [`spiritual-note-submissions${id}`, month || "all"],
+    queryFn: async () => {
+      const response = await apiClient.get<unknown>(
+        `/v2/spiritual-note/${id}/submissions`,
+      );
+      return normalizeSpiritualNoteRecords(response.data);
+    },
+    enabled: true,
+  });
+};

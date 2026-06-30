@@ -23,6 +23,7 @@ import { spiritualNoteActivities } from "@/data/spiritual-note";
 import {
   Entypo,
   FontAwesome,
+  Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import Button from "@/components/Button";
@@ -33,7 +34,6 @@ import {
   useSubmitSpiritualNote,
 } from "@/hooks/useSpiritualNote";
 import LoadingIndicator from "@/components/LoadingIndicator";
-import ErrorIndicator from "@/components/ErrorIndicator";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -69,6 +69,7 @@ export default function SpiritualNote() {
   const {
     data: submissions,
     error,
+    isError,
     isPending,
     refetch,
   } = useSpiritualNoteSubmissions(monthKey);
@@ -184,11 +185,6 @@ export default function SpiritualNote() {
 
   if (isPending) return <LoadingIndicator />;
 
-  if (error)
-    return (
-      <ErrorIndicator state="error" text={error?.message} onRetry={onRefresh} />
-    );
-
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
       <ScrollView
@@ -235,7 +231,23 @@ export default function SpiritualNote() {
             }}
           />
         </View>
-        <Text style={styles.sectionTitle}>قائمة المتابعة الروحية</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignContent: "center",
+            paddingHorizontal: 10,
+          }}
+        >
+          <Text style={styles.sectionTitle}>قائمة المتابعة الروحية</Text>
+          <TouchableOpacity onPress={onRefresh}>
+            <Ionicons
+              name="reload"
+              size={18}
+              color={theme.spiritualNote.text}
+            />
+          </TouchableOpacity>
+        </View>
         <View style={styles.list}>
           {activitiesToDisplay.map((activity) => (
             <View key={activity.key} style={styles.row}>
@@ -267,7 +279,7 @@ export default function SpiritualNote() {
                         color="#fff"
                       />
                     </View>
-                  ) : !selectedRecord.confession && !isToday && !error ? (
+                  ) : !selectedRecord.confession && !isToday && !isError ? (
                     <View style={[styles.disapprovedBadge, styles.badge]}>
                       <Entypo
                         name="cross"
@@ -308,7 +320,9 @@ export default function SpiritualNote() {
                   <Checkbox
                     value={selectedRecord[activity.key]}
                     disabled={
-                      !isToday || (isToday && submittedToday[activity.key])
+                      !isToday ||
+                      (isToday && submittedToday[activity.key]) ||
+                      isError
                     }
                     onValueChange={(value) =>
                       updateActivity(activity.key, value)
@@ -320,7 +334,7 @@ export default function SpiritualNote() {
             </View>
           ))}
         </View>
-        {isToday && (
+        {isToday && !isError && (
           <Button
             text={"ارسال"}
             loading={submitSpiritualNote.isPending}

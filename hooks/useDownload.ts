@@ -88,10 +88,17 @@ export const useDownload = () => {
   const getMimeType = (extension: string) => {
     const mimeTypes: Record<string, string> = {
       mp4: "video/mp4",
+      m4v: "video/mp4",
       mov: "video/quicktime",
+      avi: "video/x-msvideo",
+      mkv: "video/x-matroska",
+      webm: "video/webm",
 
       mp3: "audio/mpeg",
+      mpeg: "video/mpeg",
+      mpg: "video/mpeg",
       wav: "audio/wav",
+      m4a: "audio/mp4",
 
       pdf: "application/pdf",
 
