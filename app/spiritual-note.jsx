@@ -53,6 +53,7 @@ export default function SpiritualNote() {
 
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const [selectedDate, setSelectedDate] = useState(today);
+  const [calendarCurrentDate, setCalendarCurrentDate] = useState(today);
 
   const [records, setRecords] = useState(initialRecords);
   const [submittedToday, setSubmittedToday] = useState({
@@ -65,7 +66,10 @@ export default function SpiritualNote() {
   });
 
   const user = useAppSelector((state) => state.auth.user);
-  const monthKey = useMemo(() => selectedDate.slice(0, 7), [selectedDate]);
+  const monthKey = useMemo(
+    () => calendarCurrentDate.slice(0, 7),
+    [calendarCurrentDate],
+  );
   const {
     data: submissions,
     error,
@@ -194,11 +198,16 @@ export default function SpiritualNote() {
         <Text style={styles.pageTitle}>اختر اليوم</Text>
         <View style={styles.calendarCard}>
           <Calendar
-            current={selectedDate}
+            current={calendarCurrentDate}
             maxDate={today}
             markedDates={markedDates}
             onDayPress={(day) => {
               setSelectedDate(day.dateString);
+              setCalendarCurrentDate(day.dateString);
+            }}
+            onMonthChange={(month) => {
+              const monthString = String(month.month).padStart(2, "0");
+              setCalendarCurrentDate(`${month.year}-${monthString}-01`);
             }}
             renderArrow={(direction) => (
               <MaterialCommunityIcons

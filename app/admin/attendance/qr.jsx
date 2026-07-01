@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import { useMarkAttendance } from "@/hooks/useAttendance";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function AttendanceCheck() {
   const [permission, requestPermission] = useCameraPermissions();
   const router = useRouter();
@@ -74,8 +75,6 @@ export default function AttendanceCheck() {
         text2: error.message || "حدث خطأ غير متوقع",
       });
 
-      Sentry.captureException(new Error(error));
-
       resetState();
 
       router.back();
@@ -83,7 +82,7 @@ export default function AttendanceCheck() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>امسح رمز QR</Text>
       <Text style={styles.description}>
         يرجى توجيه الكاميرا نحو الرمز الموجود في هاتف المخدوم
@@ -174,7 +173,7 @@ export default function AttendanceCheck() {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
@@ -182,7 +181,7 @@ function createStyles(theme, fonts) {
     container: {
       flex: 1,
       alignItems: "center",
-      paddingTop: 80,
+      justifyContent: "center",
     },
 
     title: {

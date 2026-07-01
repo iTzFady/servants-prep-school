@@ -223,14 +223,18 @@ export const useSpiritualNoteSubmissions = (
   month?: string,
 ): UseQueryResult<Record<string, { [key: string]: boolean }>, Error> => {
   return useQuery({
-    queryKey: ["spiritual-note-submissions", month || "all"],
+    queryKey: ["spiritual-note-submissions", month ?? "current"],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
-        "/v2/spiritual-note/submissions",
-      );
+      const response = await apiClient.get("/v2/spiritual-note/submissions", {
+        params: month
+          ? {
+              month: Number(month.slice(5, 7)),
+            }
+          : undefined,
+      });
+
       return normalizeSpiritualNoteRecords(response.data);
     },
-    enabled: true,
   });
 };
 
@@ -259,13 +263,38 @@ export const useAdminSpiritualNoteSubmissions = (
   month?: string,
 ): UseQueryResult<Record<string, { [key: string]: boolean }>, Error> => {
   return useQuery({
-    queryKey: [`spiritual-note-submissions${id}`, month || "all"],
+    queryKey: ["spiritual-note-submissions", id, month ?? "current"],
     queryFn: async () => {
-      const response = await apiClient.get<unknown>(
+      const response = await apiClient.get(
         `/v2/spiritual-note/${id}/submissions`,
+        {
+          params: month
+            ? {
+                month: Number(month.slice(5, 7)),
+              }
+            : undefined,
+        },
       );
+
       return normalizeSpiritualNoteRecords(response.data);
     },
-    enabled: true,
+  });
+};
+
+export const useMarkConfession = () => {
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await apiClient.post(
+        "/v2/spiritual-note/confession",
+        userId,
+      );
+      return response.data;
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["confession"],
+      });
+    },
   });
 };

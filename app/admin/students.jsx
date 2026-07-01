@@ -86,7 +86,6 @@ function createStyles(theme, fonts) {
     container: {
       flex: 1,
       padding: 16,
-      backgroundColor: theme.background,
     },
     searchContainer: {
       flexDirection: "row",

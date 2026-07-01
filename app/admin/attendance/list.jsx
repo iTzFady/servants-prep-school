@@ -1,5 +1,4 @@
 import { View, TextInput, StyleSheet, Text, FlatList } from "react-native";
-import * as Sentry from "@sentry/react-native";
 import { Feather } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
@@ -7,15 +6,16 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { useUsersList } from "@/hooks/useUser";
 import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
-import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
-export default function AttendanceManual() {
+import ErrorIndicator from "@/components/ErrorIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
+export default function AttendanceStudentList() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const router = useRouter();
-  const [refreshing, setRefreshing] = useState(false);
   const { data: users, isLoading, error, refetch } = useUsersList(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const filteredUsers = useMemo(
     () =>
@@ -24,6 +24,24 @@ export default function AttendanceManual() {
       ) || [],
     [searchQuery, users],
   );
+
+  const renderUser = useCallback(
+    ({ item }) => {
+      return (
+        <StudentCard
+          item={item}
+          onPress={() =>
+            router.push({
+              pathname: `/admin/attendance/${item.id}`,
+              params: { name: item.name },
+            })
+          }
+        />
+      );
+    },
+    [router],
+  );
+
   const onRefresh = useCallback(async () => {
     try {
       setRefreshing(true);
@@ -34,33 +52,14 @@ export default function AttendanceManual() {
     }
   }, [refetch]);
 
-  const renderUser = useCallback(
-    ({ item }) => {
-      return (
-        <StudentCard
-          item={item}
-          onPress={() =>
-            router.push({
-              pathname: `/admin/spiritual-note/${item.id}`,
-              params: { name: item.name },
-            })
-          }
-        />
-      );
-    },
-    [router],
-  );
-
   if (isLoading) return <LoadingIndicator />;
-  if (error) {
-    Sentry.captureException(new Error(error));
+  if (error)
     return (
       <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
-  }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <Feather name="search" size={20} color={theme.inputField.color} />
         <TextInput
@@ -79,31 +78,19 @@ export default function AttendanceManual() {
         keyExtractor={(item) => item.id}
         renderItem={renderUser}
         contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={onRefresh}
-        showsVerticalScrollIndicator={false}
         ListEmptyComponent={<ErrorIndicator text="لا يوجد مستخدمين" />}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 16,
-      backgroundColor: theme.background,
-    },
-    centerContent: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    pageTitle: {
-      fontFamily: fonts.bold,
-      fontSize: 22,
-      color: theme.title,
-      textAlign: "right",
-      marginBottom: 16,
+      paddingHorizontal: 16,
     },
     searchContainer: {
       flexDirection: "row",
@@ -128,25 +115,6 @@ function createStyles(theme, fonts) {
       flexGrow: 1,
     },
 
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      paddingTop: 40,
-    },
-    emptyText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.textSecondary,
-      textAlign: "center",
-    },
-    errorText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.section.color,
-      marginTop: 12,
-      textAlign: "center",
-    },
     sectionHeader: {
       paddingHorizontal: 16,
       paddingVertical: 8,
@@ -156,54 +124,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 14,
       color: theme.title,
-    },
-    overlayModal: {
-      flex: 1,
-      backgroundColor: "rgba(0,0,0,.5)",
-      justifyContent: "flex-end",
-    },
-
-    card: {
-      backgroundColor: "white",
-      padding: 20,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      gap: 12,
-    },
-
-    titleModal: {
-      fontSize: 22,
-      fontFamily: fonts.regular,
-      textAlign: "right",
-    },
-
-    button: {
-      backgroundColor: "#EEE",
-      padding: 16,
-      borderRadius: 12,
-    },
-
-    input: {
-      borderWidth: 1,
-      borderColor: "#DDD",
-      borderRadius: 12,
-      padding: 12,
-      textAlign: "right",
-      fontFamily: fonts.light,
-    },
-    buttonText: {
-      fontFamily: fonts.medium,
-      textAlign: "right",
-    },
-
-    submit: {
-      backgroundColor: "#2E248D",
-      padding: 14,
-      borderRadius: 12,
-      alignItems: "center",
-    },
-    endButton: {
-      backgroundColor: theme.admin.button,
     },
   });
 }

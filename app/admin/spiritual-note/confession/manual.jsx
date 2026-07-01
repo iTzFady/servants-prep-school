@@ -1,21 +1,31 @@
-import { View, TextInput, StyleSheet, Text, FlatList } from "react-native";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Text,
+  FlatList,
+  Alert,
+} from "react-native";
+import * as Sentry from "@sentry/react-native";
 import { Feather } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useUsersList } from "@/hooks/useUser";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import StudentCard from "@/components/StudentCard";
-import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
-export default function AttendanceStudentList() {
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { useMarkConfession } from "@/hooks/useSpiritualNote";
+import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
+export default function AttendanceManual() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const router = useRouter();
-  const { data: users, isLoading, error, refetch } = useUsersList(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  const { data: users, isLoading, error, refetch } = useUsersList(false);
+  const confession = useMarkConfession();
   const filteredUsers = useMemo(
     () =>
       users?.filter((user) =>
@@ -23,24 +33,6 @@ export default function AttendanceStudentList() {
       ) || [],
     [searchQuery, users],
   );
-
-  const renderUser = useCallback(
-    ({ item }) => {
-      return (
-        <StudentCard
-          item={item}
-          onPress={() =>
-            router.push({
-              pathname: `/admin/attendance/${item.id}`,
-              params: { name: item.name },
-            })
-          }
-        />
-      );
-    },
-    [router],
-  );
-
   const onRefresh = useCallback(async () => {
     try {
       setRefreshing(true);
@@ -51,14 +43,60 @@ export default function AttendanceStudentList() {
     }
   }, [refetch]);
 
+  const renderUser = useCallback(
+    ({ item }) => {
+      return (
+        <StudentCard
+          item={item}
+          onPress={() =>
+            Alert.alert(
+              "تسجيل الاعتراف",
+              `هل انت متأكد من تسجيل اعتراف المخدوم ${item.name}`,
+              [
+                { text: "الغاء", style: "cancel" },
+                { text: "تسجيل", onPress: () => submit(item.id) },
+              ],
+            )
+          }
+        />
+      );
+    },
+    [submit],
+  );
+
+  const submit = useCallback(
+    async (id) => {
+      try {
+        await confession.mutateAsync({
+          userId: id,
+        });
+
+        Toast.show({
+          type: "success",
+          text1: "تم تسجيل الاعتراف",
+          text2: "تم حفظ الاعتراف بنجاح",
+        });
+        router.back();
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "فشل تسجيل الاعتراف",
+          text2: error.message || "حدث خطأ غير متوقع",
+        });
+      }
+    },
+    [confession],
+  );
+
   if (isLoading) return <LoadingIndicator />;
-  if (error)
+  if (error) {
     return (
       <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
+  }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <Feather name="search" size={20} color={theme.inputField.color} />
         <TextInput
@@ -77,20 +115,19 @@ export default function AttendanceStudentList() {
         keyExtractor={(item) => item.id}
         renderItem={renderUser}
         contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={onRefresh}
+        showsVerticalScrollIndicator={false}
         ListEmptyComponent={<ErrorIndicator text="لا يوجد مستخدمين" />}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 16,
-      backgroundColor: theme.background,
+      paddingHorizontal: 16,
     },
     searchContainer: {
       flexDirection: "row",
@@ -114,7 +151,6 @@ function createStyles(theme, fonts) {
       gap: 12,
       flexGrow: 1,
     },
-
     sectionHeader: {
       paddingHorizontal: 16,
       paddingVertical: 8,

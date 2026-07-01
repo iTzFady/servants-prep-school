@@ -9,6 +9,7 @@ import { useAdminAttendance } from "@/hooks/useAttendance";
 import { useLocalSearchParams } from "expo-router";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AttendanceLogs() {
   const { theme } = useContext(ThemeContext);
@@ -46,7 +47,7 @@ export default function AttendanceLogs() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.counterContainer}>
         <AttendanceCounter counter={presentCount} text="حضور" type="present" />
         <AttendanceCounter counter={lateCount} text="تأخير" type="late" />
@@ -74,7 +75,7 @@ export default function AttendanceLogs() {
           <ErrorIndicator text="لا توجد سجلات حضور حتى الآن" />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -82,17 +83,16 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: 10,
+      paddingHorizontal: 16,
       gap: 10,
     },
     counterContainer: {
       flexDirection: "row",
       gap: 12,
-      padding: 16,
     },
     sectionTitleContainer: {
       flexDirection: "row",
-      gap: 6,
+      gap: 10,
       alignItems: "center",
     },
     sectionTitle: {

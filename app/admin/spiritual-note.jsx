@@ -4,7 +4,7 @@ import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import IconButton from "@/components/IconButton";
 import { useRouter } from "expo-router";
-import { attendanceTabs, noteTabs } from "@/data/tabs";
+import { noteTabs } from "@/data/tabs";
 
 export default function SpiritualNote() {
   const { theme } = useContext(ThemeContext);

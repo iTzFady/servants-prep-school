@@ -5,6 +5,7 @@ import { fonts } from "@/theme/fonts";
 import IconButton from "@/components/IconButton";
 import { useRouter } from "expo-router";
 import { attendanceTabs } from "@/data/tabs";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AttendanceScreen() {
   const { theme } = useContext(ThemeContext);
@@ -25,7 +26,7 @@ export default function AttendanceScreen() {
     [router],
   );
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.sectionTitle}>يمكنك متابعة او تسجيل الحضور</Text>
       <FlatList
         data={attendanceTabs}
@@ -33,14 +34,14 @@ export default function AttendanceScreen() {
         renderItem={renderTabs}
         numColumns={1}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 10,
+      paddingHorizontal: 16,
     },
     sectionTitle: {
       borderStartWidth: 4,
@@ -48,7 +49,6 @@ function createStyles(theme, fonts) {
       paddingStart: 10,
       fontFamily: fonts.bold,
       fontSize: 18,
-      marginVertical: 10,
       color: theme.section.color,
     },
   });

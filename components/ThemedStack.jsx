@@ -224,18 +224,16 @@ export default function ThemedStack() {
             headerTitle: "بيانات المخدومين",
           }}
         />
-        {
-          <Stack.Screen
-            name="admin/attendance_check"
-            options={{
-              headerShown: true,
-              header: Header,
-              headerTitle: "تسجيل الحضور",
-            }}
-          />
-        }
         <Stack.Screen
-          name="admin/attendance_manual"
+          name="admin/attendance/qr"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "تسجيل الحضور",
+          }}
+        />
+        <Stack.Screen
+          name="admin/attendance/manual"
           options={{
             headerShown: true,
             header: Header,
@@ -243,7 +241,7 @@ export default function ThemedStack() {
           }}
         />
         <Stack.Screen
-          name="admin/attendance"
+          name="admin/attendance/index"
           options={{
             headerShown: true,
             header: Header,
@@ -259,7 +257,7 @@ export default function ThemedStack() {
           })}
         />
         <Stack.Screen
-          name="admin/attendance_students_list"
+          name="admin/attendance/list"
           options={{
             headerShown: true,
             header: Header,
@@ -291,7 +289,7 @@ export default function ThemedStack() {
           }}
         />
         <Stack.Screen
-          name="admin/spiritual-note/confession"
+          name="admin/spiritual-note/confession/manual"
           options={{
             headerShown: true,
             header: Header,
@@ -299,7 +297,7 @@ export default function ThemedStack() {
           }}
         />
         <Stack.Screen
-          name="admin/spiritual-note/qr"
+          name="admin/spiritual-note/confession/qr"
           options={{
             headerShown: true,
             header: Header,

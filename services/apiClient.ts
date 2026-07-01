@@ -4,6 +4,7 @@ import { ERRORS } from "@/data/errors";
 import { store } from "@/store/store";
 import { clearAuth } from "@/store/authSlice";
 import Toast from "react-native-toast-message";
+import * as Sentry from "@sentry/react-native";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_BASEURL || process.env.EXPO_BASEURL;
@@ -37,6 +38,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
+    Sentry.captureException(new Error(error));
     const { response } = error as any;
     let userMessage = ERRORS.DEFAULT;
     let isTokenInvalid = false;
@@ -44,7 +46,6 @@ apiClient.interceptors.response.use(
     if (response) {
       const data = response.data || {};
       const code = (data.code || data.error || data.message || "").toString();
-
       if (code && ERRORS[code]) {
         userMessage = ERRORS[code];
         if (code === "INVALID_TOKEN") {

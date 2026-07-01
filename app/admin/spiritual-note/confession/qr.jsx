@@ -1,31 +1,50 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Sentry from "@sentry/react-native";
 
-import {
-  Modal,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import { useMarkAttendance } from "@/hooks/useAttendance";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
+import { useMarkConfession } from "@/hooks/useSpiritualNote";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function AttendanceCheck() {
   const [permission, requestPermission] = useCameraPermissions();
   const router = useRouter();
   const [studentId, setStudentId] = useState("");
+  const confession = useMarkConfession();
 
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
 
-  const attendance = useMarkAttendance();
+  const submit = useCallback(async () => {
+    try {
+      await confession.mutateAsync({
+        userId: studentId,
+      });
+      Toast.show({
+        type: "success",
+        text1: "تم تسجيل الاعتراف",
+        text2: "تم حفظ الاعتراف بنجاح",
+      });
+
+      resetState();
+
+      router.back();
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "فشل تسجيل الاعتراف",
+        text2: error.message || "حدث خطأ غير متوقع",
+      });
+
+      resetState();
+
+      router.back();
+    }
+  }, [confession, studentId, router]);
 
   if (!permission) return null;
 
@@ -42,34 +61,8 @@ export default function AttendanceCheck() {
     setStudentId("");
   }
 
-  async function submit() {
-    try {
-      Toast.show({
-        type: "success",
-        text1: "تم تسجيل الحضور",
-        text2: "تم حفظ حالة الطالب بنجاح",
-      });
-
-      resetState();
-
-      router.back();
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "فشل تسجيل الحضور",
-        text2: error.message || "حدث خطأ غير متوقع",
-      });
-
-      Sentry.captureException(new Error(error));
-
-      resetState();
-
-      router.back();
-    }
-  }
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>امسح رمز QR</Text>
       <Text style={styles.description}>
         يرجى توجيه الكاميرا نحو الرمز الموجود في هاتف المخدوم
@@ -81,10 +74,11 @@ export default function AttendanceCheck() {
             barcodeTypes: ["qr"],
           }}
           onBarcodeScanned={
-            attendance.isPending
+            confession.isPending
               ? undefined
               : ({ data }) => {
                   setStudentId(data);
+                  submit();
                 }
           }
         />
@@ -96,7 +90,7 @@ export default function AttendanceCheck() {
           <View style={styles.cornerBottomRight} />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
@@ -104,7 +98,7 @@ function createStyles(theme, fonts) {
     container: {
       flex: 1,
       alignItems: "center",
-      paddingTop: 80,
+      justifyContent: "center",
     },
 
     title: {
@@ -118,9 +112,6 @@ function createStyles(theme, fonts) {
       color: theme.title,
       marginBottom: 40,
       textAlign: "center",
-    },
-    disabled: {
-      opacity: 0.5,
     },
     scannerContainer: {
       width: 300,
@@ -194,51 +185,6 @@ function createStyles(theme, fonts) {
       borderBottomWidth: 4,
       borderRightWidth: 4,
       borderColor: "#D4B100",
-    },
-    overlayModal: {
-      flex: 1,
-      backgroundColor: "rgba(0,0,0,.5)",
-      justifyContent: "flex-end",
-    },
-
-    card: {
-      backgroundColor: "white",
-      padding: 20,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      gap: 12,
-    },
-
-    titleModal: {
-      fontSize: 22,
-      fontFamily: fonts.regular,
-      textAlign: "right",
-    },
-
-    button: {
-      backgroundColor: "#EEE",
-      padding: 16,
-      borderRadius: 12,
-    },
-
-    input: {
-      borderWidth: 1,
-      borderColor: "#DDD",
-      borderRadius: 12,
-      padding: 12,
-      textAlign: "right",
-      fontFamily: fonts.light,
-    },
-    buttonText: {
-      fontFamily: fonts.medium,
-      textAlign: "right",
-    },
-
-    submit: {
-      backgroundColor: "#2E248D",
-      padding: 14,
-      borderRadius: 12,
-      alignItems: "center",
     },
   });
 }

@@ -153,7 +153,6 @@ function createStyles(theme, fonts) {
     container: {
       flex: 1,
       gap: 5,
-      backgroundColor: theme.background,
     },
     searchContainer: {
       flexDirection: "row",

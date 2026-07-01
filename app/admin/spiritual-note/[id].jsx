@@ -22,34 +22,43 @@ import ErrorIndicator from "@/components/ErrorIndicator";
 
 const today = new Date().toISOString().split("T")[0];
 
+const initialRecords = {
+  [today]: {
+    bible: false,
+    morning: false,
+    evening: false,
+    sleep: false,
+    mass: false,
+    confession: false,
+  },
+};
 export default function SpiritualNoteDetails() {
-  const initialRecords = {
-    [today]: {
-      bible: false,
-      morning: false,
-      evening: false,
-      sleep: false,
-      mass: false,
-      confession: false,
-    },
-  };
   const { colorScheme, theme } = useContext(ThemeContext);
   const { id } = useLocalSearchParams();
-  const [records, setRecords] = useState(initialRecords);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const [selectedDate, setSelectedDate] = useState(today);
+  const [calendarCurrentDate, setCalendarCurrentDate] = useState(today);
 
-  const monthKey = useMemo(() => selectedDate.slice(0, 7), [selectedDate]);
+  const [records, setRecords] = useState(initialRecords);
+  const [submittedToday, setSubmittedToday] = useState({
+    bible: false,
+    morning: false,
+    evening: false,
+    sleep: false,
+    mass: false,
+    confession: false,
+  });
+
+  const monthKey = useMemo(
+    () => calendarCurrentDate.slice(0, 7),
+    [calendarCurrentDate],
+  );
   const {
     data: submissions,
     error,
     isPending,
     refetch,
   } = useAdminSpiritualNoteSubmissions(id, monthKey);
-
-  const onRefresh = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
 
   useEffect(() => {
     if (!submissions) return;
@@ -58,7 +67,22 @@ export default function SpiritualNoteDetails() {
       ...prev,
       ...submissions,
     }));
+
+    setSubmittedToday(
+      submissions[today] || {
+        bible: false,
+        morning: false,
+        evening: false,
+        sleep: false,
+        mass: false,
+        confession: false,
+      },
+    );
   }, [submissions]);
+
+  const onRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   const selectedRecord = records[selectedDate] || {
     bible: false,
@@ -102,25 +126,28 @@ export default function SpiritualNoteDetails() {
 
   if (isPending) return <LoadingIndicator />;
 
-  if (error)
+  if (error) {
     return (
       <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
+  }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-      >
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.pageTitle}>اختر اليوم</Text>
         <View style={styles.calendarCard}>
           <Calendar
-            current={selectedDate}
+            current={calendarCurrentDate}
             maxDate={today}
             markedDates={markedDates}
             onDayPress={(day) => {
               setSelectedDate(day.dateString);
+              setCalendarCurrentDate(day.dateString);
+            }}
+            onMonthChange={(month) => {
+              const monthString = String(month.month).padStart(2, "0");
+              setCalendarCurrentDate(`${month.year}-${monthString}-01`);
             }}
             renderArrow={(direction) => (
               <MaterialCommunityIcons

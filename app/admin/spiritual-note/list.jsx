@@ -9,7 +9,8 @@ import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
-export default function AttendanceManual() {
+import { SafeAreaView } from "react-native-safe-area-context";
+export default function NoteStudentList() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
@@ -53,14 +54,13 @@ export default function AttendanceManual() {
 
   if (isLoading) return <LoadingIndicator />;
   if (error) {
-    Sentry.captureException(new Error(error));
     return (
       <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <Feather name="search" size={20} color={theme.inputField.color} />
         <TextInput
@@ -84,26 +84,14 @@ export default function AttendanceManual() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<ErrorIndicator text="لا يوجد مستخدمين" />}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 16,
-      backgroundColor: theme.background,
-    },
-    centerContent: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    pageTitle: {
-      fontFamily: fonts.bold,
-      fontSize: 22,
-      color: theme.title,
-      textAlign: "right",
-      marginBottom: 16,
+      paddingHorizontal: 16,
     },
     searchContainer: {
       flexDirection: "row",
@@ -127,26 +115,6 @@ function createStyles(theme, fonts) {
       gap: 12,
       flexGrow: 1,
     },
-
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      paddingTop: 40,
-    },
-    emptyText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.textSecondary,
-      textAlign: "center",
-    },
-    errorText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.section.color,
-      marginTop: 12,
-      textAlign: "center",
-    },
     sectionHeader: {
       paddingHorizontal: 16,
       paddingVertical: 8,
@@ -156,54 +124,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 14,
       color: theme.title,
-    },
-    overlayModal: {
-      flex: 1,
-      backgroundColor: "rgba(0,0,0,.5)",
-      justifyContent: "flex-end",
-    },
-
-    card: {
-      backgroundColor: "white",
-      padding: 20,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      gap: 12,
-    },
-
-    titleModal: {
-      fontSize: 22,
-      fontFamily: fonts.regular,
-      textAlign: "right",
-    },
-
-    button: {
-      backgroundColor: "#EEE",
-      padding: 16,
-      borderRadius: 12,
-    },
-
-    input: {
-      borderWidth: 1,
-      borderColor: "#DDD",
-      borderRadius: 12,
-      padding: 12,
-      textAlign: "right",
-      fontFamily: fonts.light,
-    },
-    buttonText: {
-      fontFamily: fonts.medium,
-      textAlign: "right",
-    },
-
-    submit: {
-      backgroundColor: "#2E248D",
-      padding: 14,
-      borderRadius: 12,
-      alignItems: "center",
-    },
-    endButton: {
-      backgroundColor: theme.admin.button,
     },
   });
 }

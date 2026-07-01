@@ -32,5 +32,9 @@ export const ERRORS: Record<string, string> = {
   ERROR_UPDATING_USER_ROLE: "حدث خطأ أثناء تحديث صلاحية المستخدم.",
   ERROR_UPDATING_STATUS: "حدث خطأ أثناء تحديث الحالة.",
   SPIRITUAL_NOTE_ALREADY_EXISTS: "تم ارسال هذه النوتة مسبقا",
+  ERROR_CREATING_CONFESSION: "حدث خطأ أثناء تسجيل الاعتراف.",
+  FAILED_TO_CREATE_CONFESSION: "فشل تسجيل الاعتراف. حاول مرة أخرى لاحقاً.",
+  CONFESSION_CREATED: "تم تسجيل الاعتراف بنجاح.",
+  CONFESSION_ALREADY_EXISTS: "تم تسجيل الاعتراف مسبقاً.",
   DEFAULT: "حدث خطأ ما. حاول مرة أخرى لاحقاً.",
 };

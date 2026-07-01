@@ -13,6 +13,7 @@ import { getDayLabel } from "@/data/days";
 import { getEducationLabel } from "@/data/education_types";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function PendingUserDetail() {
   const { id } = useLocalSearchParams();
   const userId = Array.isArray(id) ? id[0] : id;
@@ -52,21 +53,22 @@ export default function PendingUserDetail() {
 
   if (isLoading) return <LoadingIndicator />;
 
-  if (error || !user)
+  if (error || !user) {
     return (
       <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
     );
+  }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.nameContainer}>
-        <Image style={styles.pfp} source={user.pfpUrl} />
-        <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
-          {user.name}
-        </Text>
-      </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.nameContainer}>
+          <Image style={styles.pfp} source={user.pfpUrl} />
+          <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
+            {user.name}
+          </Text>
+        </View>
 
-      <View style={styles.detailsCard}>
         <Text style={styles.sectionTitle}>البيانات الشخصية</Text>
         <View style={styles.row}>
           <DetailTile text="الاسم" subText={user.name} />
@@ -114,25 +116,25 @@ export default function PendingUserDetail() {
           subText={user.servantPrepYear === "1" ? "اولي" : "تانية"}
         />
         <DetailTile text="العنوان" subText={user.address} />
-      </View>
 
-      <View style={styles.buttonRow}>
-        <Button
-          text="رفض"
-          onPressEvent={() => handleStatusChange("REJECTED")}
-          style={styles.rejectButton}
-          loading={isPending}
-          disabled={isPending}
-        />
-        <Button
-          text="قبول"
-          onPressEvent={() => handleStatusChange("APPROVED")}
-          style={styles.acceptButton}
-          loading={isPending}
-          disabled={isPending}
-        />
-      </View>
-    </ScrollView>
+        <View style={styles.buttonRow}>
+          <Button
+            text="رفض"
+            onPressEvent={() => handleStatusChange("REJECTED")}
+            style={styles.rejectButton}
+            loading={isPending}
+            disabled={isPending}
+          />
+          <Button
+            text="قبول"
+            onPressEvent={() => handleStatusChange("APPROVED")}
+            style={styles.acceptButton}
+            loading={isPending}
+            disabled={isPending}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -142,21 +144,12 @@ function createStyles(theme, fonts) {
       flex: 1,
     },
     content: {
-      padding: 16,
-      paddingBottom: 40,
-    },
-    detailsCard: {
+      paddingHorizontal: 16,
       gap: 10,
     },
     row: {
       flexDirection: "row",
       gap: 15,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 20,
     },
     name: {
       fontFamily: fonts.bold,
@@ -180,21 +173,19 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.bold,
       fontSize: 16,
       color: theme.title,
-      marginBottom: 14,
     },
     buttonRow: {
       flexDirection: "row",
-      marginTop: 24,
       gap: 16,
       backgroundColor: theme.background,
     },
     acceptButton: {
-      backgroundColor: "#22c55eae",
+      backgroundColor: "#118c3ec0",
       flex: 1,
       color: "#fff",
     },
     rejectButton: {
-      backgroundColor: "#cb1212",
+      backgroundColor: "#cb1212d2",
       color: "#fff",
       flex: 1,
     },

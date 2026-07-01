@@ -11,6 +11,7 @@ import { getEducationLabel } from "@/data/education_types";
 import { Image } from "expo-image";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UserDetails() {
   const { id } = useLocalSearchParams();
@@ -31,15 +32,15 @@ export default function UserDetails() {
     );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.nameContainer}>
-        <Image style={styles.pfp} source={user.pfpUrl} />
-        <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
-          {user.name}
-        </Text>
-      </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.nameContainer}>
+          <Image style={styles.pfp} source={user.pfpUrl} />
+          <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
+            {user.name}
+          </Text>
+        </View>
 
-      <View style={styles.detailsCard}>
         <Text style={styles.sectionTitle}>البيانات الشخصية</Text>
         <View style={styles.row}>
           <DetailTile text="الاسم" subText={user.name} />
@@ -87,32 +88,24 @@ export default function UserDetails() {
           subText={user.servantPrepYear === "1" ? "اولي" : "تانية"}
         />
         <DetailTile text="العنوان" subText={user.address} />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
-const createStyles = (theme, fonts) =>
-  StyleSheet.create({
+function createStyles(theme, fonts) {
+  return StyleSheet.create({
     container: {
       flex: 1,
+      paddingHorizontal: 16,
+      paddingBottom: 8,
     },
     content: {
-      padding: 16,
-      paddingBottom: 40,
-    },
-    detailsCard: {
       gap: 10,
     },
     row: {
       flexDirection: "row",
       gap: 15,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 20,
     },
     name: {
       fontFamily: fonts.bold,
@@ -136,6 +129,6 @@ const createStyles = (theme, fonts) =>
       fontFamily: fonts.bold,
       fontSize: 16,
       color: theme.title,
-      marginBottom: 14,
     },
   });
+}

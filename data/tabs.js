@@ -121,7 +121,7 @@ export const attendanceTabs = [
     icon: ({ color }) => (
       <MaterialCommunityIcons name="qrcode" size={24} color={color} />
     ),
-    value: "admin/attendance_check",
+    value: "admin/attendance/qr",
   },
   {
     id: 1,
@@ -130,14 +130,14 @@ export const attendanceTabs = [
     icon: ({ color }) => (
       <MaterialCommunityIcons name="typewriter" size={24} color={color} />
     ),
-    value: "admin/attendance_manual",
+    value: "admin/attendance/manual",
   },
   {
     id: 2,
     label: "متابعة الحضور والغياب",
     description: "متابعة التزام المخدومين",
     icon: ({ color }) => <Fontisto name="preview" size={24} color={color} />,
-    value: "admin/attendance_students_list",
+    value: "admin/attendance/list",
   },
 ];
 
@@ -149,7 +149,7 @@ export const noteTabs = [
     icon: ({ color }) => (
       <MaterialIcons name="qr-code-scanner" size={24} color={color} />
     ),
-    value: "admin/spiritual-note/qr",
+    value: "admin/spiritual-note/confession/qr",
   },
   {
     id: 1,
@@ -158,7 +158,7 @@ export const noteTabs = [
     icon: ({ color }) => (
       <MaterialCommunityIcons name="typewriter" size={24} color={color} />
     ),
-    value: "admin/spiritual-note/confession",
+    value: "admin/spiritual-note/confession/manual",
   },
   {
     id: 2,

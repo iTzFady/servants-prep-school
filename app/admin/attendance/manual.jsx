@@ -23,6 +23,7 @@ import Toast from "react-native-toast-message";
 import Button from "@/components/Button";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function AttendanceManual() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
@@ -85,8 +86,6 @@ export default function AttendanceManual() {
         text1: "فشل انهاء اليوم",
         text2: error?.message || "حدث خطأ غير متوقع",
       });
-
-      Sentry.captureException(new Error(error));
     }
   }
 
@@ -121,7 +120,6 @@ export default function AttendanceManual() {
         text1: "فشل تسجيل الحضور",
         text2: error.message || "حدث خطأ غير متوقع",
       });
-      Sentry.captureException(new Error(error));
 
       resetState();
 
@@ -149,7 +147,7 @@ export default function AttendanceManual() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <Feather name="search" size={20} color={theme.inputField.color} />
         <TextInput
@@ -262,26 +260,14 @@ export default function AttendanceManual() {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 16,
-      backgroundColor: theme.background,
-    },
-    centerContent: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    pageTitle: {
-      fontFamily: fonts.bold,
-      fontSize: 22,
-      color: theme.title,
-      textAlign: "right",
-      marginBottom: 16,
+      paddingHorizontal: 16,
     },
     searchContainer: {
       flexDirection: "row",
@@ -304,26 +290,6 @@ function createStyles(theme, fonts) {
       paddingBottom: 16,
       gap: 12,
       flexGrow: 1,
-    },
-
-    emptyContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      paddingTop: 40,
-    },
-    emptyText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.textSecondary,
-      textAlign: "center",
-    },
-    errorText: {
-      fontFamily: fonts.regular,
-      fontSize: 14,
-      color: theme.section.color,
-      marginTop: 12,
-      textAlign: "center",
     },
     sectionHeader: {
       paddingHorizontal: 16,
@@ -352,7 +318,6 @@ function createStyles(theme, fonts) {
     titleModal: {
       fontSize: 22,
       fontFamily: fonts.regular,
-      textAlign: "right",
     },
 
     button: {

@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import StudentCard from "@/components/StudentCard";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AccountsManagement() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,7 +54,7 @@ export default function AccountsManagement() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
         <Feather name="search" size={20} color={theme.inputField.color} />
         <TextInput
@@ -80,7 +81,7 @@ export default function AccountsManagement() {
           <ErrorIndicator text="لا يوجد مستخدمين قيد الانتظار" />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -88,8 +89,8 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 16,
-      backgroundColor: theme.background,
+      paddingHorizontal: 16,
+      gap: 10,
     },
     searchContainer: {
       flexDirection: "row",
