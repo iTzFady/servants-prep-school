@@ -8,6 +8,7 @@ import AttendanceTile from "@/components/AttendanceTile";
 import { useAttendance } from "@/hooks/useAttendance";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Attendance() {
   const { theme } = useContext(ThemeContext);
@@ -45,7 +46,7 @@ export default function Attendance() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.counterContainer}>
         <AttendanceCounter counter={presentCount} text="حضور" type="present" />
         <AttendanceCounter counter={lateCount} text="تأخير" type="late" />
@@ -73,7 +74,7 @@ export default function Attendance() {
           <ErrorIndicator text="لا توجد سجلات حضور حتى الآن" />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -81,7 +82,7 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: 10,
+      paddingHorizontal: 16,
       gap: 10,
     },
     counterContainer: {

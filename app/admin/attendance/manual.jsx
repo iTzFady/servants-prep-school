@@ -9,7 +9,6 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import * as Sentry from "@sentry/react-native";
 
 import { Feather, Entypo } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
@@ -23,7 +22,10 @@ import Toast from "react-native-toast-message";
 import Button from "@/components/Button";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 export default function AttendanceManual() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme } = useContext(ThemeContext);
@@ -35,6 +37,7 @@ export default function AttendanceManual() {
   const [locked, setLocked] = useState(false);
   const [studentId, setStudentId] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const attendance = useMarkAttendance();
   const { data: users, isLoading, error, refetch } = useUsersList(true);
@@ -160,6 +163,7 @@ export default function AttendanceManual() {
       </View>
       <Button
         text="انهاء غياب اليوم"
+        disabled={bulkAttendance.isPending}
         onPressEvent={() =>
           Alert.alert(
             "هل انت متأكد من هذا الامر؟",
@@ -190,9 +194,16 @@ export default function AttendanceManual() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<ErrorIndicator text="لا يوجد مستخدمين" />}
       />
-      <Modal visible={modalVisible} transparent animationType="slide">
+      <Modal
+        onRequestClose={resetState}
+        visible={modalVisible}
+        transparent
+        statusBarTranslucent
+        navigationBarTranslucent
+        animationType="slide"
+      >
         <View style={styles.overlayModal}>
-          <View style={styles.card}>
+          <View style={[styles.card, { paddingBottom: insets.bottom }]}>
             <Text style={styles.titleModal}>
               برجاء الاختيار حالة حضور الطالب
             </Text>
@@ -302,7 +313,7 @@ function createStyles(theme, fonts) {
       color: theme.title,
     },
     overlayModal: {
-      flex: 1,
+      ...StyleSheet.absoluteFill,
       backgroundColor: "rgba(0,0,0,.5)",
       justifyContent: "flex-end",
     },
@@ -331,12 +342,10 @@ function createStyles(theme, fonts) {
       borderColor: "#DDD",
       borderRadius: 12,
       padding: 12,
-      textAlign: "right",
       fontFamily: fonts.light,
     },
     buttonText: {
       fontFamily: fonts.medium,
-      textAlign: "right",
     },
 
     submit: {

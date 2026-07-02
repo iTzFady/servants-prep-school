@@ -6,7 +6,6 @@ import {
   FlatList,
   Alert,
 } from "react-native";
-import * as Sentry from "@sentry/react-native";
 import { Feather } from "@expo/vector-icons";
 import { useState, useContext, useMemo, useCallback } from "react";
 import { fonts } from "@/theme/fonts";

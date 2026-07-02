@@ -1,4 +1,3 @@
-import Button from "@/components/Button";
 import IconButton from "@/components/IconButton";
 import { ThemeContext } from "@/context/ThemeContext";
 import { curriculumTabs } from "@/data/tabs";
@@ -7,9 +6,9 @@ import { router } from "expo-router";
 import { useCallback, useContext, useMemo } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Feather } from "@expo/vector-icons";
-export default function AdminCurriculum() {
+export default function Curriculum() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const stpaul = require("@/assets/images/saint-paul.webp");
@@ -35,7 +34,7 @@ export default function AdminCurriculum() {
     [handlePress],
   );
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.card}>
         <View style={styles.textContainer}>
           <Text style={styles.title}>مكتبة الخادم</Text>
@@ -45,12 +44,6 @@ export default function AdminCurriculum() {
         </View>
         <Image source={stpaul} style={styles.stpaulImg} />
       </View>
-      <Button
-        text="اضافة محاضرة جديدة"
-        onPressEvent={() => router.push("/admin/newLecture")}
-        prefixIcon={<Feather name="upload-cloud" size={24} color="#ffffff" />}
-        style={styles.button}
-      />
       <Text style={styles.sectionTitle}>الفروع</Text>
       <FlatList
         data={curriculumTabs}
@@ -58,14 +51,14 @@ export default function AdminCurriculum() {
         numColumns={2}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 10,
+      paddingHorizontal: 16,
     },
     sectionTitle: {
       borderStartWidth: 4,

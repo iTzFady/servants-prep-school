@@ -90,6 +90,14 @@ export default function ThemedStack() {
           }}
         />
         <Stack.Screen
+          name="curriculum/[id]"
+          options={({ route }) => ({
+            headerShown: true,
+            header: Header,
+            headerTitle: `${getCurriculumLabel(route.params?.id)}`,
+          })}
+        />
+        <Stack.Screen
           name="attendance"
           options={{
             headerShown: true,
@@ -121,14 +129,6 @@ export default function ThemedStack() {
             header: Header,
             headerTitle: "تسجيل الحضور",
           }}
-        />
-        <Stack.Screen
-          name="curriculum/[id]"
-          options={({ route }) => ({
-            headerShown: true,
-            header: Header,
-            headerTitle: `${getCurriculumLabel(route.params?.id)}`,
-          })}
         />
         <Stack.Screen
           name="spiritual-note"
@@ -176,16 +176,9 @@ export default function ThemedStack() {
             headerTitle: "الاعدادت",
           }}
         />
+
         <Stack.Screen
-          name="admin/curriculum"
-          options={{
-            headerShown: true,
-            header: Header,
-            headerTitle: "ادارة المناهج",
-          }}
-        />
-        <Stack.Screen
-          name="admin/accounts"
+          name="admin/accounts/index"
           options={{
             headerShown: true,
             header: Header,
@@ -209,7 +202,23 @@ export default function ThemedStack() {
           }}
         />
         <Stack.Screen
-          name="admin/newLecture"
+          name="admin/curriculum/index"
+          options={{
+            headerShown: true,
+            header: Header,
+            headerTitle: "ادارة المناهج",
+          }}
+        />
+        <Stack.Screen
+          name="admin/curriculum/[id]"
+          options={({ route }) => ({
+            headerShown: true,
+            header: Header,
+            headerTitle: `${getCurriculumLabel(route.params?.id)}`,
+          })}
+        />
+        <Stack.Screen
+          name="admin/curriculum/create"
           options={{
             headerShown: true,
             header: Header,

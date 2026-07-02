@@ -65,7 +65,7 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 10,
+      paddingHorizontal: 16,
     },
     sectionTitle: {
       borderLeftWidth: 4,

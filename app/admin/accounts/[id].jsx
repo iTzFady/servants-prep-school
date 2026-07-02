@@ -1,6 +1,14 @@
-import { ScrollView, View, Text, StyleSheet } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import { Image } from "expo-image";
-import { useMemo, useContext, useCallback } from "react";
+import { useMemo, useContext, useCallback, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
@@ -18,6 +26,8 @@ export default function PendingUserDetail() {
   const { id } = useLocalSearchParams();
   const userId = Array.isArray(id) ? id[0] : id;
   const { theme } = useContext(ThemeContext);
+  const defaultProfilePic = require("@/assets/images/default-profile.webp");
+  const [isModalVisible, setModalVisible] = useState(false);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const router = useRouter();
   const { data: user, isLoading, error, refetch } = useUserDetail(userId || "");
@@ -61,9 +71,21 @@ export default function PendingUserDetail() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
         <View style={styles.nameContainer}>
-          <Image style={styles.pfp} source={user.pfpUrl} />
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setModalVisible(true)}
+          >
+            <Image
+              source={user?.pfpUrl ? { uri: user?.pfpUrl } : defaultProfilePic}
+              style={styles.pfp}
+              contentFit="cover"
+            />
+          </TouchableOpacity>
           <Text numberOfLines={1} ellipsizeMode="clip" style={styles.name}>
             {user.name}
           </Text>
@@ -134,6 +156,24 @@ export default function PendingUserDetail() {
           />
         </View>
       </ScrollView>
+      <Modal
+        visible={isModalVisible}
+        transparent
+        statusBarTranslucent
+        navigationBarTranslucent
+        animationType="fade"
+      >
+        <Pressable
+          style={styles.modalContainer}
+          onPress={() => setModalVisible(false)}
+        >
+          <Image
+            source={user?.pfpUrl ? { uri: user.pfpUrl } : defaultProfilePic}
+            style={styles.fullscreenImage}
+            contentFit="contain"
+          />
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -188,6 +228,16 @@ function createStyles(theme, fonts) {
       backgroundColor: "#cb1212d2",
       color: "#fff",
       flex: 1,
+    },
+    modalContainer: {
+      ...StyleSheet.absoluteFill,
+      backgroundColor: "rgba(0,0,0,0.9)",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    fullscreenImage: {
+      width: "100%",
+      height: "100%",
     },
   });
 }

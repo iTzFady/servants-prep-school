@@ -536,7 +536,7 @@ function createStyles(theme, fonts) {
     },
     formContainer: {
       width: "100%",
-      paddingHorizontal: 20,
+      paddingHorizontal: 16,
     },
     scrollContent: {
       flexGrow: 1,

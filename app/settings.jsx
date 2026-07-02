@@ -9,14 +9,13 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Fragment, useCallback, useContext, useMemo, useState } from "react";
+import { Fragment, useCallback, useContext, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from "@/components/Button";
 import { secureStore } from "@/services/secureStore";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Settings() {
-  const [loading, setLoading] = useState(false);
   const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
   const toggleTheme = useCallback(
     () => setColorScheme(colorScheme === "dark" ? "light" : "dark"),
@@ -98,7 +97,6 @@ export default function Settings() {
         </Fragment>
         <Button
           text="تسجيل الخروج"
-          loading={loading}
           style={styles.button}
           onPressEvent={() => {
             router.dismissAll();
@@ -119,7 +117,7 @@ function createStyles(theme, fonts) {
   return StyleSheet.create({
     content: {
       flexGrow: 1,
-      padding: 8,
+      paddingHorizontal: 16,
     },
     sectionTitle: {
       paddingHorizontal: 4,

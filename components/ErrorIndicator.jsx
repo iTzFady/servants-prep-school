@@ -7,11 +7,11 @@ import Button from "./Button";
 
 export default function ErrorIndicator({ state, text, onRetry, loading }) {
   const { theme } = useContext(ThemeContext);
-
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
+
   return state === "error" ? (
     <View style={styles.container}>
-      <MaterialIcons name="error" size={34} color={styles.icon} />
+      <MaterialIcons name="error" size={50} color={styles.icon.color} />
       <Text style={styles.text}>{text}</Text>
       {onRetry && (
         <Button
@@ -26,7 +26,7 @@ export default function ErrorIndicator({ state, text, onRetry, loading }) {
     </View>
   ) : (
     <View style={styles.container}>
-      <AntDesign name="dropbox" size={34} color={styles.icon.color} />
+      <AntDesign name="dropbox" size={50} color={styles.icon.color} />
       <Text style={styles.text}>{text}</Text>
     </View>
   );
@@ -47,7 +47,7 @@ function createStyles(theme, fonts) {
       textAlign: "center",
     },
     button: {
-      backgroundColor: theme.login.button,
+      backgroundColor: theme.register.button,
     },
     icon: {
       color: theme.section.color,

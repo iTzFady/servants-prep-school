@@ -1,7 +1,6 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useContext, useMemo, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import * as Sentry from "@sentry/react-native";
 
 import {
   Modal,
@@ -17,7 +16,10 @@ import { useRouter } from "expo-router";
 import { useMarkAttendance } from "@/hooks/useAttendance";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 export default function AttendanceCheck() {
   const [permission, requestPermission] = useCameraPermissions();
   const router = useRouter();
@@ -29,6 +31,7 @@ export default function AttendanceCheck() {
   const [status, setStatus] = useState("");
   const [note, setNote] = useState("");
   const [locked, setLocked] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const attendance = useMarkAttendance();
 
@@ -111,9 +114,15 @@ export default function AttendanceCheck() {
           <View style={styles.cornerBottomRight} />
         </View>
       </View>
-      <Modal visible={modalVisible} transparent animationType="slide">
+      <Modal
+        visible={modalVisible}
+        transparent
+        statusBarTranslucent
+        navigationBarTranslucent
+        animationType="slide"
+      >
         <View style={styles.overlayModal}>
-          <View style={styles.card}>
+          <View style={[styles.card, { paddingBottom: insets.bottom }]}>
             <Text style={styles.titleModal}>
               برجاء الاختيار حالة حضور الطالب
             </Text>
@@ -219,10 +228,9 @@ function createStyles(theme, fonts) {
     },
 
     permission: {
-      ...StyleSheet.absoluteFillObject,
-      alignContent: "center",
       alignItems: "center",
       justifyContent: "center",
+      flex: 1,
     },
     permissionText: {
       fontFamily: fonts.light,
@@ -289,7 +297,6 @@ function createStyles(theme, fonts) {
     titleModal: {
       fontSize: 22,
       fontFamily: fonts.regular,
-      textAlign: "right",
     },
 
     button: {
@@ -303,12 +310,10 @@ function createStyles(theme, fonts) {
       borderColor: "#DDD",
       borderRadius: 12,
       padding: 12,
-      textAlign: "right",
       fontFamily: fonts.light,
     },
     buttonText: {
       fontFamily: fonts.medium,
-      textAlign: "right",
     },
 
     submit: {

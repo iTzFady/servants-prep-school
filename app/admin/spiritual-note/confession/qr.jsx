@@ -1,7 +1,6 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import * as Sentry from "@sentry/react-native";
 
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
@@ -133,8 +132,7 @@ function createStyles(theme, fonts) {
     },
 
     permission: {
-      ...StyleSheet.absoluteFillObject,
-      alignContent: "center",
+      flex: 1,
       alignItems: "center",
       justifyContent: "center",
     },

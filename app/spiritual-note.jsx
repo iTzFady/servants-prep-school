@@ -14,7 +14,6 @@ import {
 import { Checkbox } from "expo-checkbox";
 import { Calendar } from "react-native-calendars";
 import QRCode from "react-native-qrcode-svg";
-import * as Sentry from "@sentry/react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -369,7 +368,6 @@ export default function SpiritualNote() {
                     });
                   },
                   onError: (error) => {
-                    Sentry.captureException(error);
                     Toast.show({
                       type: "error",
                       text1: "تعذر حفظ المتابعة الروحية",

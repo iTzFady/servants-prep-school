@@ -107,7 +107,6 @@ function createStyles(theme, fonts) {
       fontFamily: fonts.regular,
       fontSize: 14,
       color: theme.inputField.color,
-      textAlign: "right",
       padding: 0,
     },
     listContent: {

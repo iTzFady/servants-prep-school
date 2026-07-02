@@ -17,8 +17,7 @@ import CurriculumTypeChip from "@/components/CurriculumTypeChip";
 import LectureCard from "@/components/LectureCard";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";
-import { SafeAreaView } from "react-native-safe-area-context";
-export default function CurriculumList() {
+export default function AdminCurriculumList() {
   const { id } = useLocalSearchParams();
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
@@ -88,7 +87,7 @@ export default function CurriculumList() {
     );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.searchContainer}>
         <Feather name="search" size={20} color={theme.inputField.color} />
         <TextInput
@@ -146,7 +145,7 @@ export default function CurriculumList() {
           <ErrorIndicator text="لا يوجد محاضرات لهذا الفرع" />
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
 function createStyles(theme, fonts) {

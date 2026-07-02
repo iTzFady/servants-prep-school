@@ -89,7 +89,6 @@ function createStyles(theme, fonts) {
       paddingHorizontal: 10,
       borderRadius: 5,
       fontFamily: fonts.extraLight,
-      textAlign: "right",
       writingDirection: "rtl",
     },
     dropdownLabel: {

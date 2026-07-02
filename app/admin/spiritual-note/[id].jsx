@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { Checkbox } from "expo-checkbox";
 import { Calendar } from "react-native-calendars";
-import * as Sentry from "@sentry/react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { spiritualNoteActivities } from "@/data/spiritual-note";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
