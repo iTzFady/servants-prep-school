@@ -18,32 +18,35 @@ export default function AttendanceCheck() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
 
-  const submit = useCallback(async () => {
-    try {
-      await confession.mutateAsync({
-        userId: studentId,
-      });
-      Toast.show({
-        type: "success",
-        text1: "تم تسجيل الاعتراف",
-        text2: "تم حفظ الاعتراف بنجاح",
-      });
+  const submit = useCallback(
+    async (id) => {
+      try {
+        await confession.mutateAsync({
+          userId: id,
+        });
+        Toast.show({
+          type: "success",
+          text1: "تم تسجيل الاعتراف",
+          text2: "تم حفظ الاعتراف بنجاح",
+        });
 
-      resetState();
+        resetState();
 
-      router.back();
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "فشل تسجيل الاعتراف",
-        text2: error.message || "حدث خطأ غير متوقع",
-      });
+        router.back();
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "فشل تسجيل الاعتراف",
+          text2: error.message || "حدث خطأ غير متوقع",
+        });
 
-      resetState();
+        resetState();
 
-      router.back();
-    }
-  }, [confession, studentId, router]);
+        router.back();
+      }
+    },
+    [confession, router],
+  );
 
   if (!permission) return null;
 
@@ -77,7 +80,7 @@ export default function AttendanceCheck() {
               ? undefined
               : ({ data }) => {
                   setStudentId(data);
-                  submit();
+                  submit(data);
                 }
           }
         />
