@@ -32,6 +32,29 @@ export default function AttendanceManual() {
       ) || [],
     [searchQuery, users],
   );
+  const submit = useCallback(
+    async (id) => {
+      try {
+        await confession.mutateAsync({
+          userId: id,
+        });
+
+        Toast.show({
+          type: "success",
+          text1: "تم تسجيل الاعتراف",
+          text2: "تم حفظ الاعتراف بنجاح",
+        });
+        router.back();
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "فشل تسجيل الاعتراف",
+          text2: error.message || "حدث خطأ غير متوقع",
+        });
+      }
+    },
+    [confession],
+  );
   const onRefresh = useCallback(async () => {
     try {
       setRefreshing(true);
@@ -61,30 +84,6 @@ export default function AttendanceManual() {
       );
     },
     [submit],
-  );
-
-  const submit = useCallback(
-    async (id) => {
-      try {
-        await confession.mutateAsync({
-          userId: id,
-        });
-
-        Toast.show({
-          type: "success",
-          text1: "تم تسجيل الاعتراف",
-          text2: "تم حفظ الاعتراف بنجاح",
-        });
-        router.back();
-      } catch (error) {
-        Toast.show({
-          type: "error",
-          text1: "فشل تسجيل الاعتراف",
-          text2: error.message || "حدث خطأ غير متوقع",
-        });
-      }
-    },
-    [confession],
   );
 
   if (isLoading) return <LoadingIndicator />;
