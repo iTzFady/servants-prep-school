@@ -115,6 +115,18 @@ export const secureStore = {
     return storage.removeItem(USER_KEY);
   },
 
+  async getItem(key: string): Promise<string | null> {
+    return storage.getItem(key);
+  },
+
+  async setItem(key: string, value: string): Promise<void> {
+    return storage.setItem(key, value);
+  },
+
+  async removeItem(key: string): Promise<void> {
+    return storage.removeItem(key);
+  },
+
   async clear(): Promise<void> {
     try {
       await Promise.all([this.removeToken(), this.removeUser()]);

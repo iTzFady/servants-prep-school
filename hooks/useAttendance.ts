@@ -31,7 +31,7 @@ export const useAttendance = (): UseQueryResult<AttendanceResponse, Error> => {
     queryKey: ["attendance"],
     queryFn: async () => {
       const response =
-        await apiClient.get<AttendanceResponse>("/v1/attendance/");
+        await apiClient.get<AttendanceResponse>("/api/v1/attendance/");
       return response.data;
     },
     enabled: true,
@@ -49,7 +49,7 @@ export interface AttendanceAdminPayload {
 export const useMarkAttendance = () => {
   return useMutation({
     mutationFn: async (payload: AttendanceAdminPayload) => {
-      const response = await apiClient.post("/v1/attendance/admin", payload);
+      const response = await apiClient.post("/api/v1/attendance/admin", payload);
       return response.data;
     },
 
@@ -68,7 +68,7 @@ export const useAdminAttendance = (
     queryKey: ["attendance", id],
     queryFn: async () => {
       const response = await apiClient.get<AttendanceResponse>(
-        `/v1/attendance/admin/${id}`,
+        `/api/v1/attendance/admin/${id}`,
       );
       return response.data;
     },
@@ -87,7 +87,7 @@ export const useBulkAttendance = (): UseMutationResult<
 > => {
   return useMutation({
     mutationFn: async (payload) => {
-      await apiClient.post("/v1/attendance/admin/bulk", payload);
+      await apiClient.post("/api/v1/attendance/admin/bulk", payload);
     },
 
     onSuccess: () => {

@@ -42,7 +42,7 @@ export const dashboardTabs = [
     label: "النتائج",
     description: "كشف درجات الاختبارات",
     icon: ({ color }) => <Feather name="bar-chart-2" size={24} color={color} />,
-    // value: "results",
+    value: "results",
   },
   {
     id: 5,
@@ -101,7 +101,7 @@ export const AdmindashboardTabs = [
     label: "ادارة النتائج",
     description: "رصد ومتابعة درجات الاختبارات",
     icon: ({ color }) => <Feather name="bar-chart-2" size={24} color={color} />,
-    // value: "results",
+    value: "admin/results",
   },
 
   {

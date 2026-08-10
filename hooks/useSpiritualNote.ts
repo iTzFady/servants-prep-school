@@ -225,7 +225,7 @@ export const useSpiritualNoteSubmissions = (
   return useQuery({
     queryKey: ["spiritual-note-submissions", month ?? "current"],
     queryFn: async () => {
-      const response = await apiClient.get("/v2/spiritual-note/submissions", {
+      const response = await apiClient.get("/api/v2/spiritual-note/submissions", {
         params: month
           ? {
               month: Number(month.slice(5, 7)),
@@ -245,7 +245,7 @@ export const useSubmitSpiritualNote = (): UseMutationResult<
 > => {
   return useMutation({
     mutationFn: async (payload) => {
-      const response = await apiClient.post("/v2/spiritual-note", payload);
+      const response = await apiClient.post("/api/v2/spiritual-note", payload);
       return response.data;
     },
     onSuccess: () => {
@@ -266,7 +266,7 @@ export const useAdminSpiritualNoteSubmissions = (
     queryKey: ["spiritual-note-submissions", id, month ?? "current"],
     queryFn: async () => {
       const response = await apiClient.get(
-        `/v2/spiritual-note/${id}/submissions`,
+        `/api/v2/spiritual-note/${id}/submissions`,
         {
           params: month
             ? {
@@ -285,7 +285,7 @@ export const useMarkConfession = () => {
   return useMutation({
     mutationFn: async (userId: string) => {
       const response = await apiClient.post(
-        "/v2/spiritual-note/confession",
+        "/api/v2/spiritual-note/confession",
         userId,
       );
       return response.data;

@@ -7,7 +7,6 @@ import { TouchableOpacity } from "react-native";
 import Header from "./Header";
 import { getCurriculumLabel } from "@/data/tabs";
 import { useAppSelector } from "@/store/hooks";
-import { NavigationBar } from "expo-navigation-bar";
 import Toast from "react-native-toast-message";
 export default function ThemedStack() {
   const { theme, colorScheme } = useContext(ThemeContext);
@@ -41,7 +40,7 @@ export default function ThemedStack() {
           name="index"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "إعداد خدام",
             headerRight: () => (
               <TouchableOpacity onPress={() => router.navigate("/settings")}>
@@ -69,7 +68,7 @@ export default function ThemedStack() {
           name="register"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "تسجيل حساب جديد",
           }}
         />
@@ -77,7 +76,7 @@ export default function ThemedStack() {
           name="settings"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "الاعدادت",
           }}
         />
@@ -85,7 +84,7 @@ export default function ThemedStack() {
           name="curriculum"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "المنهج",
           }}
         />
@@ -93,7 +92,7 @@ export default function ThemedStack() {
           name="curriculum/[id]"
           options={({ route }) => ({
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: `${getCurriculumLabel(route.params?.id)}`,
           })}
         />
@@ -101,7 +100,7 @@ export default function ThemedStack() {
           name="attendance"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "سجل الحضور والغياب",
           }}
         />
@@ -109,7 +108,7 @@ export default function ThemedStack() {
           name="profile"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "الملف الشخصي",
             headerLeft: () => (
               <TouchableOpacity onPress={() => router.navigate("/qr-code")}>
@@ -126,7 +125,7 @@ export default function ThemedStack() {
           name="qr-code"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "تسجيل الحضور",
           }}
         />
@@ -134,8 +133,16 @@ export default function ThemedStack() {
           name="spiritual-note"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "النوتة الروحية",
+          }}
+        />
+        <Stack.Screen
+          name="results"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "النتائج",
           }}
         />
         {/* Admin Screens */}
@@ -143,7 +150,7 @@ export default function ThemedStack() {
           name="admin/index"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "إعداد خدام",
             headerRight: () => (
               <TouchableOpacity
@@ -172,7 +179,7 @@ export default function ThemedStack() {
           name="admin/settings"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "الاعدادت",
           }}
         />
@@ -181,7 +188,7 @@ export default function ThemedStack() {
           name="admin/accounts/index"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "ادارة الحسابات",
           }}
         />
@@ -189,7 +196,7 @@ export default function ThemedStack() {
           name="admin/accounts/[id]"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "تفاصيل الاستمارة",
           }}
         />
@@ -197,7 +204,7 @@ export default function ThemedStack() {
           name="admin/details/[id]"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "تفاصيل الحساب",
           }}
         />
@@ -205,7 +212,7 @@ export default function ThemedStack() {
           name="admin/curriculum/index"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "ادارة المناهج",
           }}
         />
@@ -213,7 +220,7 @@ export default function ThemedStack() {
           name="admin/curriculum/[id]"
           options={({ route }) => ({
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: `${getCurriculumLabel(route.params?.id)}`,
           })}
         />
@@ -221,7 +228,7 @@ export default function ThemedStack() {
           name="admin/curriculum/create"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "إضافة محاضرة جديدة",
           }}
         />
@@ -229,7 +236,7 @@ export default function ThemedStack() {
           name="admin/students"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "بيانات المخدومين",
           }}
         />
@@ -237,7 +244,7 @@ export default function ThemedStack() {
           name="admin/attendance/qr"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "تسجيل الحضور",
           }}
         />
@@ -245,7 +252,7 @@ export default function ThemedStack() {
           name="admin/attendance/manual"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "تسجيل الحضور يدويا",
           }}
         />
@@ -253,7 +260,7 @@ export default function ThemedStack() {
           name="admin/attendance/index"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "ادارة الحضور و الغياب",
           }}
         />
@@ -261,7 +268,7 @@ export default function ThemedStack() {
           name="admin/attendance/[id]"
           options={({ route }) => ({
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: `${route.params?.name}`,
           })}
         />
@@ -269,15 +276,39 @@ export default function ThemedStack() {
           name="admin/attendance/list"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "متابعة الحضور",
           }}
+        />
+        <Stack.Screen
+          name="admin/results"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "ادارة النتائج",
+          }}
+        />
+        <Stack.Screen
+          name="admin/results/add"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "اضافة مادة",
+          }}
+        />
+        <Stack.Screen
+          name="admin/results/[id]"
+          options={({ route }) => ({
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: `${route.params?.name || "نتائج الطالب"}`,
+          })}
         />
         <Stack.Screen
           name="admin/spiritual-note"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "ادارة النوتة الروحية",
           }}
         />
@@ -285,7 +316,7 @@ export default function ThemedStack() {
           name="admin/spiritual-note/[id]"
           options={({ route }) => ({
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: `${route.params?.name}`,
           })}
         />
@@ -293,7 +324,7 @@ export default function ThemedStack() {
           name="admin/spiritual-note/list"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "قائمة الطلاب",
           }}
         />
@@ -301,7 +332,7 @@ export default function ThemedStack() {
           name="admin/spiritual-note/confession/manual"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "الاعتراف",
           }}
         />
@@ -309,7 +340,7 @@ export default function ThemedStack() {
           name="admin/spiritual-note/confession/qr"
           options={{
             headerShown: true,
-            header: Header,
+            header: (props) => <Header {...props} />,
             headerTitle: "الاعتراف",
           }}
         />
@@ -318,7 +349,6 @@ export default function ThemedStack() {
         animated={true}
         style={colorScheme === "dark" ? "light" : "dark"}
       />
-      <NavigationBar style={colorScheme === "dark" ? "light" : "dark"} />
     </>
   );
 }

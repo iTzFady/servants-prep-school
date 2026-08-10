@@ -54,7 +54,7 @@ export const usePendingUsers = (): UseQueryResult<PendingUser[], Error> => {
     queryKey: ["pendingUsers"],
     queryFn: async () => {
       const response = await apiClient.get<PendingUsersResponse>(
-        "/v1/admin/user/pending",
+        "/api/v1/admin/user/pending",
       );
       return response.data.users;
     },
@@ -69,7 +69,7 @@ export const useUsersList = (
     queryKey: ["UsersList"],
     queryFn: async () => {
       const response = await apiClient.get<UserList[]>(
-        `/v1/admin/user/students?notAttend=${state}`,
+        `/api/v1/admin/user/students?notAttend=${state}`,
       );
       return response.data;
     },
@@ -84,7 +84,7 @@ export const useUserDetail = (
     queryKey: ["userDetail", userId],
     queryFn: async () => {
       const response = await apiClient.get<UserDetail>(
-        `/v1/admin/user/${userId}`,
+        `/api/v1/admin/user/${userId}`,
       );
       return response.data;
     },
@@ -98,7 +98,7 @@ export const useUpdateUserStatus = (
   return useMutation({
     mutationFn: async (payload) => {
       const response = await apiClient.patch<UserDetail>(
-        `/v1/admin/user/${userId}/status`,
+        `/api/v1/admin/user/${userId}/status`,
         payload,
       );
       return response.data;
