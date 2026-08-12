@@ -1,7 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import InputField from "@/components/InputField";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { useResultsStorage } from "@/hooks/useResults";
@@ -13,7 +13,6 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 export default function AdminStudentResults() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const router = useRouter();
   const { id, name } = useLocalSearchParams();
   const { subjects, isLoading, getResultsForStudent, saveResultsForStudent } =
     useResultsStorage();
@@ -21,15 +20,11 @@ export default function AdminStudentResults() {
   const [values, setValues] = useState({});
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    const existing = getResultsForStudent(id);
-    setValues(
-      subjects.reduce((acc, subject) => {
-        acc[subject] = existing[subject] ?? "";
-        return acc;
-      }, {}),
-    );
-  }, [getResultsForStudent, id, subjects]);
+  const savedValues = getResultsForStudent(id);
+  const displayedValues = subjects.reduce((acc, subject) => {
+    acc[subject] = values[subject] ?? savedValues[subject] ?? "";
+    return acc;
+  }, {});
 
   const handleChange = (subject, text) => {
     setValues((prev) => ({ ...prev, [subject]: text }));
@@ -38,13 +33,12 @@ export default function AdminStudentResults() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await saveResultsForStudent(id, values);
+      await saveResultsForStudent(id, displayedValues);
       Toast.show({
         type: "success",
         text1: "تم حفظ النتائج",
         text2: "تم تحديث نتائج الطالب بنجاح.",
       });
-      router.back();
     } catch (error) {
       Toast.show({
         type: "error",
@@ -78,7 +72,7 @@ export default function AdminStudentResults() {
               <Text style={styles.subjectLabel}>{item}</Text>
               <InputField
                 text="الدرجة"
-                value={values[item]}
+                value={displayedValues[item]}
                 onChangeText={(text) => handleChange(item, text)}
                 placeholder="مثال: 85"
                 keyboardType="numeric"

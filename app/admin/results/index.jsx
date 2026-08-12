@@ -98,7 +98,7 @@ export default function AdminResultsPage() {
                 <MaterialIcons
                   name="close"
                   size={18}
-                  color={theme.section.color}
+                  color={theme.textPrimary}
                 />
               </TouchableOpacity>
             </View>
@@ -194,7 +194,7 @@ function createStyles(theme, fonts) {
       borderColor: theme.borderColor,
     },
     subjectText: {
-      color: theme.textColor,
+      color: theme.textPrimary,
       fontFamily: fonts.medium,
       fontSize: 14,
     },

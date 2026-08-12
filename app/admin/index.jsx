@@ -24,7 +24,7 @@ export default function AdminIndex() {
         title={item.label}
         icon={item.icon}
         description={item.description}
-        onPress={() => router.navigate(`/${item.value}`)}
+        onPress={() => router.push(`/${item.value}`)}
         disabled={!item.value}
         onDisabled={() => {
           Toast.show({

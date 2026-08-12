@@ -35,7 +35,7 @@ export const dashboardTabs = [
     label: "الواجبات",
     description: "تسليم الواجب الاسبوعي",
     icon: ({ color }) => <Feather name="clipboard" size={24} color={color} />,
-    // value: "assignments",
+    value: "assignments",
   },
   {
     id: 4,
@@ -49,7 +49,7 @@ export const dashboardTabs = [
     label: "الارشيف",
     description: "رحلات و مناسبات سابقة",
     icon: ({ color }) => <Feather name="archive" size={24} color={color} />,
-    // value: "archive",
+    value: "archive",
   },
 ];
 
@@ -94,7 +94,7 @@ export const AdmindashboardTabs = [
     label: "ادارة الواجبات",
     description: "انشاء ومتابعة الواجبات",
     icon: ({ color }) => <Feather name="clipboard" size={24} color={color} />,
-    // value: "assignments",
+    value: "assignments",
   },
   {
     id: 6,
@@ -109,7 +109,7 @@ export const AdmindashboardTabs = [
     label: "ادارة الارشيف",
     description: "رفع وتحديث الارشيف",
     icon: ({ color }) => <Feather name="archive" size={24} color={color} />,
-    // value: "archive",
+    value: "archive",
   },
 ];
 
