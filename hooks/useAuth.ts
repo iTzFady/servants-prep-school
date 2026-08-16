@@ -8,6 +8,10 @@ import { User } from "../store/authSlice";
 import { apiClient } from "@/services/apiClient";
 import { queryClient } from "@/services/queryClient";
 import { secureStore } from "@/services/secureStore";
+import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
+import axios from "axios";
 
 // Auth
 interface LoginPayload {
@@ -39,6 +43,23 @@ export const useLogin = (): UseMutationResult<
         secureStore.setUser(data.userResponse),
       ]);
       queryClient.invalidateQueries({ queryKey: ["user"] });
+      await registerPushToken().then(async (token) => {
+        try {
+          if (token) {
+            await apiClient.post("/api/v2/push-notifications", {"expoPushToken": token });
+          }
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            console.log("STATUS:", error.response?.status);
+            console.log("DATA:", error.response?.data);
+            console.log("HEADERS:", error.response?.headers);
+            console.log("URL:", error.config?.url);
+          }
+          else {
+            console.log("Error:", error);
+          }
+        }
+      });
     },
   });
 };
@@ -82,3 +103,34 @@ export const useGetProfile = (): UseQueryResult<User, Error> => {
     enabled: true,
   });
 };
+
+async function registerPushToken(): Promise<string | null> {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "Default",
+      importance: Notifications.AndroidImportance.MAX,
+    });
+  }
+
+  const current = await Notifications.getPermissionsAsync();
+  let finalStatus = current.status;
+
+  if (finalStatus !== "granted") {
+    const requested = await Notifications.requestPermissionsAsync();
+    finalStatus = requested.status;
+  }
+
+  if (finalStatus !== "granted") {
+    return null;
+  }
+
+  const projectId =
+    Constants.expoConfig?.extra?.eas?.projectId ??
+    Constants.easConfig?.projectId;
+
+  if (!projectId) {
+    throw new Error("EAS project ID is missing");
+  }
+
+  return (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+}

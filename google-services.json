@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050624496944",
+    "project_id": "e3dadkhodam",
+    "storage_bucket": "e3dadkhodam.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050624496944:android:79764a06d35c061ae864f5",
+        "android_client_info": {
+          "package_name": "com.faaady.serveantsprepapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcmZMx5nFlTrYBHLEAhuLvy9-4oABwbXg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,7 +11,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.faaady.serveantsprepapp",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "ExpoLocalization_supportsRTL": true,
+        "ExpoLocalization_forcesRTL": true
       }
     },
     "android": {
@@ -21,7 +23,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.faaady.serveantsprepapp"
+      "package": "com.faaady.serveantsprepapp",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "dir": "rtl",
@@ -55,7 +58,17 @@
           "organization": "faaady"
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/splash-icon.png",
+          "color": "#E6F4FE",
+          "sounds": [
+            "./assets/sounds/notification_sound.wav"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -68,6 +81,6 @@
         "projectId": "be0ef0d9-c5b4-4195-8138-7c297b45ece6"
       }
     },
-    "owner": "faaady"
+    "owner": "stmary-church"
   }
 }
