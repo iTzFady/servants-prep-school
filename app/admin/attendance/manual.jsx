@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
+  Pressable,
 } from "react-native";
 
 import { Feather, Entypo } from "@expo/vector-icons";
@@ -200,9 +201,10 @@ export default function AttendanceManual() {
         transparent
         statusBarTranslucent
         navigationBarTranslucent
-        animationType="slide"
+        animationType="fade"
       >
         <View style={styles.overlayModal}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={resetState} />
           <View style={[styles.card, { paddingBottom: insets.bottom }]}>
             <Text style={styles.titleModal}>
               برجاء الاختيار حالة حضور الطالب
@@ -319,7 +321,7 @@ function createStyles(theme, fonts) {
     },
 
     card: {
-      backgroundColor: "white",
+      backgroundColor: theme.primary,
       padding: 20,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
@@ -329,10 +331,11 @@ function createStyles(theme, fonts) {
     titleModal: {
       fontSize: 22,
       fontFamily: fonts.regular,
+      color: theme.section.color,
     },
 
     button: {
-      backgroundColor: "#EEE",
+      backgroundColor: theme.secondary,
       padding: 16,
       borderRadius: 12,
     },
@@ -346,6 +349,7 @@ function createStyles(theme, fonts) {
     },
     buttonText: {
       fontFamily: fonts.medium,
+      color: theme.section.color,
     },
 
     submit: {
@@ -356,6 +360,9 @@ function createStyles(theme, fonts) {
     },
     endButton: {
       backgroundColor: theme.admin.button,
+    },
+    disabled: {
+      opacity: 0.6,
     },
   });
 }

@@ -48,7 +48,9 @@ export default function ThemedStack() {
               </TouchableOpacity>
             ),
             headerLeft: () => (
-              <TouchableOpacity onPress={() => router.navigate("/notifications")}>
+              <TouchableOpacity
+                onPress={() => router.navigate("/notifications")}
+              >
                 <Feather name="bell" size={24} color={theme.header.color} />
               </TouchableOpacity>
             ),
@@ -95,11 +97,46 @@ export default function ThemedStack() {
             headerTitle: "سجل الحضور والغياب",
           }}
         />
-        <Stack.Screen name="assignments/index" options={{ headerShown: true, header: (props) => <Header {...props} />, headerTitle: "الواجبات" }} />
-        <Stack.Screen name="assignments/[id]" options={{ headerShown: true, header: (props) => <Header {...props} />, headerTitle: "حل الواجب" }} />
-        <Stack.Screen name="archive/index" options={{ headerShown: true, header: (props) => <Header {...props} />, headerTitle: "الأرشيف" }} />
-        <Stack.Screen name="archive/[id]" options={{ headerShown: true, header: (props) => <Header {...props} />, headerTitle: "تفاصيل الألبوم" }} />
-        <Stack.Screen name="notifications" options={{ headerShown: true, header: (props) => <Header {...props} />, headerTitle: "الإشعارات" }} />
+        <Stack.Screen
+          name="assignments/index"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "الواجبات",
+          }}
+        />
+        <Stack.Screen
+          name="assignments/[id]"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "حل الواجب",
+          }}
+        />
+        <Stack.Screen
+          name="archive/index"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "الأرشيف",
+          }}
+        />
+        <Stack.Screen
+          name="archive/[id]"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "تفاصيل الألبوم",
+          }}
+        />
+        <Stack.Screen
+          name="notifications"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "الإشعارات",
+          }}
+        />
         <Stack.Screen
           name="profile"
           options={{
@@ -282,14 +319,6 @@ export default function ThemedStack() {
             headerShown: true,
             header: (props) => <Header {...props} />,
             headerTitle: "ادارة النتائج",
-          }}
-        />
-        <Stack.Screen
-          name="admin/results/add"
-          options={{
-            headerShown: true,
-            header: (props) => <Header {...props} />,
-            headerTitle: "اضافة مادة",
           }}
         />
         <Stack.Screen

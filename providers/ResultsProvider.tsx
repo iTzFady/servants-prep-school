@@ -1,5 +1,12 @@
 import { secureStore } from "@/services/secureStore";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 const SUBJECTS_KEY = "resultsSubjects";
 const RESULTS_KEY = "studentResults";
@@ -18,7 +25,10 @@ type ResultsContextValue = {
   isLoading: boolean;
   addSubject: (subject: string) => Promise<void>;
   removeSubject: (subject: string) => Promise<void>;
-  saveResultsForStudent: (studentId: string, results: StudentResults) => Promise<void>;
+  saveResultsForStudent: (
+    studentId: string,
+    results: StudentResults,
+  ) => Promise<void>;
   getResultsForStudent: (studentId: string) => StudentResults;
 };
 
@@ -46,55 +56,88 @@ export function ResultsProvider({ children }: { children: React.ReactNode }) {
         if (active) setIsLoading(false);
       }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const addSubject = useCallback(async (subject: string) => {
-    const trimmed = subject.trim();
-    if (!trimmed || subjects.includes(trimmed)) return;
-    const nextSubjects = [...subjects, trimmed];
-    setSubjects(nextSubjects);
-    try {
-      await secureStore.setItem(SUBJECTS_KEY, JSON.stringify(nextSubjects));
-    } catch (error) {
-      setSubjects(subjects);
-      throw error;
-    }
-  }, [subjects]);
+  const addSubject = useCallback(
+    async (subject: string) => {
+      const trimmed = subject.trim();
+      if (!trimmed || subjects.includes(trimmed)) return;
+      const nextSubjects = [...subjects, trimmed];
+      setSubjects(nextSubjects);
+      try {
+        await secureStore.setItem(SUBJECTS_KEY, JSON.stringify(nextSubjects));
+      } catch (error) {
+        setSubjects(subjects);
+        throw error;
+      }
+    },
+    [subjects],
+  );
 
-  const removeSubject = useCallback(async (subject: string) => {
-    const nextSubjects = subjects.filter((item) => item !== subject);
-    setSubjects(nextSubjects);
-    try {
-      await secureStore.setItem(SUBJECTS_KEY, JSON.stringify(nextSubjects));
-    } catch (error) {
-      setSubjects(subjects);
-      throw error;
-    }
-  }, [subjects]);
+  const removeSubject = useCallback(
+    async (subject: string) => {
+      const nextSubjects = subjects.filter((item) => item !== subject);
+      setSubjects(nextSubjects);
+      try {
+        await secureStore.setItem(SUBJECTS_KEY, JSON.stringify(nextSubjects));
+      } catch (error) {
+        setSubjects(subjects);
+        throw error;
+      }
+    },
+    [subjects],
+  );
 
-  const saveResultsForStudent = useCallback(async (studentId: string, results: StudentResults) => {
-    const nextResults = { ...studentResults, [studentId]: results };
-    setStudentResults(nextResults);
-    try {
-      await secureStore.setItem(RESULTS_KEY, JSON.stringify(nextResults));
-    } catch (error) {
-      setStudentResults(studentResults);
-      throw error;
-    }
-  }, [studentResults]);
+  const saveResultsForStudent = useCallback(
+    async (studentId: string, results: StudentResults) => {
+      const nextResults = { ...studentResults, [studentId]: results };
+      setStudentResults(nextResults);
+      try {
+        await secureStore.setItem(RESULTS_KEY, JSON.stringify(nextResults));
+      } catch (error) {
+        setStudentResults(studentResults);
+        throw error;
+      }
+    },
+    [studentResults],
+  );
 
   const getResultsForStudent = useCallback(
     (studentId: string) => studentResults[studentId] || {},
     [studentResults],
   );
 
-  const value = useMemo(() => ({ subjects, studentResults, isLoading, addSubject, removeSubject, saveResultsForStudent, getResultsForStudent }), [subjects, studentResults, isLoading, addSubject, removeSubject, saveResultsForStudent, getResultsForStudent]);
-  return <ResultsContext.Provider value={value}>{children}</ResultsContext.Provider>;
+  const value = useMemo(
+    () => ({
+      subjects,
+      studentResults,
+      isLoading,
+      addSubject,
+      removeSubject,
+      saveResultsForStudent,
+      getResultsForStudent,
+    }),
+    [
+      subjects,
+      studentResults,
+      isLoading,
+      addSubject,
+      removeSubject,
+      saveResultsForStudent,
+      getResultsForStudent,
+    ],
+  );
+  return (
+    <ResultsContext.Provider value={value}>{children}</ResultsContext.Provider>
+  );
 }
 
 export function useResultsStore() {
   const context = useContext(ResultsContext);
-  if (!context) throw new Error("useResultsStorage must be used within ResultsProvider");
+  if (!context)
+    throw new Error("useResultsStorage must be used within ResultsProvider");
   return context;
 }
