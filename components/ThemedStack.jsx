@@ -123,11 +123,11 @@ export default function ThemedStack() {
         />
         <Stack.Screen
           name="archive/[id]"
-          options={{
+          options={({ route }) => ({
             headerShown: true,
             header: (props) => <Header {...props} />,
-            headerTitle: "تفاصيل الألبوم",
-          }}
+            headerTitle: `${route.params?.name || "تفاصيل الألبوم"}`,
+          })}
         />
         <Stack.Screen
           name="notifications"

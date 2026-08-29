@@ -3,6 +3,7 @@ import {
   Feather,
   FontAwesome,
   FontAwesome5,
+  FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
@@ -61,6 +62,14 @@ export const SubjectTabs = [
       <Ionicons name="newspaper" size={size} color={color} />
     ),
     value: "MEMORIZATION_TEXTS",
+  },
+  {
+    id: 7,
+    label: "نوتة روحية",
+    icon: ({ color, size }) => (
+      <FontAwesome6 name="notes-medical" size={size} color={color} />
+    ),
+    value: "SPIRITUAL_NOTES",
   },
 ];
 

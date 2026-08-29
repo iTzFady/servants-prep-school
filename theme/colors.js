@@ -144,6 +144,9 @@ export const Colors = {
         border: "#f9f9f9",
       },
     },
+    modal: {
+      background: "#F1F5F9",
+    },
   },
   dark: {
     login: {
@@ -288,6 +291,9 @@ export const Colors = {
         background: "#1C2839",
         border: "#FFFFFF80",
       },
+    },
+    modal: {
+      background: "#0F172A",
     },
   },
 };

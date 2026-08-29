@@ -1,9 +1,11 @@
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeContext } from "@/context/ThemeContext";
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -43,121 +45,122 @@ const albums = [
   },
 ];
 export default function Archive() {
+  const { theme } = useContext(ThemeContext);
   const [query, setQuery] = useState("");
   const filtered = useMemo(
     () => albums.filter((a) => a.title.includes(query)),
     [query],
   );
+  const styles = useMemo(() => createStyles(theme, fonts), [theme]);
+
+  const renderAlbum = ({ item }) => (
+    <TouchableOpacity
+      key={item.id}
+      onPress={() =>
+        router.push({
+          pathname: `/archive/${item.id}`,
+          params: { name: item.title },
+        })
+      }
+      style={styles.card}
+    >
+      <Image source={item.cover} style={styles.image} contentFit="cover" />
+      <View style={styles.cardBody}>
+        <Text numberOfLines={1} style={styles.cardTitle}>
+          {item.title}
+        </Text>
+        <Text style={styles.cardMeta}>
+          {item.date} · {item.count}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
   return (
-    <SafeAreaView style={styles.screen} edges={["bottom"]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.search}>
-          <Feather name="search" size={20} color="#94A3B8" />
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder="ابحث في الأرشيف"
-            placeholderTextColor="#94A3B8"
-            style={styles.input}
-            textAlign="right"
-          />
+    <SafeAreaView style={styles.screen} edges={["bottom", "top"]}>
+      <View style={styles.search}>
+        <Feather name="search" size={20} color="#94A3B8" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="ابحث في الارشيف"
+          placeholderTextColor={theme.inputField.color}
+          value={query}
+          onChangeText={setQuery}
+        />
+      </View>
+      <View style={styles.heading}>
+        <View>
+          <Text style={styles.title}>الألبومات</Text>
         </View>
-        <View style={styles.heading}>
-          <View>
-            <Text style={styles.title}>ذكرياتنا</Text>
-            <Text style={styles.subtitle}>الرحلات واللقاءات والمناسبات</Text>
-          </View>
-          <Text style={styles.count}>{filtered.length} ألبومات</Text>
-        </View>
-        <View style={styles.grid}>
-          {filtered.map((a) => (
-            <TouchableOpacity
-              key={a.id}
-              onPress={() => router.push(`/archive/${a.id}`)}
-              style={styles.card}
-            >
-              <Image source={a.cover} style={styles.image} contentFit="cover" />
-              <View style={styles.cardBody}>
-                <Text numberOfLines={1} style={styles.cardTitle}>
-                  {a.title}
-                </Text>
-                <Text style={styles.cardMeta}>
-                  {a.date} · {a.count}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+        <Text style={styles.count}>{filtered.length} ألبومات</Text>
+      </View>
+      <FlatList
+        keyExtractor={(item) => item.id}
+        data={filtered}
+        renderItem={renderAlbum}
+        numColumns={2}
+        contentContainerStyle={{ gap: 16 }}
+      />
     </SafeAreaView>
   );
 }
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#F8FAFC" },
-  content: { padding: 16, paddingBottom: 30 },
-  search: {
-    height: 48,
-    backgroundColor: "#FFF",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    gap: 8,
-  },
-  input: {
-    flex: 1,
-    fontFamily: fonts.regular,
-    color: "#1E293B",
-    fontSize: 13,
-    writingDirection: "rtl",
-  },
-  heading: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginVertical: 22,
-  },
-  title: { fontFamily: fonts.bold, fontSize: 20, color: "#1E293B" },
-  subtitle: {
-    fontFamily: fonts.regular,
-    fontSize: 11,
-    color: "#94A3B8",
-    marginTop: 2,
-  },
-  count: { fontFamily: fonts.medium, fontSize: 11, color: "#B51D36" },
-  grid: {
-    flexDirection: "row-reverse",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 14,
-  },
-  card: {
-    width: "47.8%",
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#EEF2F6",
-    shadowColor: "#0F172A",
-    shadowOpacity: 0.04,
-    shadowRadius: 7,
-    elevation: 1,
-  },
-  image: { height: 125, width: "100%" },
-  cardBody: { padding: 10 },
-  cardTitle: {
-    fontFamily: fonts.bold,
-    color: "#334155",
-    fontSize: 13,
-    textAlign: "right",
-  },
-  cardMeta: {
-    fontFamily: fonts.regular,
-    color: "#94A3B8",
-    fontSize: 10,
-    textAlign: "right",
-    marginTop: 4,
-  },
-});
+function createStyles(theme, fonts) {
+  return StyleSheet.create({
+    screen: { flex: 1, paddingHorizontal: 16 },
+    search: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      backgroundColor: theme.inputField.background,
+      borderRadius: 14,
+      marginBottom: 16,
+      gap: 10,
+    },
+    searchInput: {
+      flex: 1,
+      fontFamily: fonts.regular,
+      fontSize: 14,
+      color: theme.inputField.color,
+      padding: 0,
+    },
+    heading: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    title: { fontFamily: fonts.bold, fontSize: 14, color: theme.title },
+
+    count: {
+      fontFamily: fonts.medium,
+      fontSize: 11,
+      color: theme.textSecondary,
+    },
+    card: {
+      backgroundColor: theme.secondary,
+      flex: 1,
+      margin: 10,
+      borderRadius: 10,
+      justifyContent: "center",
+      alignItems: "center",
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    image: { height: 125, width: "100%", borderRadius: 10 },
+    cardBody: { padding: 10 },
+    cardTitle: {
+      fontFamily: fonts.bold,
+      color: theme.title,
+      fontSize: 13,
+    },
+    cardMeta: {
+      fontFamily: fonts.regular,
+      color: theme.textSecondary,
+      fontSize: 10,
+      marginTop: 4,
+    },
+  });
+}

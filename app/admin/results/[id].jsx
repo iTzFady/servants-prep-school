@@ -358,7 +358,7 @@ function createStyles(theme, fonts) {
       justifyContent: "flex-end",
     },
     overlayModal: {
-      backgroundColor: theme.settings.section.background,
+      backgroundColor: theme.modal.background,
       padding: 20,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
