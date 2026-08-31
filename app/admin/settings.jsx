@@ -12,7 +12,6 @@ import { router } from "expo-router";
 import { Fragment, useCallback, useContext, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from "@/components/Button";
-import { secureStore } from "@/services/secureStore";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function AdminSettings() {
@@ -96,7 +95,7 @@ export default function AdminSettings() {
           style={styles.button}
           onPressEvent={() => {
             router.dismissAll();
-            secureStore.clear();
+
             router.replace("/login");
           }}
           prefixIcon={<MaterialIcons name="logout" size={24} color="#DC2626" />}

@@ -46,7 +46,9 @@ export const useLogin = (): UseMutationResult<
       await registerPushToken().then(async (token) => {
         try {
           if (token) {
-            await apiClient.post("/api/v2/push-notifications", {"expoPushToken": token });
+            await apiClient.post("/api/v2/push-notifications", {
+              expoPushToken: token,
+            });
           }
         } catch (error) {
           if (axios.isAxiosError(error)) {
@@ -54,8 +56,7 @@ export const useLogin = (): UseMutationResult<
             console.log("DATA:", error.response?.data);
             console.log("HEADERS:", error.response?.headers);
             console.log("URL:", error.config?.url);
-          }
-          else {
+          } else {
             console.log("Error:", error);
           }
         }
@@ -84,7 +85,7 @@ export const useRegister = (): UseMutationResult<AuthResponse, Error, any> => {
 export const useLogout = (): UseMutationResult<void, Error, void> => {
   return useMutation({
     mutationFn: async () => {
-      // await apiClient.post("/auth/logout");
+      await apiClient.delete("/api/v2/push-notifications");
     },
     onSuccess: async () => {
       await secureStore.clear();

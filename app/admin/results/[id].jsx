@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -13,7 +13,7 @@ import InputField from "@/components/InputField";
 import { useLocalSearchParams } from "expo-router";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
-import { useResultsStorage } from "@/hooks/useResults";
+import { useAdminResults, useCreateResults } from "@/hooks/useResults";
 import { SubjectTabs, getSubjectLabel } from "@/data/subjects";
 import Button from "@/components/Button";
 import {
@@ -22,53 +22,74 @@ import {
 } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import ErrorIndicator from "@/components/ErrorIndicator";
 
 export default function AdminStudentResults() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const { id, name } = useLocalSearchParams();
-  const { subjects, isLoading, getResultsForStudent, saveResultsForStudent } =
-    useResultsStorage();
 
+  const { data: results, isLoading, error, refetch } = useAdminResults(id);
+  const createResults = useCreateResults();
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [newScore, setNewScore] = useState("");
-  const [adding, setAdding] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const insets = useSafeAreaInsets();
   const [values, setValues] = useState({});
-  const [saving, setSaving] = useState(false);
-
-  const savedValues = getResultsForStudent(id);
-  // fallback to canonical subjects from data/subjects.js when none are stored
-  const effectiveSubjects =
-    subjects && subjects.length > 0
-      ? subjects
-      : SubjectTabs.map((t) => t.value);
-
-  const displayedValues = effectiveSubjects.reduce((acc, subject) => {
-    acc[subject] = values[subject] ?? savedValues[subject] ?? "";
-    return acc;
-  }, {});
-
-  const remainingSubjectsToAdd = effectiveSubjects.filter(
-    (s) =>
-      (savedValues[s] === undefined || savedValues[s] === "") &&
-      (values[s] === undefined || values[s] === ""),
+  const [refreshing, setRefreshing] = useState(false);
+  const subjects = useMemo(() => SubjectTabs.map((t) => t.value), []);
+  const existingSubjects = useMemo(
+    () => (results?.results ?? []).map((r) => r.subject),
+    [results],
   );
+  const remainingSubjects = useMemo(
+    () => subjects.filter((s) => !existingSubjects.includes(s)),
+    [subjects, existingSubjects],
+  );
+  const onRefresh = useCallback(async () => {
+    try {
+      setRefreshing(true);
 
-  const handleChange = (subject, text) => {
-    setValues((prev) => ({ ...prev, [subject]: text }));
-  };
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   const handleSave = async () => {
-    setSaving(true);
+    setIsPending(true);
     try {
-      await saveResultsForStudent(id, displayedValues);
+      let subjectArray = [];
+      if (selectedSubject && newScore) {
+        const scoreNum = Number(newScore);
+        if (!Number.isFinite(scoreNum) || scoreNum <= 0) {
+          Toast.show({ type: "error", text1: "درجة غير صالحة" });
+          return;
+        }
+        subjectArray = [{ subjectName: selectedSubject, score: scoreNum }];
+      } else {
+        subjectArray = Object.entries(values || {})
+          .map(([subjectName, score]) => ({
+            subjectName,
+            score: Number(score),
+          }))
+          .filter((s) => Number.isFinite(s.score) && s.score > 0);
+      }
+
+      if (subjectArray.length === 0) {
+        Toast.show({ type: "info", text1: "لا يوجد بيانات للحفظ" });
+        return;
+      }
+
+      await createResults.mutateAsync({ userId: id, subject: subjectArray });
       Toast.show({
         type: "success",
         text1: "تم حفظ النتائج",
         text2: "تم تحديث نتائج الطالب بنجاح.",
       });
+      setValues({});
+      await refetch();
     } catch (error) {
       Toast.show({
         type: "error",
@@ -76,83 +97,62 @@ export default function AdminStudentResults() {
         text2: error?.message || "حدث خطأ أثناء حفظ النتائج.",
       });
     } finally {
-      setSaving(false);
+      setIsPending(false);
+      setSelectedSubject(null);
+      setNewScore("");
+      setAddModalVisible(false);
     }
   };
 
   if (isLoading) return <LoadingIndicator />;
+  if (error)
+    return (
+      <ErrorIndicator state="error" text={error.message} onRetry={onRefresh} />
+    );
+  const renderItems = ({ item }) => {
+    const subjectKey = item.subject;
+    const currentScore = values[subjectKey] ?? item.score?.toString() ?? "";
+
+    return (
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <View style={styles.iconWrapper}>
+            {(() => {
+              const tab = SubjectTabs.find((t) => t.value === item.subject);
+              const IconComp = tab?.icon;
+              return IconComp
+                ? IconComp({ color: theme.section.color, size: 20 })
+                : null;
+            })()}
+          </View>
+          <Text style={styles.subjectLabel}>
+            {getSubjectLabel(item.subject)}
+          </Text>
+        </View>
+        <InputField text="الدرجة" value={currentScore} editable={false} />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>نتائج الطالب</Text>
-      <Text style={styles.subtitle}>{name || "المخدوم"}</Text>
+      <FlatList
+        data={results.results}
+        keyExtractor={(result) => result.subject}
+        renderItem={renderItems}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        contentContainerStyle={styles.listContent}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        ListEmptyComponent={<ErrorIndicator text="لم يتم اضافة نتائج بعد" />}
+        ListHeaderComponent={
+          results.results.length > 0 && (
+            <Text style={styles.title}>نتائج الطالب</Text>
+          )
+        }
+      />
 
-      {subjects.length === 0 ? (
-        <View style={styles.emptyWrapper}>
-          <Text style={styles.emptyText}>
-            لا توجد مواد مضافة بعد. اذهب الى صفحة ادارة النتائج واضف المواد.
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={effectiveSubjects}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <View style={styles.cardHeader}>
-                <View style={styles.iconWrapper}>
-                  {(() => {
-                    const tab = SubjectTabs.find((t) => t.value === item);
-                    const IconComp = tab?.icon;
-                    return IconComp
-                      ? IconComp({ color: theme.section.color, size: 20 })
-                      : null;
-                  })()}
-                </View>
-                <Text style={styles.subjectLabel}>
-                  {getSubjectLabel(item) || item}
-                </Text>
-                <View style={styles.progressContainer}>
-                  <View style={styles.progressBarBackground}>
-                    {(() => {
-                      const raw = Number(displayedValues[item] ?? 0);
-                      const pct = Math.max(
-                        0,
-                        Math.min(100, Number.isFinite(raw) ? raw : 0),
-                      );
-                      return (
-                        <View
-                          style={[
-                            styles.progressBarFill,
-                            {
-                              width: `${pct}%`,
-                              backgroundColor: theme.admin.button,
-                            },
-                          ]}
-                        />
-                      );
-                    })()}
-                  </View>
-                  <Text style={styles.progressText}>
-                    {displayedValues[item] ?? ""}
-                  </Text>
-                </View>
-              </View>
-              <InputField
-                text="الدرجة"
-                value={displayedValues[item]}
-                onChangeText={(text) => handleChange(item, text)}
-                placeholder="مثال: 85"
-                keyboardType="numeric"
-              />
-            </View>
-          )}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          contentContainerStyle={styles.listContent}
-        />
-      )}
-
-      {remainingSubjectsToAdd.length > 0 && !isAddModalVisible && (
+      {remainingSubjects.length > 0 && !isAddModalVisible && (
         <TouchableOpacity
           accessibilityLabel="اضافة نتيجة"
           activeOpacity={0.9}
@@ -184,7 +184,7 @@ export default function AdminStudentResults() {
               showsVerticalScrollIndicator={false}
               style={styles.modalList}
             >
-              {remainingSubjectsToAdd.map((s) => {
+              {remainingSubjects.map((s) => {
                 const tab = SubjectTabs.find((t) => t.value === s);
                 return (
                   <TouchableOpacity
@@ -218,11 +218,11 @@ export default function AdminStudentResults() {
               keyboardType="numeric"
             />
             <Button
-              text="حفظ النتائج"
+              text="اضافة"
               onPressEvent={handleSave}
               style={styles.saveButton}
-              loading={saving}
-              disabled={effectiveSubjects.length === 0}
+              loading={isLoading || isPending}
+              disabled={!selectedSubject || !newScore}
             />
           </View>
         </View>

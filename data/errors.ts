@@ -36,5 +36,8 @@ export const ERRORS: Record<string, string> = {
   FAILED_TO_CREATE_CONFESSION: "فشل تسجيل الاعتراف. حاول مرة أخرى لاحقاً.",
   CONFESSION_CREATED: "تم تسجيل الاعتراف بنجاح.",
   CONFESSION_ALREADY_EXISTS: "تم تسجيل الاعتراف مسبقاً.",
+  SUBJECT_ALREADY_EXISTS: "تم اضافة نتيجة لهذه المادة مسبقاً.",
+  RESULTS_SAVED_SUCCESSFULLY: "تم حفظ النتائج بنجاح.",
+  ERROR_SAVING_RESULTS: "حدث خطأ أثناء حفظ النتائج.",
   DEFAULT: "حدث خطأ ما. حاول مرة أخرى لاحقاً.",
 };

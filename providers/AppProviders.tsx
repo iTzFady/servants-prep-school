@@ -7,7 +7,6 @@ import { initializeAuth } from "../store/authSlice";
 import { secureStore } from "../services/secureStore";
 import { useAppDispatch } from "../store/hooks";
 import { setSentryUser, clearSentryUser } from "../services/sentryClient";
-import { ResultsProvider } from "./ResultsProvider";
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -45,7 +44,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     <Provider store={store}>
       <AuthInitializer>
         <QueryClientProvider client={queryClient}>
-          <ResultsProvider>{children}</ResultsProvider>
+          {children}
         </QueryClientProvider>
       </AuthInitializer>
     </Provider>

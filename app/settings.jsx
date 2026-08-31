@@ -12,16 +12,16 @@ import { router } from "expo-router";
 import { Fragment, useCallback, useContext, useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Button from "@/components/Button";
-import { secureStore } from "@/services/secureStore";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLogout } from "@/hooks/useAuth";
 export default function Settings() {
   const { colorScheme, setColorScheme, theme } = useContext(ThemeContext);
   const toggleTheme = useCallback(
     () => setColorScheme(colorScheme === "dark" ? "light" : "dark"),
     [setColorScheme, colorScheme],
   );
-
+  const { mutateAsync: logout, isPending } = useLogout();
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -98,11 +98,13 @@ export default function Settings() {
         <Button
           text="تسجيل الخروج"
           style={styles.button}
-          onPressEvent={() => {
+          onPressEvent={async () => {
+            await logout();
             router.dismissAll();
-            secureStore.clear();
             router.replace("/login");
           }}
+          loading={isPending}
+          disabled={isPending}
           prefixIcon={<MaterialIcons name="logout" size={24} color="#DC2626" />}
         />
         <Text style={{ color: theme.title, textAlign: "center" }}>
