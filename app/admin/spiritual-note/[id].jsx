@@ -1,7 +1,7 @@
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import "@/utils/calendarLocale";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -21,32 +21,25 @@ import ErrorIndicator from "@/components/ErrorIndicator";
 
 const today = new Date().toISOString().split("T")[0];
 
-const initialRecords = {
-  [today]: {
-    bible: false,
-    morning: false,
-    evening: false,
-    sleep: false,
-    mass: false,
-    confession: false,
-  },
+const defaultSubmission = {
+  bible: false,
+  morning: false,
+  evening: false,
+  sleep: false,
+  mass: false,
+  confession: false,
 };
+
+const initialRecords = {
+  [today]: { ...defaultSubmission },
+};
+
 export default function SpiritualNoteDetails() {
   const { colorScheme, theme } = useContext(ThemeContext);
   const { id } = useLocalSearchParams();
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const [selectedDate, setSelectedDate] = useState(today);
   const [calendarCurrentDate, setCalendarCurrentDate] = useState(today);
-
-  const [records, setRecords] = useState(initialRecords);
-  const [submittedToday, setSubmittedToday] = useState({
-    bible: false,
-    morning: false,
-    evening: false,
-    sleep: false,
-    mass: false,
-    confession: false,
-  });
 
   const monthKey = useMemo(
     () => calendarCurrentDate.slice(0, 7),
@@ -59,43 +52,24 @@ export default function SpiritualNoteDetails() {
     refetch,
   } = useAdminSpiritualNoteSubmissions(id, monthKey);
 
-  useEffect(() => {
-    if (!submissions) return;
-
-    setRecords((prev) => ({
-      ...prev,
-      ...submissions,
-    }));
-
-    setSubmittedToday(
-      submissions[today] || {
-        bible: false,
-        morning: false,
-        evening: false,
-        sleep: false,
-        mass: false,
-        confession: false,
-      },
-    );
-  }, [submissions]);
+  const effectiveRecords = useMemo(
+    () => ({
+      ...initialRecords,
+      ...(submissions ?? {}),
+    }),
+    [submissions],
+  );
 
   const onRefresh = useCallback(async () => {
     await refetch();
   }, [refetch]);
 
-  const selectedRecord = records[selectedDate] || {
-    bible: false,
-    morning: false,
-    evening: false,
-    sleep: false,
-    mass: false,
-    confession: false,
-  };
+  const selectedRecord = effectiveRecords[selectedDate] || defaultSubmission;
 
   const markedDates = useMemo(() => {
     const result = {};
 
-    Object.entries(records).forEach(([date, record]) => {
+    Object.entries(effectiveRecords).forEach(([date, record]) => {
       const completedCount = Object.values(record).filter(Boolean).length;
 
       let color = "#D9D9D9";
@@ -121,7 +95,7 @@ export default function SpiritualNoteDetails() {
     };
 
     return result;
-  }, [records, selectedDate]);
+  }, [effectiveRecords, selectedDate]);
 
   if (isPending) return <LoadingIndicator />;
 

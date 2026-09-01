@@ -1,74 +1,96 @@
 import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { fonts } from "@/theme/fonts";
-const questions = [
-  {
-    title: "ما هو المقصود بكلمة عقيدة؟",
-    choices: [
-      "الإيمان والتعليم المسيحي",
-      "مجرد معلومات تاريخية",
-      "طقوس الكنيسة فقط",
-      "دراسة الألحان",
-    ],
-  },
-  { title: "الكنيسة جسد المسيح الحي.", choices: ["صح", "خطأ"] },
-];
+import useAssignment from "@/hooks/useAssignment";
+
 export default function AssignmentQuestions() {
   const { id } = useLocalSearchParams();
+  const { getAssignment, submitAssignment } = useAssignment();
   const [index, setIndex] = useState(0);
-  const [answer, setAnswer] = useState();
-  const q = questions[index];
-  const next = () =>
-    index === questions.length - 1
-      ? router.back()
-      : (setIndex(index + 1), setAnswer(undefined));
+  const [questions, setQuestions] = useState([]);
+  const [selected, setSelected] = useState({});
+
+  useEffect(() => {
+    let mounted = true;
+    if (!id) return;
+    getAssignment(id)
+      .then((data) => {
+        if (!mounted) return;
+        // Expecting API: { questions: [{ id, name, answers: [{ id, text }] }, ...], title }
+        setQuestions((data && data.questions) || []);
+      })
+      .catch(() => {});
+    return () => (mounted = false);
+  }, [id, getAssignment]);
+
+  const q = questions[index] || { name: "", answers: [] };
+
+  const goNext = async () => {
+    if (index === questions.length - 1) {
+      // submit
+      const answers = questions.map((qq) => ({
+        questionId: qq.id,
+        answerId: selected[qq.id],
+      }));
+      try {
+        await submitAssignment(id, { assignmentId: id, answers });
+      } catch (e) {
+        // ignore for now; API client will surface errors
+      }
+      router.back();
+    } else {
+      setIndex(index + 1);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.screen} edges={["bottom"]}>
       <View style={styles.progressTop}>
         <View>
           <Text style={styles.small}>
-            السؤال {index + 1} من {questions.length}
+            السؤال {index + 1} من {questions.length || 0}
           </Text>
-          <Text style={styles.title}>
-            {id === "hymns" ? "واجب الألحان" : "واجب العقيدة"}
-          </Text>
+          <Text style={styles.title}>{/* title from API if available */}</Text>
         </View>
         <Text style={styles.percent}>
-          {Math.round(((index + 1) / questions.length) * 100)}%
+          {Math.round(((index + 1) / (questions.length || 1)) * 100)}%
         </Text>
       </View>
       <View style={styles.track}>
         <View
           style={[
             styles.fill,
-            { width: `${((index + 1) / questions.length) * 100}%` },
+            { width: `${((index + 1) / (questions.length || 1)) * 100}%` },
           ]}
         />
       </View>
       <View style={styles.question}>
         <Text style={styles.kind}>
-          {q.choices.length === 2 ? "صح أم خطأ" : "اختر الإجابة الصحيحة"}
+          {q.answers && q.answers.length === 2 ? "صح أم خطأ" : "اختر الإجابة الصحيحة"}
         </Text>
-        <Text style={styles.questionText}>{q.title}</Text>
-        {q.choices.map((choice, i) => (
+        <Text style={styles.questionText}>{q.name}</Text>
+        {(q.answers || []).map((choice) => (
           <TouchableOpacity
-            onPress={() => setAnswer(i)}
-            key={choice}
-            style={[styles.choice, answer === i && styles.choiceActive]}
+            onPress={() => setSelected({ ...selected, [q.id]: choice.id })}
+            key={choice.id}
+            style={[
+              styles.choice,
+              selected[q.id] === choice.id && styles.choiceActive,
+            ]}
           >
-            <View style={[styles.radio, answer === i && styles.radioActive]}>
-              {answer === i && <View style={styles.dot} />}
+            <View style={[styles.radio, selected[q.id] === choice.id && styles.radioActive]}>
+              {selected[q.id] === choice.id && <View style={styles.dot} />}
             </View>
             <Text
               style={[
                 styles.choiceText,
-                answer === i && styles.choiceTextActive,
+                selected[q.id] === choice.id && styles.choiceTextActive,
               ]}
             >
-              {choice}
+              {choice.text}
             </Text>
           </TouchableOpacity>
         ))}
@@ -77,14 +99,13 @@ export default function AssignmentQuestions() {
         <TouchableOpacity
           disabled={index === 0}
           onPress={() => {
-            setIndex(index - 1);
-            setAnswer(undefined);
+            setIndex(Math.max(0, index - 1));
           }}
           style={styles.prev}
         >
           <Text style={styles.prevText}>السابق</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={next} style={styles.next}>
+        <TouchableOpacity onPress={goNext} style={styles.next}>
           <Text style={styles.nextText}>
             {index === questions.length - 1 ? "إنهاء" : "التالي"}
           </Text>

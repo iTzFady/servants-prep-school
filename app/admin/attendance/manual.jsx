@@ -35,7 +35,6 @@ export default function AttendanceManual() {
   const [modalVisible, setModalVisible] = useState(false);
   const [status, setStatus] = useState("");
   const [note, setNote] = useState("");
-  const [locked, setLocked] = useState(false);
   const [studentId, setStudentId] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
@@ -98,7 +97,6 @@ export default function AttendanceManual() {
     setStudentId("");
     setStatus("");
     setNote("");
-    setLocked(false);
   }
 
   async function submit(selectedStatus = status) {
@@ -136,7 +134,6 @@ export default function AttendanceManual() {
       <StudentCard
         item={item}
         onPress={() => {
-          setLocked(true);
           setStudentId(item.id);
           setModalVisible(true);
         }}

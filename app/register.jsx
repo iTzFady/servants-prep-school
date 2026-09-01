@@ -7,7 +7,7 @@ import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useContext, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
@@ -23,10 +23,7 @@ import { useRegister } from "@/hooks/useAuth";
 import UploadButton from "@/components/UploadButton";
 import { educationTypes, serverntPrepYear } from "@/data/education_types";
 import { gender } from "@/data/gender";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import dateUtils from "@/utils/dateFormatter";
 
 export default function Register() {
@@ -35,13 +32,10 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const insets = useSafeAreaInsets();
   const {
     control,
     handleSubmit,
-    watch,
-
-    formState: { errors, isDirty, isValid },
+    formState: { errors },
   } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -64,7 +58,7 @@ export default function Register() {
       serviceType: "",
     },
   });
-  const password = watch("password");
+  const password = useWatch({ control, name: "password" });
   const onSubmit = (data) => {
     const payload = {
       ...data,

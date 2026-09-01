@@ -3,7 +3,7 @@ import { useAppSelector } from "@/store/hooks";
 
 import { fonts } from "@/theme/fonts";
 import { useContext, useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function QrCode() {

@@ -1,161 +1,61 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react-native';
-import { ThemeContext, ThemeProvider } from '@/context/ThemeContext';
-import { useContext } from 'react';
-import { Text } from 'react-native';
+import { describe, it, expect } from "vitest";
+import React, { act, useContext } from "react";
+import { render, screen } from "@testing-library/react";
+import { ThemeContext, ThemeProvider } from "@/context/ThemeContext";
 
-// Mock component to test ThemeContext
-function TestComponent() {
+function Consumer() {
   const context = useContext(ThemeContext);
-  
-  if (!context) {
-    return <Text>No context</Text>;
-  }
 
-  const { colorScheme, theme } = context;
-  
-  return (
-    <Text testID="color-scheme">
-      {colorScheme}
-    </Text>
+  return React.createElement(
+    "div",
+    { "data-testid": "theme-state" },
+    context ? context.colorScheme : "missing",
   );
 }
 
-describe('ThemeContext', () => {
-  describe('ThemeProvider', () => {
-    it('should provide theme context to children', () => {
+describe("ThemeContext", () => {
+  it("provides a default light theme to children", async () => {
+    await act(async () => {
       render(
-        <ThemeProvider>
-          <TestComponent />
-        </ThemeProvider>
+        React.createElement(ThemeProvider, null, React.createElement(Consumer)),
       );
-
-      const colorSchemeText = screen.getByTestID('color-scheme');
-      expect(colorSchemeText).toBeDefined();
     });
 
-    it('should have default color scheme', () => {
-      const TestComponent = () => {
-        const context = useContext(ThemeContext);
-        return <Text testID="scheme">{context.colorScheme}</Text>;
-      };
-
-      render(
-        <ThemeProvider>
-          <TestComponent />
-        </ThemeProvider>
-      );
-
-      const schemeText = screen.getByTestID('scheme');
-      expect(schemeText.props.children).toBeDefined();
-    });
-
-    it('should provide theme object with required properties', () => {
-      const TestComponent = () => {
-        const context = useContext(ThemeContext);
-        
-        if (!context || !context.theme) {
-          return <Text>No theme</Text>;
-        }
-
-        return <Text testID="theme-exists">Theme exists</Text>;
-      };
-
-      render(
-        <ThemeProvider>
-          <TestComponent />
-        </ThemeProvider>
-      );
-
-      const themeText = screen.getByTestID('theme-exists');
-      expect(themeText.props.children).toBe('Theme exists');
-    });
-
-    it('should provide setColorScheme function', () => {
-      const TestComponent = () => {
-        const context = useContext(ThemeContext);
-        
-        if (!context) {
-          return <Text>No context</Text>;
-        }
-
-        return (
-          <Text testID="has-setter">
-            {typeof context.setColorScheme === 'function' ? 'true' : 'false'}
-          </Text>
-        );
-      };
-
-      render(
-        <ThemeProvider>
-          <TestComponent />
-        </ThemeProvider>
-      );
-
-      const setterText = screen.getByTestID('has-setter');
-      expect(setterText.props.children).toBe('true');
-    });
-
-    it('should have context value with colorScheme, setColorScheme, and theme', () => {
-      const TestComponent = () => {
-        const context = useContext(ThemeContext);
-        
-        if (!context) {
-          return <Text>Invalid</Text>;
-        }
-
-        const hasAllProps = 
-          'colorScheme' in context &&
-          'setColorScheme' in context &&
-          'theme' in context;
-
-        return (
-          <Text testID="props-check">
-            {hasAllProps ? 'valid' : 'invalid'}
-          </Text>
-        );
-      };
-
-      render(
-        <ThemeProvider>
-          <TestComponent />
-        </ThemeProvider>
-      );
-
-      const propsText = screen.getByTestID('props-check');
-      expect(propsText.props.children).toBe('valid');
-    });
-
-    it('should render children correctly', () => {
-      const TestComponent = () => <Text testID="child">Child Content</Text>;
-
-      render(
-        <ThemeProvider>
-          <TestComponent />
-        </ThemeProvider>
-      );
-
-      const childText = screen.getByTestID('child');
-      expect(childText.props.children).toBe('Child Content');
-    });
+    expect(screen.getByTestId("theme-state").textContent).toBe("light");
   });
 
-  describe('ThemeContext value', () => {
-    it('should throw error when context is used without provider', () => {
-      const TestComponent = () => {
-        const context = useContext(ThemeContext);
-        return <Text>{context ? 'Has context' : 'No context'}</Text>;
-      };
+  it("exposes the theme API shape", async () => {
+    let snapshot = null;
 
-      render(<TestComponent />);
+    function Probe() {
+      const context = useContext(ThemeContext);
+      snapshot = context;
+      return null;
+    }
 
-      const text = screen.getByText('No context');
-      expect(text).toBeDefined();
+    await act(async () => {
+      render(
+        React.createElement(ThemeProvider, null, React.createElement(Probe)),
+      );
     });
 
-    it('should have initial context value as null', () => {
-      const initialValue = ThemeContext._currentValue || null;
-      expect(initialValue === null || initialValue !== undefined).toBe(true);
-    });
+    expect(snapshot).toBeTruthy();
+    expect(snapshot.colorScheme).toBe("light");
+    expect(typeof snapshot.setColorScheme).toBe("function");
+    expect(snapshot.theme).toBeTruthy();
+  });
+
+  it("returns a missing context value when used without provider", () => {
+    function Probe() {
+      const context = useContext(ThemeContext);
+      return React.createElement(
+        "div",
+        { "data-testid": "no-provider" },
+        context ? "has-context" : "no-context",
+      );
+    }
+
+    render(React.createElement(Probe));
+    expect(screen.getByTestId("no-provider").textContent).toBe("no-context");
   });
 });

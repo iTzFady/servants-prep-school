@@ -2,20 +2,55 @@ import { useState, useCallback, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { Platform, Linking } from "react-native";
-import * as Sentry from "@sentry/react-native";
 
-// Only import platform-specific modules when not on web
-let FileSystem: typeof import("expo-file-system/legacy") | null = null;
-let IntentLauncher: typeof import("expo-intent-launcher") | null = null;
+type DownloadFileSystemModule = {
+  documentDirectory?: string | null;
+  getInfoAsync: (path: string) => Promise<{ exists: boolean }>;
+  makeDirectoryAsync: (path: string, options?: unknown) => Promise<void>;
+  createDownloadResumable: (
+    uri: string,
+    fileUri: string,
+    options?: unknown,
+    callback?: (progress: {
+      totalBytesExpectedToWrite: number;
+      totalBytesWritten: number;
+    }) => void,
+  ) => {
+    downloadAsync: () => Promise<{ uri?: string } | null>;
+  };
+  deleteAsync: (path: string) => Promise<void>;
+  getContentUriAsync: (path: string) => Promise<string>;
+};
 
-if (Platform.OS !== "web") {
-  try {
-    FileSystem = require("expo-file-system/legacy");
-    IntentLauncher = require("expo-intent-launcher");
-  } catch (e) {
-    console.warn("Platform-specific modules not available");
+type IntentLauncherModule = {
+  startActivityAsync: (
+    action: string,
+    params?: Record<string, unknown>,
+  ) => Promise<unknown>;
+};
+
+const loadNativeModules = async () => {
+  if (Platform.OS === "web") {
+    return { FileSystem: null, IntentLauncher: null };
   }
-}
+
+  try {
+    const [fileSystemModule, intentLauncherModule] = await Promise.all([
+      import("expo-file-system/legacy"),
+      import("expo-intent-launcher"),
+    ]);
+
+    return {
+      FileSystem: (fileSystemModule.default ??
+        fileSystemModule) as DownloadFileSystemModule,
+      IntentLauncher: (intentLauncherModule.default ??
+        intentLauncherModule) as IntentLauncherModule,
+    };
+  } catch (error) {
+    console.warn("Native modules unavailable on this platform", error);
+    return { FileSystem: null, IntentLauncher: null };
+  }
+};
 
 export interface DownloadedLecture {
   id: string;
@@ -26,12 +61,24 @@ export interface DownloadedLecture {
 }
 
 const STORAGE_KEY = "@downloaded_lectures";
-const DOWNLOADS_DIR =
-  Platform.OS === "web"
-    ? "web-downloads"
-    : `${FileSystem?.documentDirectory}lectures/`;
 
 export const useDownload = () => {
+  const [nativeModules, setNativeModules] = useState<{
+    FileSystem: DownloadFileSystemModule | null;
+    IntentLauncher: IntentLauncherModule | null;
+  }>({
+    FileSystem: null,
+    IntentLauncher: null,
+  });
+
+  const FileSystem = nativeModules.FileSystem;
+  const IntentLauncher = nativeModules.IntentLauncher;
+
+  const DOWNLOADS_DIR =
+    Platform.OS === "web"
+      ? "web-downloads"
+      : `${FileSystem?.documentDirectory ?? ""}lectures/`;
+
   const [downloadProgress, setDownloadProgress] = useState<{
     [key: string]: number;
   }>({});
@@ -60,7 +107,7 @@ export const useDownload = () => {
         intermediates: true,
       });
     }
-  }, []);
+  }, [DOWNLOADS_DIR, FileSystem]);
 
   const saveDownloadsToStorage = useCallback(
     async (lectures: DownloadedLecture[]) => {
@@ -169,10 +216,45 @@ export const useDownload = () => {
     } catch (error) {
       console.error("Initialize downloads error:", error);
     }
-  }, [ensureDownloadsDirectory, saveDownloadsToStorage]);
+  }, [
+    DOWNLOADS_DIR,
+    ensureDownloadsDirectory,
+    FileSystem,
+    saveDownloadsToStorage,
+  ]);
 
   useEffect(() => {
-    initializeDownloads();
+    let isMounted = true;
+
+    const loadModules = async () => {
+      const modules = await loadNativeModules();
+
+      if (!isMounted) return;
+
+      setNativeModules(modules);
+    };
+
+    void loadModules();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const syncDownloads = async () => {
+      await initializeDownloads();
+
+      if (!isMounted) return;
+    };
+
+    void syncDownloads();
+
+    return () => {
+      isMounted = false;
+    };
   }, [initializeDownloads]);
 
   // =========================================
@@ -380,8 +462,10 @@ export const useDownload = () => {
       }
     },
     [
+      DOWNLOADS_DIR,
       downloadedLectures,
       ensureDownloadsDirectory,
+      FileSystem,
       getFileExtensionFromUrl,
       getLectureById,
       saveDownloadsToStorage,
@@ -451,7 +535,7 @@ export const useDownload = () => {
         });
       }
     },
-    [downloadedLectures, getLectureById, saveDownloadsToStorage],
+    [downloadedLectures, FileSystem, getLectureById, saveDownloadsToStorage],
   );
 
   // =========================================
@@ -543,7 +627,7 @@ export const useDownload = () => {
         });
       }
     },
-    [getLectureById],
+    [FileSystem, getLectureById, getMimeType, IntentLauncher],
   );
 
   // =========================================

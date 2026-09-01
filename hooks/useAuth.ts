@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { User } from "../store/authSlice";
 import { apiClient } from "@/services/apiClient";
+import { clearAuthSession } from "@/services/authSession";
 import { queryClient } from "@/services/queryClient";
 import { secureStore } from "@/services/secureStore";
 import Constants from "expo-constants";
@@ -52,12 +53,9 @@ export const useLogin = (): UseMutationResult<
           }
         } catch (error) {
           if (axios.isAxiosError(error)) {
-            console.log("STATUS:", error.response?.status);
-            console.log("DATA:", error.response?.data);
-            console.log("HEADERS:", error.response?.headers);
-            console.log("URL:", error.config?.url);
+            console.warn("Push token registration failed.");
           } else {
-            console.log("Error:", error);
+            console.warn("Push token registration failed.");
           }
         }
       });
@@ -82,14 +80,23 @@ export const useRegister = (): UseMutationResult<AuthResponse, Error, any> => {
   });
 };
 
+export { clearAuthSession } from "@/services/authSession";
+
 export const useLogout = (): UseMutationResult<void, Error, void> => {
   return useMutation({
     mutationFn: async () => {
-      await apiClient.delete("/api/v2/push-notifications");
+      try {
+        await apiClient.delete("/api/v2/push-notifications");
+      } catch (error) {
+        // Keep local auth cleanup resilient even if the server is unavailable.
+        console.warn("Remote logout failed; clearing local session.");
+      }
     },
     onSuccess: async () => {
-      await secureStore.clear();
-      queryClient.clear();
+      await clearAuthSession();
+    },
+    onError: async () => {
+      await clearAuthSession();
     },
   });
 };

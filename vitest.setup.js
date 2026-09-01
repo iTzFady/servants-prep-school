@@ -1,40 +1,71 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
-// Mock React Native modules
-vi.mock('react-native', async () => {
-  const actual = await vi.importActual('react-native');
-  return {
-    ...actual,
-    Appearance: {
-      getColorScheme: vi.fn(() => 'light'),
-      addChangeListener: vi.fn(() => ({ remove: vi.fn() })),
-    },
-  };
-});
+vi.mock("react-native", () => ({
+  Platform: { OS: "ios" },
+  Appearance: {
+    getColorScheme: vi.fn(() => "light"),
+    addChangeListener: vi.fn(() => ({ remove: vi.fn() })),
+  },
+  View: ({ children }) => children,
+  Text: ({ children }) => children,
+  Pressable: ({ children, onPress, ...props }) => ({
+    children,
+    onPress,
+    ...props,
+  }),
+  TouchableOpacity: ({ children, ...props }) => ({ children, ...props }),
+  StyleSheet: { create: (styles) => styles },
+  ActivityIndicator: () => null,
+}));
 
-// Mock Expo modules
-vi.mock('expo-router', () => ({
+vi.mock("expo-router", () => ({
   router: {
     push: vi.fn(),
     replace: vi.fn(),
     back: vi.fn(),
+    dismissAll: vi.fn(),
+    navigate: vi.fn(),
   },
   Link: ({ children }) => children,
 }));
 
-vi.mock('@expo/vector-icons/', () => ({
-  Feather: ({ name, size, color }) => `Icon(${name})`,
-}));
-
-// Mock Expo constants
-vi.mock('expo-constants', () => ({
+vi.mock("react-native-toast-message", () => ({
   default: {
-    expoVersion: '51.0.0',
+    show: vi.fn(),
   },
 }));
 
-// Mock AsyncStorage for any context that might use it
-vi.mock('@react-native-async-storage/async-storage', () => ({
+vi.mock("react-native-safe-area-context", () => ({
+  SafeAreaProvider: ({ children }) => children,
+  SafeAreaView: ({ children }) => children,
+}));
+
+vi.mock("@expo/vector-icons/", () => ({
+  Feather: ({ name }) => `Icon(${name})`,
+  AntDesign: ({ name }) => `Icon(${name})`,
+  MaterialIcons: ({ name }) => `Icon(${name})`,
+  SimpleLineIcons: ({ name }) => `Icon(${name})`,
+}));
+
+vi.mock("@sentry/react-native", () => ({
+  captureException: vi.fn(),
+  captureMessage: vi.fn(),
+  init: vi.fn(),
+  withScope: vi.fn(),
+  setUser: vi.fn(),
+  configureScope: vi.fn(),
+  addBreadcrumb: vi.fn(),
+}));
+
+vi.mock("expo-constants", () => ({
+  default: {
+    expoVersion: "51.0.0",
+    expoConfig: { extra: { eas: { projectId: "test-project-id" } } },
+    easConfig: { projectId: "test-project-id" },
+  },
+}));
+
+vi.mock("@react-native-async-storage/async-storage", () => ({
   default: {
     getItem: vi.fn(),
     setItem: vi.fn(),
@@ -43,7 +74,6 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
-// Global test setup
 global.console = {
   ...console,
   error: vi.fn(),

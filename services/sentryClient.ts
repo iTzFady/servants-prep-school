@@ -21,9 +21,9 @@ export const initializeSentry = () => {
     ],
     // Configure what data is sent to Sentry
     beforeSend(event) {
-      // Filter out certain errors in development
+      // Avoid logging raw payloads and request metadata in development.
       if (process.env.NODE_ENV === "development") {
-        console.log("[Sentry] Captured event:", event);
+        console.info("[Sentry] Event captured");
       }
       return event;
     },

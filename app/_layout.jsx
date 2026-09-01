@@ -12,14 +12,15 @@ import {
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import AppProviders from "@/providers/AppProviders";
+import AppProvidersRoot from "@/providers/AppProviders";
 import toastConfig from "@/theme/toast";
 import * as Sentry from "@sentry/react-native";
 import { initializeSentry } from "@/services/sentryClient";
+import AppSplashScreen from "@/components/AppSplashScreen";
 import "../global.css";
 
+SplashScreen.preventAutoHideAsync().catch(() => undefined);
 initializeSentry();
 
 export default Sentry.wrap(function RootLayout() {
@@ -33,23 +34,21 @@ export default Sentry.wrap(function RootLayout() {
   });
 
   useEffect(() => {
-    SplashScreen.hideAsync();
+    if (loaded || error) {
+      SplashScreen.hideAsync().catch(() => undefined);
+    }
   }, [loaded, error]);
 
   if (!loaded && !error) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#A71E34" />
-      </View>
-    );
+    return <AppSplashScreen />;
   }
 
   return (
     <ThemeProvider>
       <SafeAreaProvider>
-        <AppProviders>
+        <AppProvidersRoot>
           <ThemedStack />
-        </AppProviders>
+        </AppProvidersRoot>
         <Toast config={toastConfig} />
       </SafeAreaProvider>
     </ThemeProvider>

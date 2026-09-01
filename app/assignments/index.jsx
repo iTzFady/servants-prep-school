@@ -1,6 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -9,38 +10,25 @@ import {
   View,
 } from "react-native";
 import { fonts } from "@/theme/fonts";
+import useAssignment from "@/hooks/useAssignment";
 
-const assignments = [
-  {
-    id: "faith",
-    title: "واجب العقيدة",
-    subject: "العقيدة المسيحية",
-    due: "ينتهي غداً",
-    questions: "10 أسئلة",
-    status: "قيد الحل",
-    color: "#B51D36",
-  },
-  {
-    id: "hymns",
-    title: "واجب الألحان",
-    subject: "لحن أبؤرو",
-    due: "تم التسليم",
-    questions: "5 أسئلة",
-    status: "مكتمل",
-    color: "#16A34A",
-  },
-  {
-    id: "history",
-    title: "تاريخ الكنيسة",
-    subject: "عصر الشهداء",
-    due: "ينتهي الخميس",
-    questions: "8 أسئلة",
-    status: "جديد",
-    color: "#D97706",
-  },
-];
+const assignmentsFallback = [];
 
 export default function Assignments() {
+  const { getAssignments } = useAssignment();
+  const [assignments, setAssignments] = useState(assignmentsFallback);
+
+  useEffect(() => {
+    let mounted = true;
+    getAssignments()
+      .then((data) => {
+        if (!mounted) return;
+        setAssignments(data || []);
+      })
+      .catch(() => {});
+    return () => (mounted = false);
+  }, [getAssignments]);
+
   return (
     <SafeAreaView style={styles.screen} edges={["bottom"]}>
       <ScrollView

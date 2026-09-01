@@ -1,6 +1,5 @@
 import {
   View,
-  KeyboardAvoidingView,
   ScrollView,
   Platform,
   StyleSheet,
@@ -28,12 +27,7 @@ export default function CreateCurriculum() {
   const [showDate, setShowDate] = useState(false);
   const { mutate: uploadLecture, isPending } = useUploadLecture();
   const router = useRouter();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({
+  const { control, handleSubmit } = useForm({
     defaultValues: {
       name: "",
       subject: "",

@@ -1,13 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { fonts } from "@/theme/fonts";
 import { ThemeContext } from "@/context/ThemeContext";
 import { useContext, useMemo } from "react";
-import LectureCard from "@/components/LectureCard";
-import { Lecture_Types } from "@/data/lectures";
 const photos = [
   require("@/assets/images/archive/servants-meeting.webp"),
   require("@/assets/images/archive/media-workshop.webp"),

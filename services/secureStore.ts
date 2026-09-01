@@ -34,7 +34,7 @@ const webStorage = {
 };
 
 // Native storage service for SecureStore (mobile only)
-let nativeStorage: typeof import("expo-secure-store") | null = null;
+let nativeStorage: any = null;
 if (Platform.OS !== "web") {
   try {
     nativeStorage = require("expo-secure-store");

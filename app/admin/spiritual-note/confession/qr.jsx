@@ -1,5 +1,5 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
@@ -12,11 +12,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function AttendanceCheck() {
   const [permission, requestPermission] = useCameraPermissions();
   const router = useRouter();
-  const [studentId, setStudentId] = useState("");
   const confession = useMarkConfession();
 
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
+
+  const resetState = useCallback(() => undefined, []);
 
   const submit = useCallback(
     async (id) => {
@@ -45,7 +46,7 @@ export default function AttendanceCheck() {
         router.back();
       }
     },
-    [confession, router],
+    [confession, resetState, router],
   );
 
   if (!permission) return null;
@@ -57,10 +58,6 @@ export default function AttendanceCheck() {
         <Text style={styles.permissionText}>برجاء الموافقة علي الكاميرا</Text>
       </TouchableOpacity>
     );
-  }
-
-  function resetState() {
-    setStudentId("");
   }
 
   return (
@@ -79,7 +76,6 @@ export default function AttendanceCheck() {
             confession.isPending
               ? undefined
               : ({ data }) => {
-                  setStudentId(data);
                   submit(data);
                 }
           }

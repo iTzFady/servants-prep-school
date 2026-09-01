@@ -27,7 +27,7 @@ import ErrorIndicator from "@/components/ErrorIndicator";
 export default function AdminStudentResults() {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const { id, name } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
 
   const { data: results, isLoading, error, refetch } = useAdminResults(id);
   const createResults = useCreateResults();
@@ -101,6 +101,21 @@ export default function AdminStudentResults() {
       setSelectedSubject(null);
       setNewScore("");
       setAddModalVisible(false);
+    }
+  };
+
+  const handleChange = (text) => {
+    if (!/^\d*$/.test(text)) return;
+
+    if (text === "") {
+      setNewScore("");
+      return;
+    }
+
+    const number = Number(text);
+
+    if (number >= 0 && number <= 100) {
+      setNewScore(text);
     }
   };
 
@@ -213,7 +228,7 @@ export default function AdminStudentResults() {
             <InputField
               text="الدرجة"
               value={newScore}
-              onChangeText={setNewScore}
+              onChangeText={handleChange}
               placeholder="مثال: 85"
               keyboardType="numeric"
             />

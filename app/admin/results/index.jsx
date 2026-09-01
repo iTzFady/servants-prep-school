@@ -1,18 +1,9 @@
 import { useCallback, useContext, useMemo, useState } from "react";
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { useUsersList } from "@/hooks/useUser";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import { useRouter } from "expo-router";
-import Button from "@/components/Button";
 import StudentCard from "@/components/StudentCard";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import LoadingIndicator from "@/components/LoadingIndicator";

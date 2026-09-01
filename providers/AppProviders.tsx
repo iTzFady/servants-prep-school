@@ -20,7 +20,6 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 
       if (user?.id) {
         setSentryUser(user.id, {
-          email: user.email,
           role: user.role,
         });
       } else {
