@@ -94,7 +94,7 @@ export const AdmindashboardTabs = [
     label: "ادارة الواجبات",
     description: "انشاء ومتابعة الواجبات",
     icon: ({ color }) => <Feather name="clipboard" size={24} color={color} />,
-    value: "assignments",
+    value: "admin/assignments",
   },
   {
     id: 6,

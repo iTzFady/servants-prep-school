@@ -178,6 +178,14 @@ export default function ThemedStack() {
             headerTitle: "النتائج",
           }}
         />
+        <Stack.Screen
+          name="assignments/result/[id]"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "نتيجة الواجب",
+          }}
+        />
         {/* Admin Screens */}
         <Stack.Screen
           name="admin/index"
@@ -367,6 +375,23 @@ export default function ThemedStack() {
             headerShown: true,
             header: (props) => <Header {...props} />,
             headerTitle: "الاعتراف",
+          }}
+        />
+
+        <Stack.Screen
+          name="admin/assignments/index"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "ادارة الواجبات",
+          }}
+        />
+        <Stack.Screen
+          name="admin/assignments/create"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: " انشاء واجب جديد",
           }}
         />
       </Stack>

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { AxiosInstance, InternalAxiosRequestConfig, create } from "axios";
 import { secureStore } from "./secureStore";
 import { ERRORS } from "@/data/errors";
 import { store } from "@/store/store";
@@ -9,7 +9,7 @@ import * as Sentry from "@sentry/react-native";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_BASEURL || process.env.EXPO_BASEURL;
 
-export const apiClient: AxiosInstance = axios.create({
+export const apiClient: AxiosInstance = create({
   baseURL: API_BASE_URL,
   timeout: 100000,
   headers: {
@@ -48,7 +48,7 @@ apiClient.interceptors.response.use(
       const code = (data.code || data.error || data.message || "").toString();
       if (code && ERRORS[code]) {
         userMessage = ERRORS[code];
-        if (code === "INVALID_TOKEN") {
+        if (code === "INVALID_TOKEN" || code === "AUTHENTICATION_FAILED") {
           isTokenInvalid = true;
         }
       } else {
