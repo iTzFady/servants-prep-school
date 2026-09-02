@@ -69,7 +69,9 @@ export default function AssignmentQuestions() {
       </View>
       <View style={styles.question}>
         <Text style={styles.kind}>
-          {q.answers && q.answers.length === 2 ? "صح أم خطأ" : "اختر الإجابة الصحيحة"}
+          {q.answers && q.answers.length === 2
+            ? "صح أم خطأ"
+            : "اختر الإجابة الصحيحة"}
         </Text>
         <Text style={styles.questionText}>{q.name}</Text>
         {(q.answers || []).map((choice) => (
@@ -81,7 +83,12 @@ export default function AssignmentQuestions() {
               selected[q.id] === choice.id && styles.choiceActive,
             ]}
           >
-            <View style={[styles.radio, selected[q.id] === choice.id && styles.radioActive]}>
+            <View
+              style={[
+                styles.radio,
+                selected[q.id] === choice.id && styles.radioActive,
+              ]}
+            >
               {selected[q.id] === choice.id && <View style={styles.dot} />}
             </View>
             <Text
