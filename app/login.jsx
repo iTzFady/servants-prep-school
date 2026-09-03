@@ -55,7 +55,12 @@ export default function Login() {
             text1: "تم تسجيل الدخول بنجاح",
             text2: "مرحباً بك مجدداً",
           });
-          if (data.userResponse.role === "ADMIN") router.replace("/admin");
+          if (
+            data.userResponse.role === "ADMIN" ||
+            data.userResponse.role === "SUDO" ||
+            data.userResponse.role === "FATHER"
+          )
+            router.replace("/admin");
           else router.replace("/");
         },
         onError: (error) => {

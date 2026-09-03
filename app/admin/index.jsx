@@ -10,12 +10,20 @@ import { Image } from "expo-image";
 
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { fathers } from "@/data/fathers";
 
 export default function AdminIndex() {
   const { theme } = useContext(ThemeContext);
   const user = useAppSelector((state) => state.auth.user);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
   const defaultProfilePic = require("@/assets/images/default-profile.webp");
+  const title = useMemo(() => {
+    if (fathers.includes(user?.name)) {
+      return "القس";
+    } else {
+      return user?.gender === "MALE" ? " باصون " : "تاسوني ";
+    }
+  }, [user?.name, user?.gender]);
 
   const renderTabs = useCallback(({ item }) => {
     return (
@@ -45,8 +53,7 @@ export default function AdminIndex() {
         />
         <View>
           <Text style={styles.studentName}>
-            {user?.gender === "MALE" ? " باصون " : "تاسوني "} ,
-            {user?.name.split(" ")[0] || ""}
+            {title} ,{user?.name.split(" ")[0] || ""}
           </Text>
           <Text style={styles.cardSubtext}>اهلا بك في مدرسة ماربولس</Text>
         </View>

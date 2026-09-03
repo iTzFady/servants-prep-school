@@ -88,9 +88,7 @@ export default function AssignmentQuestions() {
           <Text style={[styles.small, { color: dyn.textSecondary }]}>
             السؤال {index + 1} من {questions.length || 0}
           </Text>
-          <Text style={[styles.title, { color: dyn.textPrimary }]}>
-            {/* title from API if available */}
-          </Text>
+          <Text style={[styles.title, { color: dyn.textPrimary }]}></Text>
         </View>
         <Text style={[styles.percent, { color: dyn.primary }]}>
           {Math.round(((index + 1) / (questions.length || 1)) * 100)}%
@@ -157,7 +155,7 @@ export default function AssignmentQuestions() {
                 selected[q.id] === choice.id && { color: dyn.primary },
               ]}
             >
-              {choice.text}
+              {choice.name}
             </Text>
           </TouchableOpacity>
         ))}
@@ -189,7 +187,7 @@ export default function AssignmentQuestions() {
 }
 function createStyles(colors) {
   return StyleSheet.create({
-    screen: { flex: 1, backgroundColor: colors.background },
+    screen: { flex: 1 },
     progressTop: {
       padding: 24,
       paddingBottom: 12,
@@ -229,9 +227,9 @@ function createStyles(colors) {
       fontFamily: fonts.medium,
       color: colors.primary,
       fontSize: 12,
-      borderRightWidth: 3,
+      borderStartWidth: 3,
       borderColor: colors.primary,
-      paddingRight: 8,
+      paddingStart: 8,
     },
     questionText: {
       fontFamily: fonts.bold,
@@ -239,7 +237,6 @@ function createStyles(colors) {
       fontSize: 17,
       lineHeight: 30,
       marginVertical: 20,
-      textAlign: "right",
     },
     choice: {
       minHeight: 56,
@@ -274,8 +271,8 @@ function createStyles(colors) {
     },
     choiceText: {
       fontFamily: fonts.medium,
-      color: colors.textSecondary,
-      fontSize: 14,
+      color: "black",
+      fontSize: 16,
     },
     choiceTextActive: { color: colors.primary },
     footer: {

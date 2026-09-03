@@ -15,7 +15,7 @@ export default function ThemedStack() {
   useEffect(() => {
     if (isAuthenticated) {
       const role = user?.role?.toLowerCase?.() || "";
-      if (role === "admin" || role === "superadmin") {
+      if (role === "admin" || role === "sudo" || role === "father") {
         router.replace("/admin");
       } else {
         router.replace("/");

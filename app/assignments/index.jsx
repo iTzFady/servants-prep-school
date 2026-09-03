@@ -2,6 +2,8 @@ import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useContext, useMemo, useState } from "react";
+import dateUtils from "@/utils/dateFormatter";
+
 import {
   ScrollView,
   StyleSheet,
@@ -14,6 +16,7 @@ import { useAssignments } from "@/hooks/useAssignment";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ErrorIndicator from "@/components/ErrorIndicator";
 import { ThemeContext } from "@/context/ThemeContext";
+import { getSubjectLabel } from "@/data/subjects";
 
 const assignmentsFallback = [];
 
@@ -118,14 +121,6 @@ export default function Assignments() {
             الواجبات الحالية
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => router.push("/admin/assignments")}
-          style={{ alignSelf: "flex-start", marginBottom: 12 }}
-        >
-          <Text style={{ color: dynamic.actionColor, fontFamily: fonts.bold }}>
-            لوحة الإدارة
-          </Text>
-        </TouchableOpacity>
         {filtered.map((item) => (
           <AssignmentCard
             key={item.id}
@@ -185,20 +180,26 @@ function AssignmentCard({ item, theme, styles }) {
       </View>
       <View style={styles.cardTop}>
         <View style={[styles.icon, { backgroundColor: `${item.color}16` }]}>
-          <Feather name="clipboard" size={21} color={item.color} />
+          <Feather name="clipboard" size={21} color={theme.actionColor} />
         </View>
         <View style={styles.cardText}>
           <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.subject}>{item.subject}</Text>
+          <Text style={styles.subject}>{getSubjectLabel(item.subject)}</Text>
         </View>
       </View>
       <View style={styles.meta}>
-        <Text style={styles.metaText}>
-          <Feather name="help-circle" size={14} /> {item.questions}
-        </Text>
-        <Text style={[styles.metaText, { color: item.color }]}>
-          <Feather name="clock" size={14} /> {item.due}
-        </Text>
+        <View style={styles.metaText}>
+          <Feather name="help-circle" color={theme.actionColor} size={14} />
+          <Text style={styles.metaText}>
+            {dateUtils.arabicDate(item.endDate)}
+          </Text>
+        </View>
+        <View style={styles.metaText}>
+          <Feather name="clock" color={theme.actionColor} size={14} />
+          <Text style={styles.metaText}>
+            {dateUtils.timeRemaining(item.endDate)}
+          </Text>
+        </View>
       </View>
       <View style={styles.action}>
         <Text style={styles.actionText}>
@@ -215,7 +216,7 @@ function AssignmentCard({ item, theme, styles }) {
 }
 function createStyles(colors) {
   return StyleSheet.create({
-    screen: { flex: 1, backgroundColor: colors.background },
+    screen: { flex: 1 },
     content: { paddingBottom: 30 },
     chips: { paddingVertical: 16, paddingHorizontal: 16, gap: 8 },
     chip: {
@@ -256,13 +257,7 @@ function createStyles(colors) {
       marginTop: 12,
       padding: 16,
       borderRadius: 12,
-      backgroundColor: colors.secondary,
-      borderWidth: 1,
-      borderColor: colors.borderColor,
-      shadowColor: "#0F172A",
-      shadowOpacity: 0.05,
-      shadowRadius: 8,
-      elevation: 2,
+      backgroundColor: colors.spiritualNote.cardBackground,
     },
     status: {
       alignSelf: "flex-start",
@@ -277,8 +272,6 @@ function createStyles(colors) {
     cardTop: {
       flexDirection: "row",
       gap: 12,
-      alignItems: "center",
-      paddingLeft: 80,
     },
     icon: {
       width: 46,
@@ -292,13 +285,11 @@ function createStyles(colors) {
       fontFamily: fonts.bold,
       color: colors.title,
       fontSize: 15,
-      textAlign: "right",
     },
     subject: {
       fontFamily: fonts.regular,
       color: colors.textSecondary,
       fontSize: 12,
-      textAlign: "right",
       marginTop: 2,
     },
     meta: {
@@ -306,13 +297,14 @@ function createStyles(colors) {
       paddingTop: 12,
       borderTopWidth: 1,
       borderColor: colors.background,
-      flexDirection: "row",
-      justifyContent: "space-between",
+      gap: 6,
     },
     metaText: {
       fontFamily: fonts.regular,
       color: colors.textSecondary,
       fontSize: 11,
+      flexDirection: "row",
+      gap: 4,
     },
     action: {
       marginTop: 14,
