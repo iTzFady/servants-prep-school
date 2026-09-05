@@ -9,11 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
-import {
-  useAssignments,
-  useAdminNotifyAssignment,
-} from "@/hooks/useAssignment";
+import { router } from "expo-router";
+import { useAssignments } from "@/hooks/useAssignment";
 import { ThemeContext } from "@/context/ThemeContext";
 import { fonts } from "@/theme/fonts";
 import LoadingIndicator from "@/components/LoadingIndicator";
@@ -22,11 +19,8 @@ import { getSubjectLabel } from "@/data/subjects";
 
 export default function AdminAssignmentsList() {
   const { data, isLoading, error, refetch } = useAssignments();
-  const notifyMutation = useAdminNotifyAssignment();
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => createStyles(theme, fonts), [theme]);
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
-  const [showConfirm, setShowConfirm] = useState(false);
 
   const assignments = data || [];
 

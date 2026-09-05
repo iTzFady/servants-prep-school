@@ -202,14 +202,7 @@ export default function ThemedStack() {
             ),
             headerLeft: () => (
               <TouchableOpacity
-                // onPress={() => router.navigate("/notifications")}
-                onPress={() =>
-                  Toast.show({
-                    type: "info",
-                    text1: "لم يتم اضافة هذه الميزة في الوقت الحالي",
-                    text2: "سيتم اضافة هذه الميزة في اسرع وقت",
-                  })
-                }
+                onPress={() => router.navigate("/notifications")}
               >
                 <Feather name="bell" size={24} color={theme.header.color} />
               </TouchableOpacity>
