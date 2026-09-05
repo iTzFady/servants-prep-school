@@ -51,6 +51,7 @@ export const useAssignmentResult = (id: string | number) => {
 export const useAdminCreateAssignment = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
+      console.log("payload", payload);
       const res = await apiClient.post(
         "/api/v2/admin/assignment/create",
         payload,

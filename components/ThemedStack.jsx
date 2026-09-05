@@ -394,6 +394,30 @@ export default function ThemedStack() {
             headerTitle: " انشاء واجب جديد",
           }}
         />
+        <Stack.Screen
+          name="admin/assignments/list"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "قائمة الواجبات",
+          }}
+        />
+        <Stack.Screen
+          name="admin/assignments/notify"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "إشعار الطلاب",
+          }}
+        />
+        <Stack.Screen
+          name="admin/assignments/[id]"
+          options={{
+            headerShown: true,
+            header: (props) => <Header {...props} />,
+            headerTitle: "أسئلة الواجب",
+          }}
+        />
       </Stack>
       <StatusBar
         animated={true}

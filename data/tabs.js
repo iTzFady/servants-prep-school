@@ -4,6 +4,7 @@ import {
   FontAwesome,
   FontAwesome5,
   Fontisto,
+  Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
@@ -207,6 +208,38 @@ export const curriculumTabs = [
     label: "الكتاب المقدس",
     icon: ({ color }) => <FontAwesome5 name="bible" size={24} color={color} />,
     value: "BIBLE",
+  },
+];
+
+export const assignmentTabs = [
+  {
+    id: 0,
+    label: "إنشاء واجب جديد",
+    description: "قم بإنشاء اختبار جديد",
+    icon: ({ color }) => <Feather name="plus" size={28} color={color} />,
+    value: "admin/assignments/create",
+  },
+  {
+    id: 1,
+    label: "أسئلة الاختبار",
+    description: "عرض الأسئلة بدون إجابة",
+    icon: ({ color }) => (
+      <MaterialCommunityIcons
+        name="file-document-outline"
+        size={28}
+        color={color}
+      />
+    ),
+    value: "admin/assignments/list",
+  },
+  {
+    id: 2,
+    label: "إشعار الطلاب",
+    description: "إرسال تنبيه للطلاب",
+    icon: ({ color }) => (
+      <Ionicons name="notifications-outline" size={28} color={color} />
+    ),
+    value: "admin/assignments/notify",
   },
 ];
 

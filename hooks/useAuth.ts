@@ -113,6 +113,10 @@ export const useGetProfile = (): UseQueryResult<User, Error> => {
 };
 
 async function registerPushToken(): Promise<string | null> {
+  if (Platform.OS === "web") {
+    return null;
+  }
+
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
       name: "Default",

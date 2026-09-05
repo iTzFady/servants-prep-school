@@ -7,6 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "servantsprepschool",
     "userInterfaceStyle": "automatic",
+    "notification": {
+      "vapidPublicKey": "BMnEVT--0yAUzrFQt1eYYUAhlyqEG8Lw9CYWM8lbYvZzUARnmFE7HWQW8wgX3vWfdOkuktze5765UEC4Vggqcbw"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.faaady.serveantsprepapp",
